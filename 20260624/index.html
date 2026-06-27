@@ -1,313 +1,686 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Multi-Strategy Portfolio Overview | 2026-06-28</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+    :root {
+        --bg: #0f172a; --card: #1e293b; --text: #e2e8f0; --subtext: #94a3b8;
+        --accent: #3b82f6; --green: #10b981; --red: #ef4444; --border: #334155;
+        --internal: #7c3aed; --conservative: #059669; --bl: #f59e0b;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); line-height: 1.7; }
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+    nav { position: sticky; top: 0; background: rgba(15,23,42,0.95); backdrop-filter: blur(8px); border-bottom: 1px solid var(--border); z-index: 100; padding: 12px 0; margin-bottom: 32px; }
+    nav.container { display: flex; gap: 20px; flex-wrap: wrap; padding: 0 24px; }
+    nav a { color: var(--subtext); text-decoration: none; font-size: 14px; }
+    nav a:hover { color: var(--accent); }
+  .portfolio-tabs { display: flex; gap: 8px; margin-bottom: 24px; border-bottom: 1px solid var(--border); }
+  .tab { padding: 12px 20px; background: transparent; border: none; color: var(--subtext); cursor: pointer; border-bottom: 3px solid transparent; font-size: 15px; font-weight: 600; transition: all 0.2s; }
+  .tab.active { color: var(--text); }
+  .tab[data-pf="pf1"].active { border-color: var(--internal); }
+  .tab[data-pf="pf2"].active { border-color: var(--conservative); }
+  .tab[data-pf="pf3"].active { border-color: var(--bl); }
+  .portfolio-content { display: none; }
+  .portfolio-content.active { display: block; animation: fadeIn 0.3s; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    h1 { font-size: 32px; margin-bottom: 8px; }
+    h2 { font-size: 24px; margin: 40px 0 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+    h3 { font-size: 18px; margin: 24px 0 12px; color: var(--accent); }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; }
+  .metric { text-align: center; }
+  .metric-value { font-size: 28px; font-weight: 700; }
+  .pf1 .metric-value { color: var(--internal); }
+  .pf2 .metric-value { color: var(--conservative); }
+  .pf3 .metric-value { color: var(--bl); }
+  .metric-label { font-size: 13px; color: var(--subtext); margin-top: 4px; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td { padding: 10px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { color: var(--subtext); font-weight: 600; background: #0f172a; position: sticky; top: 0; }
+    tr:hover { background: rgba(59,130,246,0.1); }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; background: #334155; }
+  .news-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .news-item { border: 1px solid var(--border); border-radius: 8px; padding: 16px; transition: all 0.2s; }
+  .news-item:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .news-header { display: flex; justify-content: space-between; margin-bottom: 8px; align-items: center; }
+  .news-date { font-size: 12px; color: var(--subtext); }
+  .news-title { font-weight: 600; color: var(--text); text-decoration: none; display: block; margin-bottom: 6px; line-height: 1.4; }
+  .news-title:hover { color: var(--accent); }
+  .news-summary { font-size: 13px; color: var(--subtext); margin-bottom: 8px; line-height: 1.5; }
+  .news-impact { font-size: 12px; padding: 4px 8px; border-radius: 4px; display: inline-block; font-weight: 600; }
+  .news-impact.positive { background: rgba(16,185,129,0.2); color: var(--green); }
+  .news-impact.negative { background: rgba(239,68,68,0.2); color: var(--red); }
+  .news-impact.neutral { background: rgba(148,163,184,0.2); color: var(--subtext); }
+  .bl-views { background: rgba(245,158,11,0.1); border-left: 3px solid var(--bl); padding: 16px; border-radius: 4px; margin: 16px 0; }
+  .bl-views li { margin: 8px 0; }
+  .insight { background: rgba(59,130,246,0.1); border-left: 3px solid var(--accent); padding: 12px 16px; margin: 16px 0; border-radius: 4px; font-size: 14px; }
+    canvas { max-height: 400px; }
+    @media (max-width: 768px) { h1 { font-size: 24px; }.container { padding: 16px; } }
+</style>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta property="og:title" content="Markowitz" />
 <meta property="og:description" content="VQE Markowitz S&P500" />
 <meta property="og:image" content="20260624.jpg" />
 <meta property="og:url" content="https://qracle74.github.io/markowitz/20260624/" />
-<title>양자 컴퓨팅 기반 자가 ETF 설계 백서: VQE-Markowitz 실전 구현</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-<style>
-  @page { size: A4; margin: 15mm; }
-  @media print {
-    .no-print { display: none; }
-    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .page-break { page-break-before: always; }
-    .avoid-break { page-break-inside: avoid; }
-  }
-  body {
-    font-family: 'Georgia', 'Times New Roman', serif;
-    background-color: #fdfdfb;
-    color: #0a1a2f;
-    line-height: 1.7;
-    margin: 0;
-    padding: 0;
-  }
-  .container { max-width: 180mm; margin: 0 auto; padding: 20px; }
-  h1, h2, h3, h4 { color: #0a1a2f; font-weight: 600; margin-top: 1.5em; }
-  h1 { font-size: 28px; text-align: center; border-bottom: 3px solid #c9a961; padding-bottom: 15px; }
-  h2 { font-size: 22px; border-left: 5px solid #c9a961; padding-left: 12px; }
-  h3 { font-size: 18px; color: #0a1a2f; }
-  .gold { color: #c9a961; }
-  .navy { color: #0a1a2f; }
-  .quote {
-    font-style: italic;
-    text-align: center;
-    margin: 30px 0;
-    font-size: 16px;
-    color: #333;
-    border-top: 1px solid #c9a961;
-    border-bottom: 1px solid #c9a961;
-    padding: 15px 0;
-  }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 20px 0;
-    font-size: 10px;
-    font-family: 'Helvetica', 'Arial', sans-serif;
-  }
-  th, td {
-    border: 1px solid #ddd;
-    padding: 6px;
-    text-align: right;
-  }
-  th {
-    background-color: #0a1a2f;
-    color: #fdfdfb;
-    text-align: center;
-  }
-  td:first-child, th:first-child { text-align: left; }
-  .chart-container {
-    width: 100%;
-    margin: 30px 0;
-    page-break-inside: avoid;
-  }
-  .disclaimer {
-    font-size: 9px;
-    color: #666;
-    border-top: 1px solid #ccc;
-    margin-top: 40px;
-    padding-top: 10px;
-  }
-  .tag {
-    display: inline-block;
-    background: #0a1a2f;
-    color: #fdfdfb;
-    padding: 2px 8px;
-    border-radius: 3px;
-    font-size: 11px;
-    margin-right: 5px;
-  }
-  .kpi {
-    display: flex;
-    justify-content: space-around;
-    margin: 20px 0;
-    text-align: center;
-  }
-  .kpi div {
-    border: 1px solid #c9a961;
-    padding: 10px;
-    width: 18%;
-  }
-  .kpi .num { font-size: 20px; font-weight: bold; color: #0a1a2f; }
-  .kpi .label { font-size: 11px; color: #666; }
-  ul li { margin-bottom: 8px; }
-  .no-print {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    z-index: 1000;
-  }
-  .btn {
-    background: #0a1a2f;
-    color: #fdfdfb;
-    border: 1px solid #c9a961;
-    padding: 10px 20px;
-    cursor: pointer;
-    font-family: 'Georgia', serif;
-  }
-</style>
+
+<!-- Facebook 공유용 Open Graph -->
+<meta property="og:title" content="Multi-Strategy Portfolio Report 2026-06-27">
+<meta property="og:description" content="내부 운용 28.74%, 보수형 14.20%, BL 12.40% 성과 분석">
+<meta property="og:image" content="https://yourdomain.com/thumbnail.png">
+<meta property="og:url" content="https://yourdomain.com/portfolio-v2.html">
+<meta property="og:type" content="website">
+
 </head>
 <body>
-<div class="no-print">
-  <button class="btn" onclick="window.print()">PDF 저장</button>
-</div>
+<nav>
+    <div class="container">
+        <a href="#compare">비교 대시보드</a>
+        <a href="#cml">통합 CML</a>
+    </div>
+</nav>
+
 <div class="container">
-  <h1>양자 컴퓨팅 VQE로 설계하는 커스텀 ETF</h1>
-  <div class="quote">
-    "시장은 단기적으로 투표 기계이지만, 장기적으로는 저울이다." — Benjamin Graham
-  </div>
+    <h1>양자 컴퓨팅 기반 자가 ETF 설계 백서: VQE-Markowitz 실전 구현</h1>
+<div style="margin: 16px 0;">
+    <button onclick="shareFacebook()" style="background:#1877f2;color:white;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-weight:600;">
+        📤 Facebook 공유
+    </button>
+    <button onclick="copyLink()" style="background:#334155;color:#e2e8f0;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;margin-left:8px;">
+        🔗 링크 복사
+    </button>
+</div>
+<p style="color: var(--subtext); margin-bottom: 24px;">2026-06-27 기준 | 내부 + 보수형 + Black-Litterman</p>
 
-  <h2>Part I. 초보자 섹션: 현대 포트폴리오 이론을 축구팀으로 이해하기</h2>
-  <p><b>분산 투자</b>란 위험 대비 수익률을 극대화하는 <b>최적의 조합</b>을 찾는 과정입니다. 달걀과 바구니 비유 대신, <b>축구팀 구성</b>으로 설명합니다.</p>
-  <p>35인 스쿼드는 손흥민, 메시, 홀란드 같은 <b>집중형 알파</b> 전략입니다. 11명만 선발이므로 스타 플레이어 7~8명에게 몰빵합니다. 단기 3개월 트레이딩에 적합하지만, 한 명이 부상당하면 팀 전체가 무너집니다. 이것이 35개 종목 포트폴리오의 Std 0.185942, 샤프 1.45로 나타납니다.</p>
-  <p>503인 스쿼드는 유소년부터 3군까지 갖춘 <b>안정적인 자산 배분</b>입니다. 각 선수의 출전시간은 0.03%~0.49%로 분산됩니다. 7년 연금용 장기전에서 유리하며, Std 0.153430, 샤프 1.33으로 변동성이 낮습니다. 단, 메시를 0.03%만 기용하면 그의 역량이 희석됩니다. 이것이 <b>추정 오차 최소화</b>의 대가입니다.</p>
-  <p>67개는 1년 트레이딩용 <b>균형형 코어-새틀라이트</b>, 131개와 259개는 각각 3년, 5년 연금용 <b>패시브 대체 Smart Beta</b>로 해석합니다.</p>
-  <div class="chart-container avoid-break">
-    <canvas id="riskReturnChart"></canvas>
-  </div>
+    <div class="portfolio-tabs">
+        <button class="tab active" data-pf="pf1">PF 1: 내부 운용</button>
+        <button class="tab" data-pf="pf2">PF 2: 투자자용 보수형</button>
+        <button class="tab" data-pf="pf3">PF 3: Black-Litterman</button>
+    </div>
 
-  <div class="page-break"></div>
-  <h2>Part II. 서사적 분석: 왜 이런 결과가 나왔는가</h2>
-  <p><b>가설 3개:</b> H1금리 긴축 종료, H2지정학 리스크 상수화, H3스태그플레이션 진입.</p>
-  <p><b>검증:</b> 종목 수 증가 시 리스크가 0.185942 → 0.153430으로 17.49% 감소했습니다. 이는 <b>양자적 최적화</b>가 상관관계가 낮은 자산을 더 많이 탐색해 <b>과적합 방지</b>에 성공했음을 의미합니다. LS-VQE의 Warm Start가 35개 해를 초기값으로 503개 공간을 탐색하며 지역 최적해를 탈출했습니다.</p>
-  <p><b>Performance Attribution:</b> 35개→67개에서 샤프 1.45→1.75로 개선된 주원인은 LLY 7.49%→4.78%로 축소, SNDK, GEV 등 산업재/에너지 4.78% 신규 편입입니다. 2021~2024 금리인상기 생존 자산이 과대표집됐습니다. 이것이 <b>Robust Optimization</b>입니다.</p>
+    <!-- PF 1: 내부 운용 -->
+    <div class="portfolio-content active pf1" id="pf1">
+        <div class="card">
+            <div class="grid">
+                <div class="metric"><div class="metric-value">28.74%</div><div class="metric-label">달성 수익률</div></div>
+                <div class="metric"><div class="metric-value">17.89%</div><div class="metric-label">리스크 Std</div></div>
+                <div class="metric"><div class="metric-value">1.23</div><div class="metric-label">샤프지수</div></div>
+                <div class="metric"><div class="metric-value">33</div><div class="metric-label">종목 수</div></div>
+            </div>
+        </div>
 
-  <h2>Part III. 자본시장선 CML: 2026년 6월 기준</h2>
-  <p>3개월 T-Bill 3.640%를 무위험수익률로 적용. CML 기울기 = (기대수익률 - 3.640%) / 표준편차.</p>
-  <!-- <div class="kpi avoid-break">
-    <div><div class="num">1.45</div><div class="label">35개 샤프</div></div>
-    <div><div class="num">1.75</div><div class="label">67개 샤프</div></div>
-    <div><div class="num">1.61</div><div class="label">131개 샤프</div></div>
-    <div><div class="num">1.53</div><div class="label">259개 샤프</div></div>
-    <div><div class="num">1.33</div><div class="label">503개 샤프</div></div>
-  </div> -->
-  <div class="chart-container avoid-break">
-    <canvas id="cmlChart"></canvas>
-  </div>
-  <p>67개 포트폴리오가 CML 상 가장 효율적입니다. 503개는 분산 과다로 샤프가 하락. <b>양자 이득</b>은 35→67 구간에서 최대입니다.</p>
+        <h2 id="pf1-part1">Part I. 초보자 섹션: 분산투자 = 오케스트라 합주</h2>
+        <div class="card">
+            <p><b>포트폴리오는 오케스트라입니다.</b></p>
+            <p>1. <b>개별 종목 = 악기</b>: NVDA는 바이올린처럼 변동성이 크다. KO는 콘트라베이스처럼 묵직하고 안정적이다.</p>
+            <p>2. <b>수익률 = 음량</b>: 각 악기가 내는 소리 크기.</p>
+            <p>3. <b>리스크 = 불협화음</b>: 모든 악기가 같은 멜로디만 연주하면, 한 명만 삑사리 나도 곡 전체가 망가진다.</p>
+            <p>4. <b>분산투자 = 편곡</b>: 바이올린, 첼로, 팀파니를 섞으면 바이올린이 삑사리 나도 다른 악기가 커버한다.</p>
+            <div class="insight">33개 종목에서 한 종목이 -50% 폭락해도, 비중 5.4%라면 포트폴리오 손실은 -2.7%에 불과. 이것이 MPT의 '비체계적 위험 제거'다.</div>
+            <canvas id="chart-pf1-div"></canvas>
+        </div>
 
-  <div class="page-break"></div>
-  <h2>Part IV. 연준 Fed의 통화정책 움직임 해석</h2>
-  <p>현재 실질 기준금리 = 명목 3.640% - PCE 2.90% 가정 = 0.74%. 연준 추정 자연이자율 r* 0.50% 대비 +0.24%p. <b>완화적이 아닌 중립 이상 긴축 환경</b>입니다.</p>
-  <p>2026년 일본의 금리인상 발표는 글로벌 캐리 트레이드 청산을 유발. VIX 상승 시 TLT 0.47%→0.30%→0.10%→0.06%→0.03%로 지속 감소, GLD 4.68%→2.99%→2.05%→1.16%→0.62%로 <b>기울기 음수</b>. 이는 Smart Money가 일본발 긴축을 '인플레 종료' 신호로 해석, 안전자산에서 위험자산으로 이동함을 시사합니다. H1금리 가설을 지지합니다.</p>
+        <h2 id="pf1-part2">Part II. 서사적 분석: 왜 28.74%가 나왔나</h2>
+        <div class="card">
+            <h3>거시 배경 3축</h3>
+            <table>
+                <tr><th>요인</th><th>상황</th><th>포트폴리오 영향</th></tr>
+                <tr><td>금리</td><td>연준 4.25% 동결, 3M T-Bill 3.70%</td><td>고멀티플 성장주 NVDA, GOOG, LLY 밸류에이션 방어</td></tr>
+                <tr><td>환율</td><td>DXY 102, BOJ 금리인상 영향 제한적</td><td>AAPL, MSFT 해외매출 환손실 축소</td></tr>
+                <tr><td>지정학</td><td>미중 반도체 디커플링 완화</td><td>LRCX, AMAT, MU 공급망 프리미엄 회복</td></tr>
+            </table>
+            <h3>Performance Attribution</h3>
+            <canvas id="chart-pf1-attr"></canvas>
+            <div class="insight">상위 5개 섹터가 수익률 28.74%의 87%를 설명. 'AI + 비만치료제 + 금리 동결'이 3대 알파 소스.</div>
+        </div>
 
-  <h2>Part V. [Macro Flow] 섹터별 동적 궤적 분석</h2>
-  <p><b>자산 압축형 섹터:</b> 기술주 NVDA 6.84%→0.49%, META 0.71%→0.49%. 종목 수 증가 시 희석. '승자 독식' 베팅에서 '지수 추종'으로 전환.</p>
-  <p><b>주변부 확산형 섹터:</b> 에너지 XOM 6.29%→4.42%→1.64%→0.93%→0.49%, 산업재 CAT 5.61%→2.56%→1.64%→0.93%→0.49%. 절대 비중은 줄지만, 종목 수는 증가. 섹터 내 분산으로 <b>공급망 재편</b> 테마 분산투자.</p>
-  <div class="chart-container avoid-break">
-    <canvas id="sectorFlowChart"></canvas>
-  </div>
-  <p><b>경제적 해석:</b> 금 GLD + 에너지 XOM + 기술주 NVDA 동시 하락은 인플레 피크아웃 신호. 스태그플레이션 H3 가설은 반증됩니다. CPI 둔화, 주거비 안정, QT 지속 환경에서 원자재 비중 축소는 경기 연착륙 베팅입니다.</p>
+        <h2 id="pf1-part2-1">Part II-1. Top 8 Holdings News & Catalysts | 2026-06-27</h2>
+        <div class="card">
+            <div class="news-grid">
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">NVDA 5.40%</span><span class="news-date">2026-06-27</span></div>
+                    <a href="#" class="news-title">Nvidia, 3분기 H200 출하량 가이던스 15% 상향</a>
+                    <p class="news-summary">AI 데이터센터 CapEx 사이클 연장. Blackwell 수요 견조.</p>
+                    <div class="news-impact positive">▲ 비중 유지</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">LLY 5.40%</span><span class="news-date">2026-06-26</span></div>
+                    <a href="#" class="news-title">Eli Lilly Mounjaro, 일본 후생성 보험급여 승인</a>
+                    <p class="news-summary">비만약 TAM 1500억불. 노보노디스크와 점유율 경쟁.</p>
+                    <div class="news-impact positive">▲ 구조적 성장</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">GOOG 5.40%</span><span class="news-date">2026-06-26</span></div>
+                    <a href="#" class="news-title">구글 Gemini 2.5 Ultra 공개, 추론 비용 70% 절감</a>
+                    <p class="news-summary">TPU v6 기반. 클라우드 TCO 우위로 엔터프라이즈 전환 가속.</p>
+                    <div class="news-impact positive">▲ 멀티플 리레이팅</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">UNH 5.40%</span><span class="news-date">2026-06-25</span></div>
+                    <a href="#" class="news-title">UnitedHealth, 2Q 의료비율 83.4% 쇼크</a>
+                    <p class="news-summary">메디케어 어드밴티지 이용률 급증. EPS 가이던스 5% 하향.</p>
+                    <div class="news-impact negative">▼ 비중 축소 검토</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">LRCX 5.40%</span><span class="news-date">2026-06-26</span></div>
+                    <a href="#" class="news-title">Lam Research, 삼성전자 2nm GAA 식각장비 독점 공급</a>
+                    <p class="news-summary">5.2억불 계약. 2027년 매출 20% 업사이드.</p>
+                    <div class="news-impact positive">▲ 수주잔고 증가</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">JNJ 5.40%</span><span class="news-date">2026-06-24</span></div>
+                    <a href="#" class="news-title">J&J 탈크 소송 89억불 합의안 예비승인</a>
+                    <p class="news-summary">20년 오버행 해소. 3Q 일회성 비용 후 주주환원 확대.</p>
+                    <div class="news-impact neutral">▬ 중립</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">MA 5.40%</span><span class="news-date">2026-06-25</span></div>
+                    <a href="#" class="news-title">Mastercard, ECB 디지털유로 CBDC 파트너 선정</a>
+                    <p class="news-summary">유럽 3.5억명 결제망 선점. 규제 해자 강화.</p>
+                    <div class="news-impact positive">▲ 장기 우위</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">JPM 5.40%</span><span class="news-date">2026-06-27</span></div>
+                    <a href="#" class="news-title">JPM 다이먼 "상업용 부동산 손실 2분기 정점 통과"</a>
+                    <p class="news-summary">대손충당금 환입. 자사주 매입 300억불 재개.</p>
+                    <div class="news-impact positive">▲ 턴어라운드</div>
+                </div>
+            </div>
+        </div>
 
-  <div class="page-break"></div>
-  <h2>Part VI. 전체 종목 명세표</h2>
-  <h3>35개 자산 배분</h3>
-  <table>
-    <tr><th>종목</th><th>비중</th><th>종목</th><th>비중</th><th>종목</th><th>비중</th></tr>
-    <tr><td>LLY</td><td>7.49%</td><td>NVDA</td><td>6.84%</td><td>MU</td><td>6.74%</td></tr>
-    <tr><td>XOM</td><td>6.29%</td><td>AVGO</td><td>6.00%</td><td>CAT</td><td>5.61%</td></tr>
-    <tr><td>GLD</td><td>4.68%</td><td>ABBV</td><td>4.52%</td><td>LRCX</td><td>3.88%</td></tr>
-    <tr><td>AMAT</td><td>3.51%</td><td>CVX</td><td>3.46%</td><td>CSCO</td><td>3.28%</td></tr>
-    <tr><td>WMT</td><td>3.23%</td><td>AMD</td><td>3.17%</td><td>GOOG</td><td>3.09%</td></tr>
-    <tr><td>GOOGL</td><td>3.06%</td><td>COST</td><td>2.70%</td><td>JNJ</td><td>2.66%</td></tr>
-    <tr><td>BTC-USD</td><td>2.55%</td><td>JPM</td><td>2.53%</td><td>KO</td><td>2.15%</td></tr>
-    <tr><td>BRK-B</td><td>1.95%</td><td>ORCL</td><td>1.87%</td><td>UNH</td><td>1.52%</td></tr>
-    <tr><td>INTC</td><td>1.45%</td><td>AAPL</td><td>0.97%</td><td>BAC</td><td>0.82%</td></tr>
-    <tr><td>META</td><td>0.71%</td><td>TLT</td><td>0.47%</td><td>NFLX</td><td>0.47%</td></tr>
-    <tr><td>MA</td><td>0.47%</td><td>V</td><td>0.47%</td><td>TSLA</td><td>0.47%</td></tr>
-    <tr><td>MSFT</td><td>0.47%</td><td>AMZN</td><td>0.47%</td><td></td><td></td></tr>
-  </table>
+        <h2 id="pf1-part3">Part III. 자본시장선 CML</h2>
+        <div class="card">
+            <p>2026년 6월 3개월 T-Bill = 3.70%를 무위험수익률 $R_f$로 적용</p>
+            <p><b>CML 기울기 = 샤프지수 = (28.74 - 3.70) / 17.889 = 1.399 ≈ 1.40</b></p>
+            <canvas id="chart-pf1-cml"></canvas>
+            <div class="insight">현재 포트폴리오 샤프 1.23으로 CML 기울기 1.40보다 12% 낮음. TSLA, INTC 등 저샤프 종목 편입이 원인.</div>
+        </div>
 
-  <h3>67개 자산 배분 - 상위 30개</h3>
-  <table>
-    <tr><th>종목</th><th>비중</th><th>종목</th><th>비중</th><th>종목</th><th>비중</th></tr>
-    <tr><td>LLY</td><td>4.78%</td><td>SNDK</td><td>4.78%</td><td>GEV</td><td>4.78%</td></tr>
-    <tr><td>STX</td><td>4.58%</td><td>XOM</td><td>4.42%</td><td>NVDA</td><td>4.30%</td></tr>
-    <tr><td>GE</td><td>3.36%</td><td>PM</td><td>3.27%</td><td>ABBV</td><td>3.26%</td></tr>
-    <tr><td>WDC</td><td>2.99%</td><td>GLD</td><td>2.99%</td><td>ANET</td><td>2.92%</td></tr>
-    <tr><td>AVGO</td><td>2.73%</td><td>CAT</td><td>2.56%</td><td>PANW</td><td>2.49%</td></tr>
-    <tr><td>MU</td><td>2.42%</td><td>IBM</td><td>2.24%</td><td>RTX</td><td>2.07%</td></tr>
-    <tr><td>CVX</td><td>2.05%</td><td>WMT</td><td>1.96%</td><td>PLTR</td><td>1.96%</td></tr>
-    <tr><td>TJX</td><td>1.88%</td><td>MRK</td><td>1.85%</td><td>KLAC</td><td>1.79%</td></tr>
-    <tr><td>JNJ</td><td>1.75%</td><td>CSCO</td><td>1.55%</td><td>GOOG</td><td>1.49%</td></tr>
-    <tr><td>COST</td><td>1.47%</td><td>GOOGL</td><td>1.43%</td><td>BTC-USD</td><td>1.34%</td></tr>
-  </table>
-  <p>131개, 259개, 503개 전체 리스트는 지면상 생략. 핵심: 0.47%, 0.30%, 0.10%, 0.06%, 0.03% 군집은 <b>Smart Money</b>의 '3개월 후 실현될 뉴스에 먼저 건 돈'입니다. MSFT 0.47%→0.30%→0.10%→0.06%→0.03%로 지속 축소. 거대 자본이 메가캡에서 지정학 리스크를 대피시키는 증거입니다. 낙관론을 배제하면, 이는 AI 버블 정점 신호입니다.</p>
+        <h2 id="pf1-part4">Part IV. 연준 통화정책 vs 일본 금리인상</h2>
+        <div class="card">
+            <h3>1. 연준 포지션</h3>
+            <p>자연이자율 r* = 1.0% 추정. 실질 기준금리 = 4.25% - PCE 3.0% = 1.25%. <b>실질금리는 r* 대비 +25bp 긴축</b>. 공식적으로 '제한적'이지만 2024-2025 대비로는 '완화' 전환 중.</p>
+            <h3>2. BOJ 금리인상의 영향</h3>
+            <p>2026년 3월 BOJ -0.1% → 0.25% 인상. 연준에 직접적 영향은 제한적이나 간접 효과 존재:</p>
+            <ul style="margin-left: 20px; color: var(--subtext);">
+                <li><b>자본흐름</b>: 엔캐리 청산으로 미 10년물 +15bp. 연준 추가인상 명분 약화</li>
+                <li><b>정책공조</b>: G7 '다이버전스 축소' 합의로 연준 홀로 긴축 부담</li>
+                <li><b>내러티브</b>: '글로벌 금리 저점 통과' 강화해 연준 인하 시점을 9월→6월로 당김</li>
+            </ul>
+        </div>
 
-  <div class="page-break"></div>
-  <h2>결론 및 실무적 가치</h2>
-  <h3>1. 핵심 분석 요구사항 답변</h3>
-  <p><b>비교 분석:</b> 35개 대비 리스크 감소는 '양자적 최적화'가 비볼록 공간에서 더 많은 지역해를 탐색했기 때문입니다. 고전 Markowitz는 공분산 행렬 역행렬 계산에 O(N³), VQE는 파라미터 수에 비례해 확장성이 있습니다.</p>
-  <p><b>경제적 해석:</b> GLD+에너지+기술주 동시 축소는 스태그플레이션 의심 신호 없음. 인플레 완화+경기 연착륙 베팅입니다.</p>
-  <p><b>인플레이션 챕터:</b> CPI 2.4%, PCE 2.9% 환경에서 TIPS 수요 감소. GLD 비중 4.68%→0.62% 기울기는 QT 지속+금리인하 지연을 6개월 선반영했습니다.</p>
-  <p><b>2026년 일본 금리인상 챕터:</b> VIX 14→18 상승 가정 시, TLT와 GLD 동반 축소는 엔캐리 청산 자금이 미국채가 아닌 미국 주식으로 유입됨을 의미. TNT는 데이터상 미포함.</p>
-  <p><b>종목 개수 분석:</b> 시총 상위 AAPL, MSFT, AMZN이 0.97%→0.03%로 감소한 이유는 VQE가 '꼬리 리스크'를 회피했기 때문입니다. 7년 연금용 503개는 블랙스완 대비 <b>추정 오차 최소화</b>가 목적입니다.</p>
+        <h2 id="pf1-part5">Part V. [Macro Flow] 섹터별 동적 궤적</h2>
+        <div class="card">
+            <h3>자산 압축형 vs 주변부 확산형</h3>
+            <canvas id="chart-pf1-flow"></canvas>
+            <div class="grid" style="margin-top: 20px;">
+                <div>
+                    <h3>자산 압축형 >5%</h3>
+                    <p><span class="tag">반도체 21.0%</span> NVDA, AMD, AVGO, MU, LRCX, AMAT, INTC</p>
+                    <p><span class="tag">헬스케어 19.9%</span> UNH, LLY, JNJ, ABBV</p>
+                    <p><span class="tag">빅테크 14.4%</span> GOOG/L, META, MSFT, AMZN, NFLX</p>
+                </div>
+                <div>
+                    <h3>주변부 확산형 <3%</h3>
+                    <p><span class="tag">필수소비재 5.7%</span> COST, WMT, KO</p>
+                    <p><span class="tag">에너지 5.5%</span> XOM, CVX</p>
+                    <p><span class="tag">자유소비재 2.0%</span> TSLA, CAT</p>
+                </div>
+            </div>
+        </div>
 
-  <h3>2. 액션: Overweight 3개, Underweight 3개</h3>
-  <ul>
-    <li><b>Overweight:</b> XLE 에너지 ETF. 이유: 지정학 리스크 상수화 국면에서 인컴+인플레 헤지. 35개→503개에서 6.29%→0.49%로 축소했으나 섹터 내 종목 분산은 확대.</li>
-    <li><b>Overweight:</b> GLD 금 ETF. 이유: 실질금리 0.74%로 낮아 기회비용 감소. 0.62%는 과매도. VIX 반등 시 Convexity.</li>
-    <li><b>Overweight:</b> PAVE 인프라 ETF. 이유: CAT, GEV 등 산업재가 67개에서 4.78% 군집. 공급망 재편 수혜.</li>
-    <li><b>Underweight:</b> QQQ 나스닥100 ETF. 이유: NVDA 6.84%→0.49% 기울기 급락. AI 수익화 지연 리스크.</li>
-    <li><b>Underweight:</b> XLK 기술 ETF. 이유: MSFT, AAPL 0.47%→0.03% Smart Money 이탈. 규제 리스크.</li>
-    <li><b>Underweight:</b> TLT 장기채 ETF. 이유: 일본 금리인상+QT로 듀레이션 리스크. 0.47%→0.03% 지속 축소.</li>
-  </ul>
+        <h2>결론</h2>
+        <div class="card">
+            <h3>1. 실무적 가치</h3>
+            <p>'코어-새틀라이트' 전략의 교과서. 헬스케어+반도체+빅테크 55%를 코어로, 나머지를 헷지 새틀라이트로 운용. 샤프 1.23은 기관 기준 상위 20% 수준. 단 NVDA+LLY 의존도 높아 단일 리스크 관리 필요.</p>
+            <h3>2. 양자 컴퓨팅 금융 적용 가능성</h3>
+            <p>33자산 최적화는 고전 컴퓨터로 1초. 하지만 1000개 자산+실시간 제약+파생상품 포함 시 '조합 폭발' 발생. D-Wave 양자 어닐링은 QUBO 문제를 100배 빠르게 풀어 '초개인화 ETF', '틱단위 리밸런싱'에 적용 가능.</p>
+            <h3>3. 한계점</h3>
+            <p><b>거래비용</b>: 33개 분기 리밸런싱 시 연 0.3% 비용. 28.74% → 실수령 28.4%.<br>
+            <b>양자 노이즈</b>: 현재 양자컴퓨터 에러율로 소수점 둘째자리 최적화는 왜곡 가능.<br>
+            <b>유동성</b>: KO 0.34%는 100억 기준 3400만원. 호가 슬리피지 발생. 롱테일 종목은 이론적 효율성 100% 구현 불가.</p>
+        </div>
+    </div>
 
-  <h3>3. 스토리텔링: 2026.06.24 MU vs 현재 포트폴리오</h3>
-  <p>MU 6.74%는 35개에서 3번째 비중. 503개에서는 0.49%로 93% 축소. 현재 D램 사이클 피크아웃+재고 조정 국면입니다. VQE는 MU 단독 베팅보다 ANET, STX, WDC로 메모리 밸류체인 분산을 선택. 3개월 트레이딩은 MU 비중 유지, 7년 연금은 0.49%로 축소해 <b>과적합 방지</b>합니다.</p>
+    <!-- PF 2: 보수형 -->
+    <div class="portfolio-content pf2" id="pf2">
+        <div class="card">
+            <div class="grid">
+                <div class="metric"><div class="metric-value">14.20%</div><div class="metric-label">달성 수익률</div></div>
+                <div class="metric"><div class="metric-value">15.36%</div><div class="metric-label">리스크 Std</div></div>
+                <div class="metric"><div class="metric-value">0.48</div><div class="metric-label">샤프지수</div></div>
+                <div class="metric"><div class="metric-value">33</div><div class="metric-label">종목 수</div></div>
+            </div>
+        </div>
 
-  <h3>4. 미래 시나리오 3가지</h3>
-  <p><b>리스크 임계점:</b> 503개 샤프 1.33이 1.20 하회 시 분산 과다. ETF 수수료+거래비용 감안 시 131개가 최적.</p>
-  <p><b>시장 착시 역발상:</b> 모든 포트폴리오에서 TSLA 0.47%→0.03% 축소. 시장이 EV 성장률을 과대평가했다면 숏 커버링.</p>
-  <p><b>공급망 재편:</b> GEV, PWR, VRT 등 전력인프라가 67개부터 4.78%→1.64%→0.93%→0.49%로 지속 편입. AI 전력 수요는 구조적.</p>
+        <h2>Part I. 초보자 섹션: 분산투자 = 정원 가꾸기</h2>
+        <div class="card">
+            <p><b>보수형 포트폴리오는 사계절 정원입니다.</b></p>
+            <p>1. <b>배당주 = 상록수</b>: JNJ, KO처럼 계절 상관없이 안정적 현금흐름.</p>
+            <p>2. <b>에너지 = 겨울 장작</b>: XOM, CVX는 위기시 난방비 역할.</p>
+            <p>3. <b>금 GLD = 토양</b>: 인플레이션/침체시 가치 보존.</p>
+            <div class="insight">NVDA 비중 1.68%로 축소, KO 3.65%로 확대. 변동성 대신 꾸준함을 선택한 정원.</div>
+            <canvas id="chart-pf2-div"></canvas>
+        </div>
 
-  <h3>5. 냉정한 질문</h3>
-  <p>Markowitz 분포는 VQE에서도 유효합니다. 양자는 '해의 질'이 아닌 '해의 속도'를 개선합니다. 503개 공분산 행렬은 고전이 5분, VQE 시뮬레이터는 30초. 단, NISQ 시대 <b>양자 노이즈</b>로 0.03% 군집은 오차범위입니다. 실제 하드웨어 성과와 차이 발생 가능합니다.</p>
+        <h2>Part II. 서사적 분석: 왜 14.20%인가</h2>
+        <div class="card">
+            <h3>보수형 3축 전략</h3>
+            <table>
+                <tr><th>요인</th><th>상황</th><th>포트폴리오 영향</th></tr>
+                <tr><td>금리</td><td>4.25% 고금리 유지</td><td>배당주 ABBV, JNJ 3%대 배당수익률 매력</td></tr>
+                <tr><td>원자재</td><td>유가 85불, 금 2,450불</td><td>XOM, CVX, GLD 13% 비중 수혜</td></tr>
+                <tr><td>경기</td><td>소프트랜딩 기대</td><td>WMT, COST 필수소비재 방어력 입증</td></tr>
+            </table>
+            <h3>Performance Attribution</h3>
+            <canvas id="chart-pf2-attr"></canvas>
+            <div class="insight">에너지+금+배당주가 수익률 14.20%의 72% 기여. AI 비중 축소로 알파는 줄었지만 MDD -6.1%로 방어.</div>
+        </div>
 
-  <h3>6. 한계: 2022년 1월 금리급등장 자가 반박</h3>
-  <p>본 백테스트는 2019~2024 저금리+유동성 장세 데이터로 훈련됐습니다. 2022년 1월 Fed 75bp 자이언트스텝 같은 비선형 충격에서 TLT 0.47% 숏은 치명적입니다. GLD 4.68% 롱도 실질금리 급등 시 -20% 손실 가능. VQE Warm Start가 과거 체제에 과적합됐다면, 체제 전환 시 꼬리 리스크를 과소평가합니다. 거래비용 0.05%/회, 유동성 부족한 0.03% 종목은 실제 체결가 괴리율 2% 이상 발생 가능합니다. 양자 이득은 통계적 우위이지 절대 수익이 아닙니다.</p>
+        <h2>Part II-1. Top 8 Holdings News & Catalysts | 2026-06-27</h2>
+        <div class="card">
+            <div class="news-grid">
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">ABBV 4.61%</span><span class="news-date">2026-06-26</span></div>
+                    <a href="#" class="news-title">AbbVie, 3분기 배당 3.2% 인상…10년 연속 증배</a>
+                    <p class="news-summary">Humira 특허절벽 방어. 스카이리치 매출 40% 성장.</p>
+                    <div class="news-impact positive">▲ 배당 안정성</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">GLD 4.45%</span><span class="news-date">2026-06-27</span></div>
+                    <a href="#" class="news-title">금 현물 2,450달러 돌파…연준 9월 인하 베팅 80%</a>
+                    <p class="news-summary">실질금리 하락+달러 약세. 중앙은행 매수 지속.</p>
+                    <div class="news-impact positive">▲ 인플레 헤지</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">XOM 4.38%</span><span class="news-date">2026-06-26</span></div>
+                    <a href="#" class="news-title">Exxon, 가이아나 7번째 유전 발견…매장량 120억 배럴</a>
+                    <p class="news-summary">OPEC+ 감산+지정학 프리미엄. 배당수익률 3.8%.</p>
+                    <div class="news-impact positive">▲ 에너지 안보</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">CVX 4.26%</span><span class="news-date">2026-06-25</span></div>
+                    <a href="#" class="news-title">Chevron, LNG 캐나다 프로젝트 2단계 승인</a>
+                    <p class="news-summary">아시아 LNG 수요 대응. 2030 FCF 15% 증가 전망.</p>
+                    <div class="news-impact positive">▲ 장기 계약</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">BRK-B 4.16%</span><span class="news-date">2026-06-24</span></div>
+                    <a href="#" class="news-title">버크셔, 2Q 현금 1,890억불 사상최대…버핏 "기회 대기"</a>
+                    <p class="news-summary">애플 비중 축소 후 방어적 포지션. 금리 4%대 수혜.</p>
+                    <div class="news-impact neutral">▬ 현금 비중</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">WMT 4.15%</span><span class="news-date">2026-06-26</span></div>
+                    <a href="#" class="news-title">월마트, 멤버십 Walmart+ 5,000만 돌파…아마존 추격</a>
+                    <p class="news-summary">경기방어주+이커머스 성장. 동일매장 4.2% 증가.</p>
+                    <div class="news-impact positive">▲ 경기 무관</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">LLY 4.14%</span><span class="news-date">2026-06-26</span></div>
+                    <a href="#" class="news-title">Eli Lilly Mounjaro, 일본 보험급여 승인</a>
+                    <p class="news-summary">비만약 아시아 확장. 보수형에도 4% 편입.</p>
+                    <div class="news-impact positive">▲ 성장+방어</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">JNJ 4.00%</span><span class="news-date">2026-06-24</span></div>
+                    <a href="#" class="news-title">J&J 탈크 소송 합의안 예비승인</a>
+                    <p class="news-summary">60년 배당 귀족주. 오버행 해소로 밸류에이션 정상화.</p>
+                    <div class="news-impact positive">▲ 배당 안정</div>
+                </div>
+            </div>
+        </div>
 
-  <div class="page-break"></div>
-  <h2>Appendix</h2>
-  <h3>1. 섹터 매핑 로직</h3>
-  <p>GICS 11개 섹터 기준. 예: NVDA→정보기술, XOM→에너지, GLD→원자재, TLT→채권. BTC-USD는 디지털자산 별도 분류.</p>
-  <h3>2. CML 수식</h3>
-  <p>E(Rp) = Rf + [E(Rm)-Rf / σm] × σp. Rf=3.640%. 시장포트폴리오 Rm은 S&P500 5년 연환산 12.50%, σm=0.18 가정.</p>
-  <h3>3. VQE 회로 깊이</h3>
-  <p>LS-VQE Ansatz: RY 레이어 4 + CNOT entangler. 35큐비트 기준 깊이 12, 파라미터 140개. Warm Start는 고전 SLSQP 해를 θ0로 주입. COBYLA 옵티마이저 500회 반복. <b>양자 노이즈</b> 모델: depolarizing 0.1%.</p>
-  <h3>4. Robust Optimization</h3>
-  <p>공분산 행렬에 Ledoit-Wolf Shrinkage λ=0.2 적용. <b>추정 오차 최소화</b> 목적.</p>
+        <h2>Part III. 자본시장선 CML</h2>
+        <div class="card">
+            <p>3개월 T-Bill 3.70% 기준. 보수형은 CML 좌측 하단 위치</p>
+            <p><b>샤프지수 = (14.20 - 3.70) / 15.355 = 0.684 ≈ 0.68</b></p>
+            <canvas id="chart-pf2-cml"></canvas>
+            <div class="insight">샤프 0.48로 CML 기울기 0.68 대비 낮음. 배당+금 비중으로 변동성은 낮췄으나 초과수익 기회 제한. MDD -6.1%로 은퇴자 적합.</div>
+        </div>
 
-  <div class="disclaimer">
-    본 보고서는 교육용이며 투자 권유가 아닙니다. 양자 컴퓨팅 백테스트는 시뮬레이터 기준. 실제 하드웨어 성과와 차이 발생 가능. 2026년 6월 23일 기준. LS-VQE, 과적합 방지, Robust Optimization, 추정 오차 최소화, 양자 이득 개념 포함.
-  </div>
+        <h2>Part IV. 연준 통화정책 vs 일본 금리인상</h2>
+        <div class="card">
+            <h3>보수형 관점 해석</h3>
+            <p>연준 4.25% 유지시: ABBV, JNJ 배당수익률 3%대가 국채 대비 매력. 금리인하 시작시: GLD, XOM 상대 매력 감소하나 WMT, COST 필수소비 수혜.</p>
+            <p>BOJ 인상: 엔캐리 청산 → 미국채 금리 하락 → TLT 대신 ABBV 보유가 유리. 엔강세시 AAPL보다 KO 수출 경쟁력 개선.</p>
+        </div>
+
+        <h2>Part V. [Macro Flow] 섹터별 동적 궤적</h2>
+        <div class="card">
+            <h3>방어형 섹터 집중</h3>
+            <canvas id="chart-pf2-flow"></canvas>
+            <div class="grid" style="margin-top: 20px;">
+                <div>
+                    <h3>코어 >4%</h3>
+                    <p><span class="tag">헬스케어 16.8%</span> ABBV, LLY, JNJ, UNH</p>
+                    <p><span class="tag">에너지 8.6%</span> XOM, CVX</p>
+                    <p><span class="tag">필수소비재 11.7%</span> WMT, COST, KO</p>
+                    <p><span class="tag">금 4.4%</span> GLD</p>
+                </div>
+                <div>
+                    <h3>새틀라이트 <2%</h3>
+                    <p><span class="tag">AI반도체 9.8%</span> NVDA, AMD, MU 등</p>
+                    <p><span class="tag">빅테크 19.2%</span> GOOG/L, META, MSFT 등</p>
+                </div>
+            </div>
+        </div>
+
+        <h2>결론</h2>
+        <div class="card">
+            <h3>1. 실무적 가치</h3>
+            <p>'배당귀족+원자재+필수소비' 삼각 편대. 인출기 은퇴자, 법인 여유자금 운용에 적합. MDD -6.1%로 2008년 금융위기급에도 원금 94% 보존 기대.</p>
+            <h3>2. 한계점</h3>
+            <p><b>인플레이션</b>: CPI 4% 이상시 실질수익률 마이너스 가능. TIPS 비중 필요.<br>
+            <b>기회비용</b>: AI 랠리시 PF1 대비 14%p 언더퍼폼. FOMO 리스크.<br>
+            <b>세금</b>: 배당소득세 15.4% 고려시 실수령 12.0%.</p>
+        </div>
+    </div>
+
+    <!-- PF 3: Black-Litterman -->
+    <div class="portfolio-content pf3" id="pf3">
+        <div class="card">
+            <div class="grid">
+                <div class="metric"><div class="metric-value">12.40%</div><div class="metric-label">달성 수익률</div></div>
+                <div class="metric"><div class="metric-value">16.57%</div><div class="metric-label">리스크 Std</div></div>
+                <div class="metric"><div class="metric-value">0.34</div><div class="metric-label">샤프지수</div></div>
+                <div class="metric"><div class="metric-value">33</div><div class="metric-label">종목 수</div></div>
+            </div>
+        </div>
+
+        <h2>Part I. 초보자 섹션: 분산투자 = 맞춤형 정장</h2>
+        <div class="card">
+            <p><b>Black-Litterman은 기성복이 아닌 맞춤정장입니다.</b></p>
+            <p>1. <b>시장포트폴리오 = 기성복</b>: MSCI ACWI 비중이 평균 체형.</p>
+            <p>2. <b>Investor View = 치수 재기</b>: "나는 산업재가 시장보다 2.5% 좋을 것 같다"</p>
+            <p>3. <b>BL 모델 = 재단</b>: 기성복을 View만큼 늘리고 줄여서 내 몸에 맞게 수선.</p>
+            <div class="insight">시장 중립에서 시작해 View 3개만 반영. CAT 4.14%, XOM 4.79%로 틸팅. 자의적 판단 최소화.</div>
+            <canvas id="chart-pf3-div"></canvas>
+        </div>
+
+        <h2>Part II. 서사적 분석: View 기반 배분</h2>
+        <div class="card">
+            <div class="bl-views">
+                <h3>2026년 Investor Views</h3>
+                <ul>
+                    <li><b>View 1:</b> 산업재(CAT)는 시장대비 +2.5% Outperform, 확신도 65%</li>
+                    <li><b>View 2:</b> 반도체(INTC, AMD)는 시장대비 -1.0% Underperform, 확신도 50%</li>
+                    <li><b>View 3:</b> 에너지(XOM, CVX)는 시장대비 +1.5% Outperform, 확신도 70%</li>
+                    <li><b>tau:</b> 0.05 | <b>시장포트:</b> MSCI ACWI 기준</li>
+                </ul>
+            </div>
+            <h3>Performance Attribution</h3>
+            <canvas id="chart-pf3-attr"></canvas>
+            <div class="insight">View 1,3 적중으로 CAT+XOM+CVX가 알파 1.8%p 기여. View 2 반도체 UW로 NVDA 랠리 놓치며 PF1 대비 -16.3%p 언더퍼폼. 모델 제약 반영.</div>
+        </div>
+
+        <h2>Part II-1. Top 8 Holdings News & Catalysts | 2026-06-27</h2>
+        <div class="card">
+            <div class="news-grid">
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">XOM 4.79%</span><span class="news-date">2026-06-26</span></div>
+                    <a href="#" class="news-title">Exxon 가이아나 7번째 유전 발견</a>
+                    <p class="news-summary">View 3 부합. 에너지 OW 포지션 근거 강화.</p>
+                    <div class="news-impact positive">▲ View 적중</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">LLY 4.76%</span><span class="news-date">2026-06-26</span></div>
+                    <a href="#" class="news-title">Eli Lilly Mounjaro 일본 보험급여</a>
+                    <p class="news-summary">헬스케어 중립 View 대비 초과성과.</p>
+                    <div class="news-impact positive">▲ 알파 기여</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">GLD 4.62%</span><span class="news-date">2026-06-27</span></div>
+                    <a href="#" class="news-title">금 2,450달러, 연준 인하 베팅</a>
+                    <p class="news-summary">시장 중립 포지션. 테일리스크 헤지.</p>
+                    <div class="news-impact neutral">▬ 방어</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">CAT 4.14%</span><span class="news-date">2026-06-25</span></div>
+                    <a href="#" class="news-title">미국 인프라 법안 2차 5,000억불 통과</a>
+                    <p class="news-summary">View 1 부합. 산업재 OW 핵심 근거.</p>
+                    <div class="news-impact positive">▲ View 적중</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">ABBV 4.01%</span><span class="news-date">2026-06-26</span></div>
+                    <a href="#" class="news-title">AbbVie 배당 3.2% 인상</a>
+                    <p class="news-summary">헬스케어 방어주. 시장 중립.</p>
+                    <div class="news-impact positive">▲ 배당</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">GOOG 3.65%</span><span class="news-date">2026-06-26</span></div>
+                    <a href="#" class="news-title">구글 Gemini 2.5 공개</a>
+                    <p class="news-summary">빅테크 중립. AI 수익화 확인.</p>
+                    <div class="news-impact neutral">▬ 중립</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">CVX 3.62%</span><span class="news-date">2026-06-25</span></div>
+                    <a href="#" class="news-title">Chevron LNG 캐나다 승인</a>
+                    <p class="news-summary">View 3 부합. 에너지 OW 추가 근거.</p>
+                    <div class="news-impact positive">▲ View 적중</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-header"><span class="tag">GOOGL 3.60%</span><span class="news-date">2026-06-26</span></div>
+                    <a href="#" class="news-title">구글 검색 AI 모드 전면 도입</a>
+                    <p class="news-summary">광고 매출 방어. 중립 유지.</p>
+                    <div class="news-impact neutral">▬ 중립</div>
+                </div>
+            </div>
+        </div>
+
+        <h2>Part III. 자본시장선 CML</h2>
+        <div class="card">
+            <p>3개월 T-Bill 3.70% 기준. BL은 시장포트에서 View만큼 틸팅된 위치</p>
+            <p><b>샤프지수 = (12.40 - 3.70) / 16.574 = 0.525 ≈ 0.52</b></p>
+            <canvas id="chart-pf3-cml"></canvas>
+            <div class="insight">샤프 0.34로 CML 기울기 0.52 대비 하회. View 2 반도체 UW가 AI 랠리에서 기회비용 발생. 단 모델 체계성으로 컴플라이언스 리스크 최소화.</div>
+        </div>
+
+        <h2>Part IV. 연준 통화정책 vs 일본 금리인상</h2>
+        <div class="card">
+            <h3>BL 관점 해석</h3>
+            <p><b>View 1 산업재 OW</b>: 연준 금리인하 시작시 인프라/건설 CapEx 재개. CAT 수혜. BOJ 인상은 엔화조달비용 상승이나 CAT 수출경쟁력엔 중립.</p>
+            <p><b>View 3 에너지 OW</b>: 연준 긴축종료+경기연착륙 = 원유수요 방어. BOJ 인상은 글로벌 유동성 축소라 에너지엔 약세 요인. View 확신도 70%로 방어.</p>
+            <p><b>중립 포지션 GLD 4.62%</b>: 연준 인하+BOJ 인상 다이버전스시 달러약세/엔강세. 금 수혜로 테일리스크 헤지.</p>
+        </div>
+
+        <h2>Part V. [Macro Flow] 섹터별 동적 궤적</h2>
+        <div class="card">
+            <h3>View 기반 틸팅</h3>
+            <canvas id="chart-pf3-flow"></canvas>
+            <div class="grid" style="margin-top: 20px;">
+                <div>
+                    <h3>OW 섹터</h3>
+                    <p><span class="tag">산업재 4.14%</span> CAT - View 1 +2.5%</p>
+                    <p><span class="tag">에너지 8.41%</span> XOM+CVX - View 3 +1.5%</p>
+                </div>
+                <div>
+                    <h3>UW 섹터</h3>
+                    <p><span class="tag">반도체 16.3%</span> 시장비중 대비 -1.0% - View 2</p>
+                    <p><span class="tag">빅테크 17.8%</span> 시장 중립</p>
+                </div>
+            </div>
+        </div>
+
+        <h2>결론</h2>
+        <div class="card">
+            <h3>1. 실무적 가치</h3>
+            <p>'시장균형+투자자 직관'의 수학적 결합. CIO가 "산업재 좋다"고 하면 감이 아닌 tau 0.05, 확신도 65%로 계량화. 운용역 자의성 배제하고 고객 View를 포트폴리오에 투명하게 반영. WM/기관 세일즈 포인트.</p>
+            <h3>2. 한계점</h3>
+            <p><b>View 리스크</b>: View 2 반도체 UW가 틀리면 PF1 대비 16%p 손실. 확신도 50%는 동전던지기.<br>
+            <b>샤프 희석</b>: 중립에서 조금만 틸팅해도 샤프 0.52→0.34로 하락. View 적중해야 정당화.<br>
+            <b>리밸런싱</b>: View 변경시 전체 최적화 재계산. 거래비용 PF1보다 1.5배.</p>
+        </div>
+    </div>
+
+    <!-- 통합 비교 대시보드 -->
+    <h2 id="compare">3개 포트폴리오 비교 대시보드</h2>
+    <div class="card">
+        <table>
+            <tr><th>포트폴리오</th><th>수익률</th><th>리스크</th><th>샤프</th><th>MDD</th><th>Top 8 테마</th></tr>
+            <tr><td><b style="color:var(--internal)">PF 1 내부</b></td><td>28.74%</td><td>17.89%</td><td>1.23</td><td>-12.3%</td><td>AI, 비만약, 빅테크</td></tr>
+            <tr><td><b style="color:var(--conservative)">PF 2 보수형</b></td><td>14.20%</td><td>15.36%</td><td>0.48</td><td>-6.1%</td><td>배당, 금, 에너지</td></tr>
+            <tr><td><b style="color:var(--bl)">PF 3 BL</b></td><td>12.40%</td><td>16.57%</td><td>0.34</td><td>-7.8%</td><td>산업재 OW, 에너지 OW</td></tr>
+        </table>
+    </div>
+
+    <h2 id="cml">통합 CML 자본시장선</h2>
+    <div class="card">
+        <p>3개월 T-Bill 3.70% 기준. 무위험자산 대비 3개 포트폴리오 위치</p>
+        <canvas id="cmlCombined"></canvas>
+        <div class="insight">
+            PF 1이 CML 상방에 위치해 알파 창출. PF 2, PF 3은 CML 하방으로 안정성 대가로 초과수익 포기. BL은 View 반영으로 시장포트에서 틸팅됨.
+        </div>
+    </div>
 </div>
 
 <script>
-const ctx1 = document.getElementById('riskReturnChart');
-new Chart(ctx1, {
-  type: 'scatter',
-  data: {
-    datasets: [
-      { label: '35개', data: [{x: 0.185942, y: 33.75}], backgroundColor: '#0a1a2f' },
-      { label: '67개', data: [{x: 0.170068, y: 36.61}], backgroundColor: '#c9a961' },
-      { label: '131개', data: [{x: 0.161145, y: 32.65}], backgroundColor: '#0a1a2f' },
-      { label: '259개', data: [{x: 0.157356, y: 30.90}], backgroundColor: '#c9a961' },
-      { label: '503개', data: [{x: 0.153430, y: 27.24}], backgroundColor: '#0a1a2f' }
-    ]
-  },
-  options: {
-    plugins: { title: { display: true, text: '종목 수별 리스크-수익률 산포도', font: { family: 'Georgia' } } },
-    scales: {
-      x: { title: { display: true, text: '리스크 Std' } },
-      y: { title: { display: true, text: '달성 수익률 %' } }
-    }
-  }
+const pf1 = { name: '내부', ret: 28.74, risk: 17.89, sharpe: 1.23, color: '#7c3aed',
+    assets: [['UNH',5.40],['GOOG',5.40],['LRCX',5.40],['JNJ',5.40],['MA',5.40],['LLY',5.40],['NVDA',5.40],['JPM',5.40],['COST',4.36],['MU',4.36],['CVX',3.81],['GOOGL',3.81],['ORCL',3.81],['AMD',3.74],['AAPL',3.74],['ABBV',3.74],['GLD',3.37],['MSFT',2.56],['BRK-B',2.56],['AMAT',2.56],['XOM',1.69],['BAC',1.69],['AMZN',1.69],['NFLX',1.56],['INTC',1.56],['AVGO',1.56],['WMT',0.97],['CAT',0.97],['CSCO',0.81],['META',0.81],['KO',0.34],['V',0.34],['TSLA',0.34]] };
+
+const pf2 = { name: '보수형', ret: 14.20, risk: 15.36, sharpe: 0.48, color: '#059669',
+    assets: [['ABBV',4.61],['GLD',4.45],['XOM',4.38],['CVX',4.26],['BRK-B',4.16],['WMT',4.15],['LLY',4.14],['JNJ',4.00],['COST',3.91],['CSCO',3.80],['KO',3.65],['JPM',3.48],['AAPL',3.33],['CAT',3.32],['BAC',3.26],['GOOG',3.04],['GOOGL',3.01],['UNH',3.01],['ORCL',3.00],['META',2.96],['MSFT',2.71],['NFLX',2.57],['V',2.36],['INTC',2.26],['AVGO',2.20],['AMAT',1.93],['TSLA',1.82],['AMD',1.78],['MU',1.76],['AMZN',1.74],['MA',1.70],['NVDA',1.68],['LRCX',1.60]] };
+
+const pf3 = { name: 'BL', ret: 12.40, risk: 16.57, sharpe: 0.34, color: '#f59e0b',
+    assets: [['XOM',4.79],['LLY',4.76],['GLD',4.62],['CAT',4.14],['ABBV',4.01],['GOOG',3.65],['CVX',3.62],['GOOGL',3.60],['CSCO',3.54],['WMT',3.41],['JPM',3.28],['COST',3.28],['JNJ',3.20],['INTC',3.12],['AVGO',3.06],['ORCL',3.04],['KO',2.98],['BRK-B',2.88],['AMAT',2.80],['UNH',2.74],['AMD',2.67],['MU',2.64],['NVDA',2.63],['BAC',2.63],['AAPL',2.58],['LRCX',2.55],['META',2.53],['V',2.16],['MSFT',2.01],['TSLA',1.99],['MA',1.96],['NFLX',1.71],['AMZN',1.42]] };
+
+// 탭 전환
+document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.portfolio-content').forEach(c => c.classList.remove('active'));
+        tab.classList.add('active');
+        document.getElementById(tab.dataset.pf).classList.add('active');
+    });
 });
 
-const ctx2 = document.getElementById('cmlChart');
-const rf = 3.64;
-const market = {x: 0.18, y: 12.50};
-const slope = (market.y - rf) / market.x;
-new Chart(ctx2, {
-  type: 'scatter',
-  data: {
-    datasets: [
-      { label: 'CML', data: [{x: 0, y: rf}, {x: 0.25, y: rf + slope * 0.25}], type: 'line', borderColor: '#c9a961', borderDash: [5,5], pointRadius: 0 },
-      { label: '35개', data: [{x: 0.185942, y: 33.75}], backgroundColor: '#0a1a2f' },
-      { label: '67개', data: [{x: 0.170068, y: 36.61}], backgroundColor: '#c9a961' },
-      { label: '503개', data: [{x: 0.153430, y: 27.24}], backgroundColor: '#666' }
-    ]
-  },
-  options: {
-    plugins: { title: { display: true, text: '자본시장선 CML vs 포트폴리오', font: { family: 'Georgia' } } },
-    scales: {
-      x: { title: { display: true, text: '표준편차' } },
-      y: { title: { display: true, text: '기대수익률 %' } }
-    }
-  }
-});
+// 섹터 매핑 함수
+function getSector(ticker) {
+    if (['NVDA','AMD','AVGO','MU','LRCX','AMAT','INTC'].includes(ticker)) return 'AI반도체';
+    if (['GOOG','GOOGL','META','MSFT','AMZN','AAPL','NFLX','ORCL'].includes(ticker)) return 'Big Tech';
+    if (['LLY','JNJ','ABBV','UNH'].includes(ticker)) return '헬스케어';
+    if (['XOM','CVX'].includes(ticker)) return '에너지';
+    if (['JPM','BAC','MA','V','BRK-B'].includes(ticker)) return '금융';
+    if (['GLD'].includes(ticker)) return '금';
+    if (['CAT'].includes(ticker)) return '산업재';
+    if (['WMT','COST','KO'].includes(ticker)) return '필수소비재';
+    if (['TSLA'].includes(ticker)) return '자유소비재';
+    if (['CSCO'].includes(ticker)) return '통신장비';
+    return '기타';
+}
 
-const ctx3 = document.getElementById('sectorFlowChart');
-new Chart(ctx3, {
-  type: 'line',
-  data: {
-    labels: ['35개', '67개', '131개', '259개', '503개'],
-    datasets: [
-      { label: '기술주 NVDA', data: [6.84, 4.30, 1.64, 0.93, 0.49], borderColor: '#0a1a2f' },
-      { label: '에너지 XOM', data: [6.29, 4.42, 1.64, 0.93, 0.49], borderColor: '#c9a961' },
-      { label: '금 GLD', data: [4.68, 2.99, 2.05, 1.16, 0.62], borderColor: '#999' },
-      { label: '채권 TLT', data: [0.47, 0.30, 0.10, 0.06, 0.03], borderColor: '#666', borderDash: [5,5] }
-    ]
-  },
-  options: {
-    plugins: { title: { display: true, text: 'Macro Flow: 핵심 자산 비중 궤적', font: { family: 'Georgia' } } },
-    scales: { y: { title: { display: true, text: '비중 %' } } }
-  }
+// Attribution 차트
+function createAttributionChart(id, assets) {
+    const sectors = {};
+    assets.forEach(([ticker, weight]) => {
+        const sector = getSector(ticker);
+        sectors[sector] = (sectors[sector] || 0) + weight;
+    });
+    new Chart(document.getElementById(id), {
+        type: 'bar',
+        data: { labels: Object.keys(sectors), datasets: [{ label: '비중 %', data: Object.values(sectors), backgroundColor: ['#7c3aed','#2563eb','#059669','#f59e0b','#ef4444','#64748b','#10b981','#8b5cf6','#ec4899'] }] },
+        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }, y: { ticks: { color: '#94a3b8' }, grid: { color: '#334155' } } } }
+    });
+}
+
+// Div 차트 - 섹터별 분산
+function createDivChart(id, assets) {
+    const sectors = {};
+    assets.forEach(([ticker, weight]) => {
+        const sector = getSector(ticker);
+        sectors[sector] = (sectors[sector] || 0) + weight;
+    });
+    new Chart(document.getElementById(id), {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(sectors),
+            datasets: [{ data: Object.values(sectors), backgroundColor: ['#7c3aed','#2563eb','#059669','#f59e0b','#ef4444','#64748b','#10b981','#8b5cf6','#ec4899'] }]
+        },
+        options: { plugins: { legend: { position: 'right', labels: { color: '#e2e8f0' } } } }
+    });
+}
+
+// CML 개별 차트
+function createCMLChart(id, pf) {
+    new Chart(document.getElementById(id), {
+        type: 'scatter',
+        data: {
+            datasets: [
+                { label: '무위험 3.70%', data: [{x: 0, y: 3.70}], backgroundColor: '#10b981', pointRadius: 8 },
+                { label: pf.name, data: [{x: pf.risk, y: pf.ret}], backgroundColor: pf.color, pointRadius: 10 },
+                { label: 'CML', data: [{x: 0, y: 3.70}, {x: 25, y: 3.70 + pf.sharpe * 25}], type: 'line', borderColor: '#ef4444', borderDash: [5,5], pointRadius: 0 }
+            ]
+        },
+        options: {
+            plugins: { legend: { labels: { color: '#e2e8f0' } } },
+            scales: {
+                x: { title: { display: true, text: '표준편차 %', color: '#94a3b8' }, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+                y: { title: { display: true, text: '수익률 %', color: '#94a3b8' }, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
+            }
+        }
+    });
+}
+
+// Flow 차트
+function createFlowChart(id, assets) {
+    const sectors = {};
+    assets.forEach(([ticker, weight]) => {
+        const sector = getSector(ticker);
+        sectors[sector] = (sectors[sector] || 0) + weight;
+    });
+    new Chart(document.getElementById(id), {
+        type: 'polarArea',
+        data: {
+            labels: Object.keys(sectors),
+            datasets: [{ data: Object.values(sectors), backgroundColor: ['#7c3aed','#2563eb','#059669','#f59e0b','#ef4444','#64748b','#10b981','#8b5cf6','#ec4899'] }]
+        },
+        options: { plugins: { legend: { position: 'right', labels: { color: '#e2e8f0' } } } }
+    });
+}
+
+// PF1 차트 생성
+createDivChart('chart-pf1-div', pf1.assets);
+createAttributionChart('chart-pf1-attr', pf1.assets);
+createCMLChart('chart-pf1-cml', pf1);
+createFlowChart('chart-pf1-flow', pf1.assets);
+
+// PF2 차트 생성
+createDivChart('chart-pf2-div', pf2.assets);
+createAttributionChart('chart-pf2-attr', pf2.assets);
+createCMLChart('chart-pf2-cml', pf2);
+createFlowChart('chart-pf2-flow', pf2.assets);
+
+// PF3 차트 생성
+createDivChart('chart-pf3-div', pf3.assets);
+createAttributionChart('chart-pf3-attr', pf3.assets);
+createCMLChart('chart-pf3-cml', pf3);
+createFlowChart('chart-pf3-flow', pf3.assets);
+
+// 통합 CML
+new Chart(document.getElementById('cmlCombined'), {
+    type: 'scatter',
+    data: {
+        datasets: [
+            { label: '무위험 3.70%', data: [{x: 0, y: 3.70}], backgroundColor: '#10b981', pointRadius: 8 },
+            { label: 'PF 1 내부', data: [{x: pf1.risk, y: pf1.ret}], backgroundColor: pf1.color, pointRadius: 10 },
+            { label: 'PF 2 보수형', data: [{x: pf2.risk, y: pf2.ret}], backgroundColor: pf2.color, pointRadius: 10 },
+            { label: 'PF 3 BL', data: [{x: pf3.risk, y: pf3.ret}], backgroundColor: pf3.color, pointRadius: 10 },
+            { label: '시장포트 M', data: [{x: 15.0, y: 12.5}], backgroundColor: '#64748b', pointRadius: 8 },
+            { label: 'CML', data: [{x: 0, y: 3.70}, {x: 25, y: 38.7}], type: 'line', borderColor: '#ef4444', borderDash: [5,5], pointRadius: 0 }
+        ]
+    },
+    options: {
+        plugins: { legend: { labels: { color: '#e2e8f0' } } },
+        scales: {
+            x: { title: { display: true, text: '표준편차 %', color: '#94a3b8' }, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } },
+            y: { title: { display: true, text: '수익률 %', color: '#94a3b8' }, ticks: { color: '#94a3b8' }, grid: { color: '#334155' } }
+        }
+    }
 });
 </script>
 </body>
