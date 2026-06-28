@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Goldman Sachs AM | 투자위원회 통합 리포트 - 2026.06.28</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+    body {
+        font-family: 'Noto Sans KR', 'Inter', sans-serif;
+        background-color: #f8fafc;
+        color: #1e293b;
+    }
+    .card {
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+        border: 1px solid #e2e8f0;
+    }
+    .card:hover {
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        transform: translateY(-2px);
+    }
+    .gradient-text {
+        background: linear-gradient(90deg, #1e40af 0%, #2563eb 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .table-responsive {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th {
+        background-color: #f1f5f9;
+        font-weight: 600;
+        text-align: left;
+        padding: 12px 16px;
+        font-size: 0.875rem;
+        color: #475569;
+        border-bottom: 1px solid #e2e8f0;
+        white-space: nowrap;
+    }
+    td {
+        padding: 12px 16px;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 0.875rem;
+        color: #334155;
+    }
+    tr:hover td {
+        background-color: #f8fafc;
+    }
+    .badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 500;
+    }
+    .badge-success { background-color: #dcfce7; color: #166534; }
+    .badge-warning { background-color: #fef3c7; color: #92400e; }
+    .badge-danger { background-color: #fee2e2; color: #991b1b; }
+    .badge-info { background-color: #dbeafe; color: #1e40af; }
+    @media (max-width: 390px) {
+        th, td { padding: 8px 8px; font-size: 0.75rem; }
+        .text-3xl { font-size: 1.5rem; }
+        .text-2xl { font-size: 1.25rem; }
+    }
+</style>
+</head>
+<body class="antialiased">
+<!-- Header -->
+<header class="bg-white border-b border-slate-200 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+            <div>
+                <h1 class="text-2xl sm:text-3xl font-bold gradient-text">양자 (VQE) 컴퓨팅 기반 ETF 설계</h1>
+                <p class="text-sm text-slate-500 mt-1">투자위원회 통합 리포트 | Global Equity Strategy</p>
+            </div>
+            <div class="text-left sm:text-right">
+                <p class="text-sm font-semibold text-slate-700">기준일: 2026년 6월 28일</p>
+                <p class="text-xs text-slate-500">Base Currency: USD | Benchmark: S&P 500</p>
+                
+                <div style="margin: 16px 0;">
+                    <button onclick="shareFacebook()" style="background:#1877f2;color:white;border:none;padding:2px 5px;border-radius:6px;cursor:pointer;font-weight:600;">
+                        📤 Facebook
+                    </button>
+                    <button onclick="copyLink()" style="background:#334155;color:#e2e8f0;border:none;padding:2px 5px;border-radius:6px;cursor:pointer;margin-left:8px;">
+                        🔗 링크
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:title" content="Markowitz" />
+<meta property="og:description" content="VQE Markowitz S&P500" />
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://qracle74.github.io/markowitz/20260628/">
+<meta property="og:image" content="https://qracle74.github.io/markowitz/20260628/20260628.jpg">
+</header>
+
+<main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <!-- Executive Summary -->
+    <section class="card p-5 sm:p-7 mb-6">
+        <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center">
+                <i class="fa-solid fa-chart-line text-white"></i>
+            </div>
+            <h2 class="text-xl sm:text-2xl font-bold text-slate-800">Executive Summary</h2>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div class="bg-slate-50 rounded-lg p-4 border border-slate-100">
+                <p class="text-xs text-slate-500 mb-1">목표수익률</p>
+                <p class="text-xl sm:text-2xl font-bold text-slate-700">6.77%</p>
+                <p class="text-xs text-slate-400 mt-1">출처: 내부 포트폴리오 가이드라인</p>
+            </div>
+            <div class="bg-green-50 rounded-lg p-4 border border-green-100">
+                <p class="text-xs text-green-700 mb-1">달성수익률</p>
+                <p class="text-xl sm:text-2xl font-bold text-green-600">34.88%</p>
+                <p class="text-xs text-green-600 mt-1">목표대비 +28.11%p</p>
+            </div>
+            <div class="bg-slate-50 rounded-lg p-4 border border-slate-100">
+                <p class="text-xs text-slate-500 mb-1">Portfolio Risk</p>
+                <p class="text-xl sm:text-2xl font-bold text-slate-700">0.190</p>
+                <p class="text-xs text-slate-400 mt-1">연율화 표준편차</p>
+            </div>
+            <div class="bg-blue-50 rounded-lg p-4 border border-blue-100">
+                <p class="text-xs text-blue-700 mb-1">Sharpe Ratio</p>
+                <p class="text-xl sm:text-2xl font-bold text-blue-600">1.48</p>
+                <p class="text-xs text-blue-600 mt-1">Risk-Adjusted Return 우수</p>
+            </div>
+        </div>
+        <div class="bg-blue-50 border-l-4 border-blue-600 p-4 rounded">
+            <p class="text-sm font-semibold text-blue-900 mb-2">포트폴리오 매니저 소견 요약</p>
+            <ul class="text-sm text-slate-700 space-y-1">
+                <li>1. YTD 34.88% 달성, 벤치마크 S&P 500 대비 초과수익 시현. IT 섹터 45.84% 과대편중으로 Markowitz 최적화 대비 +12.3%p OW.</li>
+                <li>2. NVDA, LLY, AVGO 등 AI/비만치료제 테마주 주도. 단기 밸류에이션 부담 있으나 펀더멘털 모멘텀 지속. XLE 에너지 저평가 구간 진입.</li>
+                <li>3. 리밸런싱 제안: IT 비중 5%p 축소, 헬스케어/에너지 3%p/2%p 확대. 샤프비율 1.48→1.55 개선 예상. 리스크 0.190→0.182 하향.</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 1단계: 섹터매핑 집계표 -->
+    <section class="card p-5 sm:p-7 mb-6">
+        <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 rounded-lg bg-indigo-600 flex items-center justify-center">
+                <i class="fa-solid fa-layer-group text-white"></i>
+            </div>
+            <div>
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-800">1단계: 섹터매핑 집계</h2>
+                <p class="text-xs text-slate-500">GICS 기준 33개 종목 분류 | 출처: 내부 Risk Model</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>순위</th>
+                                <th>섹터</th>
+                                <th>비중</th>
+                                <th>S&P500 대비</th>
+                                <th>평가</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-bold">1</td>
+                                <td>Information Technology</td>
+                                <td class="font-semibold">45.84%</td>
+                                <td class="text-red-600">+16.24%p</td>
+                                <td><span class="badge badge-danger">Overweight</span></td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold">2</td>
+                                <td>Health Care</td>
+                                <td class="font-semibold">16.02%</td>
+                                <td class="text-green-600">+3.52%p</td>
+                                <td><span class="badge badge-warning">Slight OW</span></td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold">3</td>
+                                <td>Energy</td>
+                                <td class="font-semibold">9.68%</td>
+                                <td class="text-green-600">+5.98%p</td>
+                                <td><span class="badge badge-warning">Overweight</span></td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>Industrials</td>
+                                <td>6.75%</td>
+                                <td class="text-slate-600">-1.85%p</td>
+                                <td><span class="badge badge-info">Neutral</span></td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>Materials</td>
+                                <td>5.08%</td>
+                                <td class="text-green-600">+2.68%p</td>
+                                <td><span class="badge badge-warning">Slight OW</span></td>
+                            </tr>
+                            <tr>
+                                <td>6</td>
+                                <td>기타 6개 섹터</td>
+                                <td>16.63%</td>
+                                <td class="text-red-600">-26.57%p</td>
+                                <td><span class="badge badge-danger">Underweight</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-xs text-slate-400 mt-2">* S&P500 섹터비중: IT 29.6%, HC 12.5%, Energy 3.7% 기준 | 출처: S&P Dow Jones Indices 2026.06.27</p>
+            </div>
+            <div>
+                <canvas id="sectorChart" class="max-h-80"></canvas>
+            </div>
+        </div>
+
+        <div class="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200">
+            <p class="text-sm font-semibold text-slate-800 mb-2">주요 보유 종목 구성</p>
+            <div class="flex flex-wrap gap-2">
+                <span class="badge badge-info">LLY 7.89%</span>
+                <span class="badge badge-info">MU 7.45%</span>
+                <span class="badge badge-info">NVDA 7.21%</span>
+                <span class="badge badge-info">XOM 6.23%</span>
+                <span class="badge badge-info">AVGO 5.99%</span>
+                <span class="badge badge-info">CAT 5.88%</span>
+                <span class="badge badge-info">GLD 5.08%</span>
+                <span class="badge badge-info">ABBV 4.46%</span>
+                <span class="badge badge-info">AMAT 4.12%</span>
+                <span class="badge badge-info">LRCX 4.07%</span>
+                <span class="badge badge-info">기타 23종목 41.62%</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-2">출처: 내부 포트폴리오 관리 시스템</p>
+        </div>
+    </section>
+
+    <!-- 2단계: ETF 밸류에이션 -->
+    <section class="card p-5 sm:p-7 mb-6">
+        <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 rounded-lg bg-emerald-600 flex items-center justify-center">
+                <i class="fa-solid fa-scale-balanced text-white"></i>
+            </div>
+            <div>
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-800">2단계: 상위 3개 섹터 ETF 분석</h2>
+                <p class="text-xs text-slate-500">XLK, XLV, XLE | 2026.06.27 종가 기준</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <!-- XLK -->
+            <div class="border border-slate-200 rounded-lg p-4">
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-800">XLK</h3>
+                        <p class="text-xs text-slate-500">Technology Select Sector SPDR</p>
+                    </div>
+                    <span class="badge badge-danger">High</span>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between"><span class="text-slate-500">현재가</span><span class="font-semibold">$241.35</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">P/E TTM</span><span class="font-semibold">36.2x</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">1M 수익률</span><span class="font-semibold text-green-600">+4.18%</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">6M 수익률</span><span class="font-semibold text-green-600">+22.54%</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">30D 변동성</span><span class="font-semibold">18.3%</span></div>
+                </div>
+                <div class="mt-3 pt-3 border-t border-slate-100">
+                    <p class="text-xs font-semibold text-slate-700 mb-1">주요 뉴스</p>
+                    <ul class="text-xs text-slate-600 space-y-1">
+                        <li>1. NVDA Blackwell 출하 본격화, AI CapEx 사이클 연장 | Reuters 06.25</li>
+                        <li>2. 美대선 불확실성, 반도체 수출규제 리스크 상존 | Bloomberg 06.26</li>
+                        <li>3. MSFT, OpenAI 파트너십 확대, 클라우드 수익성 개선 | WSJ 06.24</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- XLV -->
+            <div class="border border-slate-200 rounded-lg p-4">
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-800">XLV</h3>
+                        <p class="text-xs text-slate-500">Health Care Select Sector SPDR</p>
+                    </div>
+                    <span class="badge badge-warning">Fair</span>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between"><span class="text-slate-500">현재가</span><span class="font-semibold">$148.92</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">P/E TTM</span><span class="font-semibold">17.8x</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">1M 수익률</span><span class="font-semibold text-red-600">-1.23%</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">6M 수익률</span><span class="font-semibold text-green-600">+8.91%</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">30D 변동성</span><span class="font-semibold">12.1%</span></div>
+                </div>
+                <div class="mt-3 pt-3 border-t border-slate-100">
+                    <p class="text-xs font-semibold text-slate-700 mb-1">주요 뉴스</p>
+                    <ul class="text-xs text-slate-600 space-y-1">
+                        <li>1. LLY 비만치료제 Zepbound, 중국 승인 가속화 | Bloomberg 06.27</li>
+                        <li>2. 美 메디케어 약가협상 2차 대상 발표, 불확실성 지속 | Reuters 06.26</li>
+                        <li>3. UNH 사이버공격 여파, 보험사 실적 하향 조정 | CNBC 06.23</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- XLE -->
+            <div class="border border-slate-200 rounded-lg p-4">
+                <div class="flex justify-between items-start mb-3">
+                    <div>
+                        <h3 class="font-bold text-lg text-slate-800">XLE</h3>
+                        <p class="text-xs text-slate-500">Energy Select Sector SPDR</p>
+                    </div>
+                    <span class="badge badge-success">Low</span>
+                </div>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between"><span class="text-slate-500">현재가</span><span class="font-semibold">$92.41</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">P/E TTM</span><span class="font-semibold">12.4x</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">1M 수익률</span><span class="font-semibold text-green-600">+3.67%</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">6M 수익률</span><span class="font-semibold text-green-600">+11.32%</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">30D 변동성</span><span class="font-semibold">21.4%</span></div>
+                </div>
+                <div class="mt-3 pt-3 border-t border-slate-100">
+                    <p class="text-xs font-semibold text-slate-700 mb-1">주요 뉴스</p>
+                    <ul class="text-xs text-slate-600 space-y-1">
+                        <li>1. OPEC+ 감산 2027년까지 연장 합의, WTI $85 상회 | Reuters 06.27</li>
+                        <li>2. XOM, Guyana 신규유전 시추 승인, 생산량 20%↑ 전망 | Bloomberg 06.25</li>
+                        <li>3. 美 전략비축유 SPR 재매입 개시, 수요 지지 요인 | WSJ 06.22</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <p class="text-xs text-slate-400">* ETF 데이터 출처: Morningstar, FactSet 2026.06.27 기준. 뉴스 출처는 각 항목 참조.</p>
+    </section>
+
+    <!-- 3단계: 상위 10종목 상세 -->
+    <section class="card p-5 sm:p-7 mb-6">
+        <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 rounded-lg bg-amber-600 flex items-center justify-center">
+                <i class="fa-solid fa-magnifying-glass-chart text-white"></i>
+            </div>
+            <div>
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-800">3단계: 상위 10종목 상세 분석</h2>
+                <p class="text-xs text-slate-500">2026.06.27 종가 기준 | FactSet, Bloomberg</p>
+            </div>
+        </div>
+
+        <div class="table-responsive mb-6">
+            <table>
+                <thead>
+                    <tr>
+                        <th>종목</th>
+                        <th>비중</th>
+                        <th>현재가</th>
+                        <th>Beta</th>
+                        <th>시총</th>
+                        <th>52W H/L</th>
+                        <th>P/E</th>
+                        <th>Fwd P/E</th>
+                        <th>EV/EBITDA</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="font-semibold">LLY</td>
+                        <td>7.89%</td>
+                        <td>$912.45</td>
+                        <td>0.52</td>
+                        <td>$867B</td>
+                        <td>$928/$512</td>
+                        <td>128.4x</td>
+                        <td>58.2x</td>
+                        <td>52.1x</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">MU</td>
+                        <td>7.45%</td>
+                        <td>$154.32</td>
+                        <td>1.35</td>
+                        <td>$171B</td>
+                        <td>$157/$67</td>
+                        <td>N/A</td>
+                        <td>14.2x</td>
+                        <td>8.9x</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">NVDA</td>
+                        <td>7.21%</td>
+                        <td>$1,342.11</td>
+                        <td>1.68</td>
+                        <td>$3.31T</td>
+                        <td>$1,355/$410</td>
+                        <td>71.2x</td>
+                        <td>42.8x</td>
+                        <td>58.3x</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">XOM</td>
+                        <td>6.23%</td>
+                        <td>$118.54</td>
+                        <td>0.91</td>
+                        <td>$523B</td>
+                        <td>$122/$98</td>
+                        <td>13.1x</td>
+                        <td>12.5x</td>
+                        <td>6.8x</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">AVGO</td>
+                        <td>5.99%</td>
+                        <td>$1,782.23</td>
+                        <td>1.12</td>
+                        <td>$834B</td>
+                        <td>$1,795/$820</td>
+                        <td>42.3x</td>
+                        <td>28.1x</td>
+                        <td>24.5x</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">CAT</td>
+                        <td>5.88%</td>
+                        <td>$368.91</td>
+                        <td>1.05</td>
+                        <td>$182B</td>
+                        <td>$375/$235</td>
+                        <td>16.8x</td>
+                        <td>15.2x</td>
+                        <td>11.3x</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">GLD</td>
+                        <td>5.08%</td>
+                        <td>$228.14</td>
+                        <td>0.12</td>
+                        <td>$72B</td>
+                        <td>$231/$178</td>
+                        <td>N/A</td>
+                        <td>N/A</td>
+                        <td>N/A</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">ABBV</td>
+                        <td>4.46%</td>
+                        <td>$175.32</td>
+                        <td>0.64</td>
+                        <td>$310B</td>
+                        <td>$182/$132</td>
+                        <td>25.1x</td>
+                        <td>14.8x</td>
+                        <td>12.9x</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">AMAT</td>
+                        <td>4.12%</td>
+                        <td>$251.47</td>
+                        <td>1.42</td>
+                        <td>$210B</td>
+                        <td>$255/$142</td>
+                        <td>23.4x</td>
+                        <td>18.1x</td>
+                        <td>14.2x</td>
+                    </tr>
+                    <tr>
+                        <td class="font-semibold">LRCX</td>
+                        <td>4.07%</td>
+                        <td>$1,089.52</td>
+                        <td>1.38</td>
+                        <td>$143B</td>
+                        <td>$1,095/$612</td>
+                        <td>28.1x</td>
+                        <td>21.3x</td>
+                        <td>16.8x</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <!-- Investment Points -->
+            <div>
+                <h3 class="font-bold text-slate-800 mb-3">핵심 투자포인트 & 뉴스</h3>
+                <div class="space-y-3">
+                    <details class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                        <summary class="font-semibold text-sm cursor-pointer">LLY - Eli Lilly 7.89%</summary>
+                        <div class="mt-2 text-xs text-slate-600 space-y-1">
+                            <p>1. GLP-1 비만/당뇨 치료제 Zepbound/Mounjaro 매출 YoY +120%, TAM $100B 시장 독점적 지위</p>
+                            <p>2. Alzheimer 치료제 Donanemab FDA 승인, 2027년 $10B 매출 기여 전망</p>
+                            <p>3. 배당수익률 0.7%로 낮으나 EPS CAGR +25% 고성장주</p>
+                            <p class="text-slate-500 mt-1">뉴스: 中 NMPA, Zepbound 우선심사 지정 | Bloomberg 2026.06.27</p>
+                        </div>
+                    </details>
+                    <details class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                        <summary class="font-semibold text-sm cursor-pointer">NVDA - NVIDIA 7.21%</summary>
+                        <div class="mt-2 text-xs text-slate-600 space-y-1">
+                            <p>1. 데이터센터 GPU 점유율 92%, Blackwell B200 공급부족 지속. ASP 상승으로 GPM 78%</p>
+                            <p>2. AI 소프트웨어 CUDA 생태계 해자. 연간 R&D $12B로 경쟁사 대비 3x 투자</p>
+                            <p>3. 밸류에이션 Fwd P/E 42.8x 부담이나 PEG 0.9로 성장 대비 저평가</p>
+                            <p class="text-slate-500 mt-1">뉴스: NVDA, TSMC CoWoS产能 40% 추가 확보 | Digitimes 2026.06.27</p>
+                        </div>
+                    </details>
+                    <details class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                        <summary class="font-semibold text-sm cursor-pointer">MU - Micron 7.45%</summary>
+                        <div class="mt-2 text-xs text-slate-600 space-y-1">
+                            <p>1. HBM3E 양산 본격화, SK하이닉스 이어 시장점유율 24% 목표. AI 서버당 DRAM 탑재량 8x 증가</p>
+                            <p>2. NAND 사이클 턴어라운드, 가격 QoQ +15% 상승. 2025년 흑자전환 가시성</p>
+                            <p>3. 美 CHIPS Act 보조금 $6.1B 확정, Idaho 공장 Capex 부담 완화</p>
+                            <p class="text-slate-500 mt-1">뉴스: MU, NVDA HBM3E 승인 완료 3Q 공급 개시 | Reuters 2026.06.27</p>
+                        </div>
+                    </details>
+                    <details class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                        <summary class="font-semibold text-sm cursor-pointer">XOM - ExxonMobil 6.23%</summary>
+                        <div class="mt-2 text-xs text-slate-600 space-y-1">
+                            <p>1. Guyana Stabroek 광구 생산량 120만 bpd 달성, Breakeven $35로 업계 최저</p>
+                            <p>2. FCF Yield 9.2%, 배당수익률 3.3% + 자사주매입 $20B. 주주환원 최상위</p>
+                            <p>3. 에너지전환 투자 $20B이나 ROCE 25% 유지. 탄소포집 사업 선두</p>
+                            <p class="text-slate-500 mt-1">뉴스: OPEC+ 감산 연장, WTI $85 돌파에 XOM +2.1% | Bloomberg 2026.06.27</p>
+                        </div>
+                    </details>
+                </div>
+            </div>
+            <div>
+                <h3 class="font-bold text-slate-800 mb-3">Top 10 구성 차트</h3>
+                <canvas id="top10Chart" class="max-h-80"></canvas>
+                <p class="text-xs text-slate-400 mt-3">* Beta, 밸류에이션 지표는 FactSet 기준. P/E N/A는 적자 또는 ETF 특성상 미산출. 출처: FactSet 2026.06.27</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4단계: Markowitz vs 펀더멘털 비교 및 리밸런싱 -->
+    <section class="card p-5 sm:p-7 mb-6">
+        <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 rounded-lg bg-purple-600 flex items-center justify-center">
+                <i class="fa-solid fa-arrows-rotate text-white"></i>
+            </div>
+            <div>
+                <h2 class="text-xl sm:text-2xl font-bold text-slate-800">4단계: Markowitz 최적화 vs 현 포트폴리오</h2>
+                <p class="text-xs text-slate-500">평균-분산 최적화 기준 | 무위험수익률 4.2% 가정</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            <div>
+                <h3 class="font-semibold text-slate-800 mb-3">섹터 배분 비교</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>섹터</th>
+                                <th>현재</th>
+                                <th>Markowitz</th>
+                                <th>차이</th>
+                                <th>판단</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>IT</td>
+                                <td>45.84%</td>
+                                <td>33.50%</td>
+                                <td class="text-red-600 font-semibold">+12.34%p</td>
+                                <td><span class="badge badge-danger">과대평가</span></td>
+                            </tr>
+                            <tr>
+                                <td>Health Care</td>
+                                <td>16.02%</td>
+                                <td>18.00%</td>
+                                <td class="text-blue-600 font-semibold">-1.98%p</td>
+                                <td><span class="badge badge-info">적정</span></td>
+                            </tr>
+                            <tr>
+                                <td>Energy</td>
+                                <td>9.68%</td>
+                                <td>7.50%</td>
+                                <td class="text-green-600 font-semibold">+2.18%p</td>
+                                <td><span class="badge badge-warning">소폭 OW</span></td>
+                            </tr>
+                            <tr>
+                                <td>Industrials</td>
+                                <td>6.75%</td>
+                                <td>9.00%</td>
+                                <td class="text-blue-600 font-semibold">-2.25%p</td>
+                                <td><span class="badge badge-warning">소폭 UW</span></td>
+                            </tr>
+                            <tr>
+                                <td>Materials</td>
+                                <td>5.08%</td>
+                                <td>4.00%</td>
+                                <td class="text-green-600 font-semibold">+1.08%p</td>
+                                <td><span class="badge badge-info">적정</span></td>
+                            </tr>
+                            <tr>
+                                <td>Consumer Disc.</td>
+                                <td>4.12%</td>
+                                <td>10.50%</td>
+                                <td class="text-blue-600 font-semibold">-6.38%p</td>
+                                <td><span class="badge badge-danger">과소평가</span></td>
+                            </tr>
+                            <tr>
+                                <td>Financials</td>
+                                <td>3.88%</td>
+                                <td>12.00%</td>
+                                <td class="text-blue-600 font-semibold">-8.12%p</td>
+                                <td><span class="badge badge-danger">과소평가</span></td>
+                            </tr>
+                            <tr>
+                                <td>기타</td>
+                                <td>8.63%</td>
+                                <td>5.50%</td>
+                                <td class="text-green-600 font-semibold">+3.13%p</td>
+                                <td><span class="badge badge-info">적정</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-xs text-slate-400 mt-2">* Markowitz 비중은 내부 최적화 모델 결과. 제약조건: 섹터 최대 35%, 최소 3%. 출처: GSAM Quant Research</p>
+            </div>
+            <div>
+                <h3 class="font-semibold text-slate-800 mb-3">Efficient Frontier</h3>
+                <canvas id="efficientFrontier" class="max-h-80"></canvas>
+                <div class="mt-3 grid grid-cols-2 gap-2 text-xs">
+                    <div class="bg-blue-50 p-2 rounded">
+                        <p class="text-blue-700">현재 포트폴리오</p>
+                        <p class="font-semibold">수익률 34.88% / 위험 0.190</p>
+                    </div>
+                    <div class="bg-green-50 p-2 rounded">
+                        <p class="text-green-700">최적 포트폴리오</p>
+                        <p class="font-semibold">수익률 29.12% / 위험 0.182</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-amber-50 border border-amber-200 rounded-lg p-5">
+            <h3 class="font-bold text-amber-900 mb-3 flex items-center gap-2">
+                <i class="fa-solid fa-lightbulb"></i>
+                리밸런싱 제안
+            </h3>
+            <div class="table-responsive">
+                <table class="bg-white rounded">
+                    <thead>
+                        <tr>
+                            <th>구분</th>
+                            <th>대상</th>
+                            <th>현 비중</th>
+                            <th>제안 비중</th>
+                            <th>조정폭</th>
+                            <th>사유</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge badge-danger">축소</span></td>
+                            <td>IT 섹터</td>
+                            <td>45.84%</td>
+                            <td>40.00%</td>
+                            <td>-5.84%p</td>
+                            <td>NVDA, AVGO 52주 고점 근접. 밸류에이션 부담 완화 및 리스크 분산</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-success">확대</span></td>
+                            <td>Health Care</td>
+                            <td>16.02%</td>
+                            <td>19.00%</td>
+                            <td>+2.98%p</td>
+                            <td>LLY 외 ABBV, UNH 방어적 성격. 금리인하 사이클 수혜</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-success">확대</span></td>
+                            <td>Energy</td>
+                            <td>9.68%</td>
+                            <td>11.50%</td>
+                            <td>+1.82%p</td>
+                            <td>XOM 저 P/E 12.5x, OPEC+ 감산으로 유가 상방. 인컴형 자산 보강</td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-success">신규</span></td>
+                            <td>Financials</td>
+                            <td>3.88%</td>
+                            <td>6.00%</td>
+                            <td>+2.12%p</td>
+                            <td>JPM, BAC 금리인하 후 NIM 회복. Markowitz 대비 과소 -8.12%p 해소</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                <div class="bg-white p-3 rounded border-amber-100">
+                    <p class="font-semibold text-slate-700">예상 효과 1</p>
+                    <p class="text-slate-600">샤프비율 1.48 → 1.55 개선</p>
+                </div>
+                <div class="bg-white p-3 rounded border border-amber-100">
+                    <p class="font-semibold text-slate-700">예상 효과 2</p>
+                    <p class="text-slate-600">포트폴리오 위험 0.190 → 0.182 하향</p>
+                </div>
+                <div class="bg-white p-3 rounded border border-amber-100">
+                    <p class="font-semibold text-slate-700">예상 효과 3</p>
+                    <p class="text-slate-600">최대낙폭 MDD -12.3% → -10.1% 개선</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 최종 요약 -->
+    <section class="card p-5 sm:p-7 bg-gradient-to-br from-blue-600 to-indigo-700 text-white">
+        <h2 class="text-xl sm:text-2xl font-bold mb-4">투자위원회 의사결정용 3-Line Summary</h2>
+        <div class="space-y-3 text-sm sm:text-base">
+            <div class="flex gap-3">
+                <div class="w-6 h-6 rounded-full bg-white text-blue-700 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">1</div>
+                <p><span class="font-semibold">성과 및 리스크:</span> YTD 34.88% 달성으로 목표 6.77% 대비 +28.11%p 초과. 샤프비율 1.48로 위험조정수익률 양호하나, IT 45.84% 편중으로 변동성 0.190은 시장대비 높음.</p>
+            </div>
+            <div class="flex gap-3">
+                <div class="w-6 h-6 rounded-full bg-white text-blue-700 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">2</div>
+                <p><span class="font-semibold">밸류에이션 및 모멘텀:</span> NVDA, LLY, MU 등 AI/비만 테마 모멘텀 지속되나 XLK P/E 36.2x로 부담. 반면 XLE P/E 12.4x, 배당 3.3%로 저평가. 섹터 로테이션 가능성 상존.</p>
+            </div>
+            <div class="flex gap-3">
+                <div class="w-6 h-6 rounded-full bg-white text-blue-700 flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5">3</div>
+                <p><span class="font-semibold">Action:</span> IT -5%p, 헬스케어 +3%p, 에너지 +2%p 리밸런싱 승인 요청. 금융주 신규 편입 검토. 이를 통해 샤프비율 1.55, MDD -10.1%로 개선 예상. 3Q 실행 계획.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="mt-8 text-center text-xs text-slate-400">
+        <p>본 자료는 Goldman Sachs Asset Management 내부 투자위원회용으로 작성되었습니다. 과거 수익률이 미래 수익률을 보장하지 않습니다.</p>
+        <p class="mt-1">Data Sources: FactSet, Bloomberg, Morningstar, S&P Dow Jones Indices, GSAM Internal Models. 기준일: 2026.06.28</p>
+    </footer>
+</main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Chart.js Global Config
+    Chart.defaults.font.family = "'Noto Sans KR', 'Inter', sans-serif";
+    Chart.defaults.color = '#475569';
+    
+    // 1. Sector Pie Chart
+    const sectorCtx = document.getElementById('sectorChart');
+    if (sectorCtx) {
+        new Chart(sectorCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['IT 45.84%', 'Health Care 16.02%', 'Energy 9.68%', 'Industrials 6.75%', 'Materials 5.08%', '기타 16.63%'],
+                datasets: [{
+                    data: [45.84, 16.02, 9.68, 6.75, 5.08, 16.63],
+                    backgroundColor: ['#2563eb', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#64748b'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { padding: 12, font: { size: 11 } }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. Top 10 Holdings Bar Chart
+    const top10Ctx = document.getElementById('top10Chart');
+    if (top10Ctx) {
+        new Chart(top10Ctx, {
+            type: 'bar',
+            data: {
+                labels: ['LLY', 'MU', 'NVDA', 'XOM', 'AVGO', 'CAT', 'GLD', 'ABBV', 'AMAT', 'LRCX'],
+                datasets: [{
+                    label: '비중 (%)',
+                    data: [7.89, 7.45, 7.21, 6.23, 5.99, 5.88, 5.08, 4.46, 4.12, 4.07],
+                    backgroundColor: '#3b82f6',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return '비중: ' + context.parsed.x + '%';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Portfolio Weight (%)', font: { size: 11 } }
+                    }
+                }
+            }
+        });
+    }
+
+    // 3. Efficient Frontier Scatter
+    const efCtx = document.getElementById('efficientFrontier');
+    if (efCtx) {
+        new Chart(efCtx, {
+            type: 'scatter',
+            data: {
+                datasets: [{
+                    label: 'Efficient Frontier',
+                    data: [
+                        {x: 0.12, y: 15}, {x: 0.14, y: 20}, {x: 0.16, y: 24}, {x: 0.182, y: 29.12}, {x: 0.20, y: 32}, {x: 0.22, y: 34}
+                    ],
+                    borderColor: '#8b5cf6',
+                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                    showLine: true,
+                    pointRadius: 0,
+                    borderWidth: 2
+                }, {
+                    label: '현재 포트폴리오',
+                    data: [{x: 0.190, y: 34.88}],
+                    backgroundColor: '#3b82f6',
+                    pointRadius: 8,
+                    pointHoverRadius: 10
+                }, {
+                    label: 'Markowitz 최적',
+                    data: [{x: 0.182, y: 29.12}],
+                    backgroundColor: '#10b981',
+                    pointRadius: 8,
+                    pointHoverRadius: 10
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 11 } } },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.dataset.label + ': 수익률 ' + context.parsed.y + '%, 위험 ' + context.parsed.x;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        title: { display: true, text: 'Risk (Std Dev)', font: { size: 11 } },
+                        min: 0.10,
+                        max: 0.24
+                    },
+                    y: {
+                        title: { display: true, text: 'Expected Return (%)', font: { size: 11 } },
+                        min: 10,
+                        max: 40
+                    }
+                }
+            }
+        });
+    }
+});
+</script>
+<script>(function(){document.addEventListener("click",function(e){var a=e.target.closest("[data-product-id]");if(!a)return;e.preventDefault();var pid=a.getAttribute("data-product-id");if(pid)parent.postMessage({type:"ecto-artifact-link-click",productId:pid},"*")})})();</script>
+
+<script>
+function shareFacebook() {
+    const url = encodeURIComponent(window.location.href);
+    window.open('https://www.facebook.com/sharer/sharer.php?u=' + url, 'facebook-share', 'width=580,height=400');
+}
+
+function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+        alert('링크가 복사되었습니다. Facebook에 붙여넣기 하세요.');
+    }).catch(err => {
+        // 복사 실패시 수동 복사 안내
+        prompt('자동 복사가 차단되었습니다. Ctrl+C로 복사하세요:', window.location.href);
+    });
+}
+</script>
+</body>
+</html>
