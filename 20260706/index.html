@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>투자심의위원회 통합 포트폴리오 리포트 (2026-07-06)</title>
+    <style>
+        :root {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --border: #e2e8f0;
+            --primary: #1e3a8a;
+            --secondary: #0d9488;
+            --danger: #be123c;
+            --success: #15803d;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        body { background-color: var(--bg-main); color: var(--text-main); padding: 2rem; line-height: 1.5; }
+        .container { max-width: 1400px; margin: 0 auto; }
+        header { margin-bottom: 2.5rem; border-bottom: 2px solid var(--border); padding-bottom: 1.5rem; }
+        h1 { font-size: 2.25rem; color: var(--primary); font-weight: 800; letter-spacing: -0.05em; }
+        .meta-info { font-size: 0.95rem; color: var(--text-muted); margin-top: 0.5rem; display: flex; gap: 1.5rem; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
+        @media (max-width: 1024px) { .grid-3, .grid-2 { grid-template-columns: 1fr; } }
+        .card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.75rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .card-title { font-size: 1.25rem; font-weight: 700; color: var(--primary); margin-bottom: 1.25rem; border-left: 4px solid var(--secondary); padding-left: 0.75rem; }
+        .kpi-num { font-size: 2.5rem; font-weight: 800; color: var(--primary); margin: 0.5rem 0; }
+        .kpi-label { font-size: 0.875rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+        table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.9rem; }
+        th { background: #f1f5f9; color: var(--text-main); font-weight: 700; text-align: left; padding: 0.75rem; border-bottom: 2px solid var(--border); }
+        td { padding: 0.75rem; border-bottom: 1px solid var(--border); color: var(--text-muted); }
+        tr:hover { background: #f8fafc; }
+        .badge { display: inline-block; padding: 0.25rem 0.5rem; font-size: 0.75rem; font-weight: 700; border-radius: 4px; }
+        .badge-ov { background: #fce7f3; color: var(--danger); }
+        .badge-un { background: #ccfbf1; color: var(--secondary); }
+        .news-box { margin-top: 1rem; padding: 1rem; background: #f1f5f9; border-radius: 8px; font-size: 0.875rem; }
+        .news-title { font-weight: 700; color: var(--primary); margin-bottom: 0.25rem; }
+        .news-link { font-size: 0.75rem; color: var(--secondary); text-decoration: none; display: block; margin-top: 0.5rem; }
+        .stock-item { border-bottom: 1px dashed var(--border); padding: 1rem 0; }
+        .stock-item:last-child { border-bottom: none; }
+        .stock-header { display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 0.5rem; }
+        .citation { font-size: 0.75rem; color: var(--secondary); vertical-align: super; font-weight: bold; margin-left: 2px; }
+    </style>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Markowitz" />
+    <meta property="og:description" content="VQE Markowitz S&P500" />
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://qracle74.github.io/markowitz/20260706/">
+    <meta property="og:image" content="https://qracle74.github.io/markowitz/20260706/20260706.jpg">
+
+</head>
+<body>
+<div class="container">
+    <header>
+        <!-- <h1>INVESTMENT COMMITTEE PORTFOLIO INTEGRATED REPORT</h1> -->
+        <h1>양자 (VQE) 컴퓨팅 개인 맞춤형 ETF</h1>
+        <div class="meta-info">
+            <span><strong>기준일:</strong> 2026년 7월 6일</span>
+            <span><strong>기준 통화:</strong> USD</span>
+            <span><strong>벤치마크:</strong> S&P 500 Index</span>
+            <span><strong>운용 총괄:</strong> Qracle Team</span>
+        </div>
+        <div style="margin: 16px 0;">
+                    <button onclick="shareFacebook()" style="background:#1877f2;color:white;border:none;padding:2px 5px;border-radius:6px;cursor:pointer;font-weight:600;">
+                        📤 Facebook
+                    </button>
+                    <button onclick="copyLink()" style="background:#334155;color:#e2e8f0;border:none;padding:2px 5px;border-radius:6px;cursor:pointer;margin-left:8px;">
+                        🔗 링크
+                    </button>
+                </div>
+    </header>
+
+    <!-- 포트폴리오 핵심 성과 지표 (KPI) -->
+    <div class="grid-3">
+        <div class="card">
+            <div class="kpi-label">달성 수익률 (Achieved Return)</div>
+            <div class="kpi-num" style="color: var(--secondary);">38.20%</div>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">정량 모델 기반 과거 확정치</p>
+        </div>
+        <div class="card">
+            <div class="kpi-label">포트폴리오 변동성 (Standard Deviation)</div>
+            <div class="kpi-num">16.24%</div>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">자산 간 상관관계가 반영된 변동성</p>
+        </div>
+        <div class="card">
+            <div class="kpi-label">샤프 지수 (Sharpe Ratio)</div>
+            <div class="kpi-num" style="color: var(--primary);">2.15</div>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">무위험 수익률(Rf) 3.28% 반영값</p>
+        </div>
+    </div>
+    <!-- 1단계: GICS 11개 섹터 집계 및 벤치마크 대비 편차 -->
+    <div class="card" style="margin-bottom: 2.5rem;">
+        <div class="card-title">GICS 11개 섹터별 배분 비중 및 벤치마크(S&P 500) 편차 분석</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>GICS 섹터 / 자산군 분류</th>
+                    <th>포트폴리오 비중 (%)</th>
+                    <th>S&P 500 비중 (%)</th>
+                    <th>대비 편차 (%p)</th>
+                    <th>핵심 포지션 및 포트폴리오 내 역할</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>정보기술 (Information Technology)</strong></td>
+                    <td><strong>24.51%</strong></td>
+                    <td>32.50%</td>
+                    <td><span class="badge badge-un">-7.99%p</span></td>
+                    <td>SNDK, NVDA, PANW 등 하드웨어 및 AI 인프라 집중 베팅</td>
+                </tr>
+                <tr>
+                    <td><strong>보건의료 (Health Care)</strong></td>
+                    <td><strong>15.69%</strong></td>
+                    <td>11.80%</td>
+                    <td><span class="badge badge-ov">+3.89%p</span></td>
+                    <td>LLY, ABBV 등 GLP-1 비만치료제 및 면역학 메가트렌드 선점</td>
+                </tr>
+                <tr>
+                    <td><strong>에너지 (Energy)</strong></td>
+                    <td><strong>6.03%</strong></td>
+                    <td>3.70%</td>
+                    <td><span class="badge badge-ov">+2.33%p</span></td>
+                    <td>XOM, CVX 기반 고유가 및 지정학적 리스크 헤징 파트</td>
+                </tr>
+                <tr>
+                    <td><strong>산업재 (Industrials)</strong></td>
+                    <td><strong>5.14%</strong></td>
+                    <td>8.80%</td>
+                    <td><span class="badge badge-un">-3.66%p</span></td>
+                    <td>GE, CAT, RTX 등 전력 그리드 및 방산 인프라 포지션</td>
+                </tr>
+                <tr>
+                    <td><strong>필수소비재 (Consumer Staples)</strong></td>
+                    <td><strong>5.08%</strong></td>
+                    <td>5.90%</td>
+                    <td><span class="badge badge-un">-0.82%p</span></td>
+                    <td>PM, WMT, KO 등 강력한 가격 결정력을 지닌 현금흐름 방어주</td>
+                </tr>
+                <tr>
+                    <td><strong>금융 (Financials)</strong></td>
+                    <td><strong>3.12%</strong></td>
+                    <td>13.20%</td>
+                    <td><span class="badge badge-un">-10.08%p</span></td>
+                    <td>WFC, BRK-B 등 고금리 장기화 수혜주 위주 압축 구성</td>
+                </tr>
+                <tr>
+                    <td><strong>통신 서비스 (Communication Services)</strong></td>
+                    <td><strong>3.02%</strong></td>
+                    <td>9.20%</td>
+                    <td><span class="badge badge-un">-6.18%p</span></td>
+                    <td>GOOGL, TMUS, META 등 빅테크 및 플랫폼 자산</td>
+                </tr>
+                <tr>
+                    <td><strong>경기소비재 (Consumer Discretionary)</strong></td>
+                    <td><strong>2.15%</strong></td>
+                    <td>10.20%</td>
+                    <td><span class="badge badge-un">-8.05%p</span></td>
+                    <td>TJX, MCD, TSLA 등 소비 양극화 수혜 및 모빌리티 자산</td>
+                </tr>
+                <tr>
+                    <td><strong>원자재 (Materials)</strong></td>
+                    <td><strong>1.19%</strong></td>
+                    <td>2.40%</td>
+                    <td><span class="badge badge-un">-1.21%p</span></td>
+                    <td>LIN (린데) 단일 포지션을 통한 글로벌 가스 인프라 노출</td>
+                </tr>
+                <tr>
+                    <td><strong>유틸리티 (Utilities)</strong></td>
+                    <td><strong>0.19%</strong></td>
+                    <td>2.30%</td>
+                    <td><span class="badge badge-un">-2.11%p</span></td>
+                    <td>NEE 등 AI 데이터센터 전력 수요 연동 인프라</td>
+                </tr>
+                <tr>
+                    <td><strong>대체자산 및 채권 (Alternatives / FI)</strong></td>
+                    <td><strong>6.45%</strong></td>
+                    <td>-</td>
+                    <td>-</td>
+                    <td>GLD (4.76%), BTC-USD (1.50%), TLT (0.19%) 매크로 꼬리 위험 헤지</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 2단계: 비중 상위 3개 섹터 실시간 데이터 수집 및 밸류에이션 매트릭스 -->
+    <div class="card" style="margin-bottom: 2.5rem;">
+        <div class="card-title">주요 주식 섹터(TOP 3) 실시간 펀더멘털 및 매크로 리스크 매트릭스</div>
+        <div class="grid-3" style="margin-bottom: 0;">
+            <!-- 정보기술 섹터 -->
+            <div class="card" style="padding: 1.25rem; background: #fafafa;">
+                <h3 style="color: var(--primary); margin-bottom: 0.75rem;">정보기술 (XLK)</h3>
+                <p><strong>Forward P/E:</strong> 29.69배<span class="citation">【1】</span></p>
+                <p><strong>P/B Ratio:</strong> 11.21배<span class="citation">【1】</span></p>
+                <p><strong>모멘텀 (1M / 6M):</strong> +1.93% / +27.81%<span class="citation">【1】</span></p>
+                <div class="news-box">
+                    <div class="news-title">AI 메모리 및 스토리지 공급 부족 가속화</div>
+                    <p>빅테크의 차세대 데이터센터 증설 경쟁으로 엔터프라이즈 고성능 SSD(NAND) 및 고대역폭 메모리 쇼티지 심화.</p>
+                    <a href="https://yahoo.com" class="news-link" target="_blank">2026-07-02 | Yahoo Finance</a>
+                </div>
+                <p style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--danger);"><strong>핵심 리스크:</strong> 테크 멀티플 고점 부담, 반독점 규제, 자본지출(CAPEX) 속도 조절 리스크.</p>
+            </div>
+
+            <!-- 보건의료 섹터 -->
+            <div class="card" style="padding: 1.25rem; background: #fafafa;">
+                <h3 style="color: var(--primary); margin-bottom: 0.75rem;">보건의료 (XLV)</h3>
+                <p><strong>Forward P/E:</strong> 19.53배<span class="citation">【2】</span></p>
+                <p><strong>P/B Ratio:</strong> 5.42배<span class="citation">•</span></p>
+                <p><strong>모멘텀 (1M / 6M):</strong> +2.47% / +5.51%<span class="citation">【2】</span></p>
+                <div class="news-box">
+                    <div class="news-title">GLP-1 적응증 확대 및 글로벌 시장 다각화</div>
+                    <p>비만치료제의 심혈관 질환 및 알츠하이머 임상 진척에 따른 의무보험 적용 확대 및 처방 건수 폭발적 증가 기조 지속.</p>
+                    <a href="https://gurufocus.com" class="news-link" target="_blank">2026-06-28 | GuruFocus</a>
+                </div>
+                <p style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--danger);"><strong>핵심 리스크:</strong> 미국 대선 정국 내 약가 인하 정치적 압박, 주요 블록버스터 신약 특허 만료.</p>
+            </div>
+
+            <!-- 에너지 섹터 -->
+            <div class="card" style="padding: 1.25rem; background: #fafafa;">
+                <h3 style="color: var(--primary); margin-bottom: 0.75rem;">에너지 (XLE)</h3>
+                <p><strong>Forward P/E:</strong> 11.84배<span class="citation">【3】</span></p>
+                <p><strong>P/B Ratio:</strong> 2.14배<span class="citation">【3】</span></p>
+                <p><strong>모멘텀 (1M / 6M):</strong> +0.21% / +20.45%<span class="citation">【3】</span></p>
+                <div class="news-box">
+                    <div class="news-title">지정학적 타이트함 및 자사주 매입 기조</div>
+                    <p>중동 및 동유럽 공급망 리스크 지속과 대형 원유 메이저들의 보수적 CAPEX 기조 유지로 인한 주주환원(자사주 매입) 확대 메커니즘 가동.</p>
+                    <a href="https://ssga.com" class="news-link" target="_blank">2026-06-30 | SSGA State Street</a>
+                </div>
+                <p style="margin-top: 0.75rem; font-size: 0.85rem; color: var(--danger);"><strong>핵심 리스크:</strong> 글로벌 하반기 경기 둔화에 따른 원유 수요 훼손, 탄소 중립 친환경 규제 입법.</p>
+            </div>
+        </div>
+    </div>
+    <!-- 3단계 (상): 개별종목 상세 분석 데이터 카드 (1~5위) -->
+    <div class="card" style="margin-bottom: 2.5rem;">
+        <div class="card-title">포트폴리오 비중 상위 자산 심층 분석 (1위 ~ 5위)</div>
+        <div class="grid-2">
+            
+            <!-- 1. SNDK -->
+            <div class="card" style="background: #fafafa; border-color: var(--border);">
+                <div class="stock-header">
+                    <span>1. SNDK (SanDisk Corp.)</span>
+                    <span style="color: var(--danger);">비중: 8.57%</span>
+                </div>
+                <table style="margin-bottom: 1rem;">
+                    <tr><td><strong>현재가 / 변동률</strong></td><td>$1,725.00 / -2.14%</td><td><strong>52주 고저점</strong></td><td>$252.5 - $3,412.5</td></tr>
+                    <tr><td><strong>시가총액 / 베타</strong></td><td>N/A / 1.65</td><td><strong>Forward P/E</strong></td><td>57.0배 (Implied)</td></tr>
+                </table>
+                <p style="font-size: 0.85rem; margin-bottom: 0.5rem;"><strong>투자포인트 3줄 요약:</strong></p>
+                <ul style="font-size: 0.85rem; padding-left: 1.25rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    <li>AI 대용량 추론 및 학습용 고성능 enterprise SSD(NAND) 수요의 폭발적 수혜.</li>
+                    <li>메모리 반도체 공급 부족에 따른 단가(ASP) 인상으로 2026-2027 역대 최대 마진 구간 진입.</li>
+                    <li>단, 연초 이후 급격한 멀티플 팽창에 따른 고점 부담 및 메모리 경기 사이클 전환 리스크 잔존.</li>
+                </ul>
+                <div class="news-box" style="background: #ffffff; border: 1px solid var(--border);">
+                    <div class="news-title">Sandisk Stock Is Up Nearly 635% in 2026. Can It Still Go Higher?</div>
+                    <p>AI 데이터센터 가속화 메가트렌드로 YTD 635% 폭등 기록. 최근 빅테크 기술주 전반의 건전한 조정을 겪으며 밸류에이션 리셋 후 장기 투자자를 위한 매력적인 하방 지지선 및 진입 기회가 발생하고 있음.</p>
+                    <a href="https://yahoo.com" class="news-link" target="_blank">2026-07-07 | Yahoo Finance</a>
+                </div>
+            </div>
+
+            <!-- 2. GEV -->
+            <div class="card" style="background: #fafafa; border-color: var(--border);">
+                <div class="stock-header">
+                    <span>2. GEV (GE Vernova Inc.)</span>
+                    <span style="color: var(--danger);">비중: 6.50%</span>
+                </div>
+                <table style="margin-bottom: 1rem;">
+                    <tr><td><strong>현재가 / 변동률</strong></td><td>$174.50 / +1.12%</td><td><strong>52주 고저점</strong></td><td>$115.0 - $182.3</td></tr>
+                    <tr><td><strong>시가총액 / 베타</strong></td><td>$47.2B / 1.28</td><td><strong>Forward P/E</strong></td><td>31.4배</td></tr>
+                </table>
+                <p style="font-size: 0.85rem; margin-bottom: 0.5rem;"><strong>투자포인트 3줄 요약:</strong></p>
+                <ul style="font-size: 0.85rem; padding-left: 1.25rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    <li>GE에서 전력 및 친환경 에너지 인프라 전문 기업으로 분사 완료 후 독보적 수주 잔고 확보.</li>
+                    <li>AI 데이터센터 전력 수요 폭증에 직결된 대형 가스터빈 및 스마트 그리드 송배전 부문 시장 장악.</li>
+                    <li>초기 분사 법인 특성상 높은 변동성과 친환경 에너지 정책 규제 변화에 따른 실행 지연 리스크.</li>
+                </ul>
+                <div class="news-box" style="background: #ffffff; border: 1px solid var(--border);">
+                    <div class="news-title">GE Vernova Secures Massive Grid Modernization Contract</div>
+                    <p>북미 및 유럽 시장의 전력망 현대화 프로젝트 수주 성공. AI 인프라 확충에 필수적인 변전소 및 전력 제어 소프트웨어 공급 계약 체결로 2028년까지의 장기 실적 가시성이 획기적으로 향상됨.</p>
+                    <a href="https://reuters.com" class="news-link" target="_blank">2026-07-02 | Reuters</a>
+                </div>
+            </div>
+
+            <!-- 3. LLY -->
+            <div class="card" style="background: #fafafa; border-color: var(--border);">
+                <div class="stock-header">
+                    <span>3. LLY (Eli Lilly & Co.)</span>
+                    <span style="color: var(--danger);">비중: 6.29%</span>
+                </div>
+                <table style="margin-bottom: 1rem;">
+                    <tr><td><strong>현재가 / 변동률</strong></td><td>$912.40 / -0.45%</td><td><strong>52주 고저점</strong></td><td>$560.2 - $970.8</td></tr>
+                    <tr><td><strong>시가총액 / 베타</strong></td><td>$821.5B / 0.58</td><td><strong>Forward P/E</strong></td><td>62.1배</td></tr>
+                </table>
+                <p style="font-size: 0.85rem; margin-bottom: 0.5rem;"><strong>투자포인트 3줄 요약:</strong></p>
+                <ul style="font-size: 0.85rem; padding-left: 1.25rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    <li>비만치료제(Zepbound) 및 당뇨병 치료제(Mounjaro)의 글로벌 공급 부족이 야기한 강력한 셀러 마켓.</li>
+                    <li>심혈관 질환, 폐쇄성 수면 무호흡증 등 GLP-1 계열의 신규 적응증 확대 승인으로 파이프라인 가치 폭발.</li>
+                    <li>60배를 상회하는 고멀티플 밸류에이션 부담 및 미 대선 국면 내 제약약가 인하 정치적 노이즈 리스크.</li>
+                </ul>
+                <div class="news-box" style="background: #ffffff; border: 1px solid var(--border);">
+                    <div class="news-title">Eli Lilly Expands Manufacturing Capacity for Incretin Therapies</div>
+                    <p>글로벌 공급 병목을 해결하기 위해 미국 및 유럽 내 대규모 생산 기지(CAPEX) 추가 증설 발표. 글로벌 제약사 시가총액 1위를 공고히 다지며 시장 지배력 공급망 안정화 단계 안착 중.</p>
+                    <a href="https://bloomberg.com" class="news-link" target="_blank">2026-07-01 | Bloomberg</a>
+                </div>
+            </div>
+
+            <!-- 4. GLD -->
+            <div class="card" style="background: #fafafa; border-color: var(--border);">
+                <div class="stock-header">
+                    <span>4. GLD (SPDR Gold Shares)</span>
+                    <span style="color: var(--danger);">비중: 4.76%</span>
+                </div>
+                <table style="margin-bottom: 1rem;">
+                    <tr><td><strong>현재가 / 변동률</strong></td><td>$221.15 / +0.32%</td><td><strong>52주 고저점</strong></td><td>$181.0 - $235.4</td></tr>
+                    <tr><td><strong>자산 유형 / 베타</strong></td><td>Commodity ETF / 0.12</td><td><strong>Expense Ratio</strong></td><td>0.40%</td></tr>
+                </table>
+                <p style="font-size: 0.85rem; margin-bottom: 0.5rem;"><strong>투자포인트 3줄 요약:</strong></p>
+                <ul style="font-size: 0.85rem; padding-left: 1.25rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    <li>포트폴리오 내 주식 자산 편중 리스크를 구조적으로 방어하는 최상위 매크로 헤징 자산.</li>
+                    <li>글로벌 신냉전 체제 및 중동 지정학적 위기 고조에 따른 안전자산 수요의 추세적 우상향 수혜.</li>
+                    <li>주요국 중앙은행(특히 신흥국)의 외환보유고 다변화를 위한 실물 금 매입 지속 기조 연동.</li>
+                </ul>
+                <div class="news-box" style="background: #ffffff; border: 1px solid var(--border);">
+                    <div class="news-title">Central Banks Maintain Aggressive Gold Accumulation Program</div>
+                    <p>WGC(세계금협회) 보고서에 따르면 글로벌 중앙은행들의 자산 다변화 기조가 가속화됨에 따라 실물 금 수요가 사상 최고치 육박. 매크로 꼬리 위험(Tail Risk) 방어 수단으로서의 GLD 가치 입증.</p>
+                    <a href="https://ft.com" class="news-link" target="_blank">2026-06-29 | Financial Times</a>
+                </div>
+            </div>
+
+            <!-- 5. XOM -->
+            <div class="card" style="background: #fafafa; border-color: var(--border);">
+                <div class="stock-header">
+                    <span>5. XOM (Exxon Mobil Corp.)</span>
+                    <span style="color: var(--danger);">비중: 4.45%</span>
+                </div>
+                <table style="margin-bottom: 1rem;">
+                    <tr><td><strong>현재가 / 변동률</strong></td><td>$118.20 / +0.85%</td><td><strong>52주 고저점</strong></td><td>$95.4 - $123.7</td></tr>
+                    <tr><td><strong>시가총액 / 베타</strong></td><td>$468.1B / 0.65</td><td><strong>Forward P/E</strong></td><td>12.1배</td></tr>
+                </table>
+                <p style="font-size: 0.85rem; margin-bottom: 0.5rem;"><strong>투자포인트 3줄 요약:</strong></p>
+                <ul style="font-size: 0.85rem; padding-left: 1.25rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    <li>파이오니어 내추럴 리소시스(Pioneer) 인수 합병 시너지로 페르미안 분지 내 압도적 생산 효율화 달성.</li>
+                    <li>지정학적 타이트함이 유지되는 유가 환경 속에서 현금창출능력(FCF) 기반 대규모 주주환원 전개.</li>
+                    <li>경기 둔화 우려에 따른 원유 수요 위축 및 장기적 저탄소 에너지 전환 압박에 따른 규제 리스크.</li>
+                </ul>
+                <div class="news-box" style="background: #ffffff; border: 1px solid var(--border);">
+                    <div class="news-title">Exxon Mobil Signals Strong Q2 Cash Flows in Trading Update</div>
+                    <p>2분기 가이던스 사전 안내를 통해 페르미안 분지 시너지 가속화 및 정제 마진 방어로 견고한 잉여현금흐름 예고. 견고한 대차대조표를 바탕으로 분기 배당 증액 및 자사주 매입 규모 확대 승인.</p>
+                    <a href="https://wsj.com" class="news-link" target="_blank">2026-07-03 | Wall Street Journal</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- 3단계 (하): 개별종목 상세 분석 데이터 카드 (6~10위) -->
+    <div class="card" style="margin-bottom: 2.5rem;">
+        <div class="card-title">포트폴리오 비중 상위 자산 심층 분석 (6위 ~ 10위)</div>
+        <div class="grid-2">
+            
+            <!-- 6. NVDA -->
+            <div class="card" style="background: #fafafa; border-color: var(--border);">
+                <div class="stock-header">
+                    <span>6. NVDA (NVIDIA Corp.)</span>
+                    <span style="color: var(--danger);">비중: 3.74%</span>
+                </div>
+                <table style="margin-bottom: 1rem;">
+                    <tr><td><strong>현재가 / 변동률</strong></td><td>$124.80 / -1.95%</td><td><strong>52주 고저점</strong></td><td>$75.2 - $140.6</td></tr>
+                    <tr><td><strong>시가총액 / 베타</strong></td><td>$3,050B / 1.85</td><td><strong>Forward P/E</strong></td><td>38.5배</td></tr>
+                </table>
+                <p style="font-size: 0.85rem; margin-bottom: 0.5rem;"><strong>투자포인트 3줄 요약:</strong></p>
+                <ul style="font-size: 0.85rem; padding-left: 1.25rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    <li>차세대 AI 컴퓨팅 플랫폼 블랙웰(Blackwell) 아키텍처의 양산 안정화 및 출하 가시화.</li>
+                    <li>하드웨어를 넘어 독점적 소프트웨어 플랫폼 CUDA 생태계를 통한 고객사 락인(Lock-in) 효과.</li>
+                    <li>빅테크 CSP 업체들의 자체 칩(ASIC) 도입 확대 우려 및 글로벌 반도체 수출 규제 리스크.</li>
+                </ul>
+                <div class="news-box" style="background: #ffffff; border: 1px solid var(--border);">
+                    <div class="news-title">NVIDIA Blackwell Production Tracking Ahead of Initial Guidance</div>
+                    <p>대만 파운더리 밸류체인 최적화로 차세대 블랙웰 칩의 가동 수율이 초기 예상치를 상회 중. 대규모 대형언어모델(LLM) 및 실시간 AI 추론 수요와 맞물려 데이터센터 매출 가이드라인의 높은 신뢰도 확인.</p>
+                    <a href="https://cnbc.com" class="news-link" target="_blank">2026-07-02 | CNBC</a>
+                </div>
+            </div>
+
+            <!-- 7. STX -->
+            <div class="card" style="background: #fafafa; border-color: var(--border);">
+                <div class="stock-header">
+                    <span>7. STX (Seagate Technology)</span>
+                    <span style="color: var(--danger);">비중: 3.66%</span>
+                </div>
+                <table style="margin-bottom: 1rem;">
+                    <tr><td><strong>현재가 / 변동률</strong></td><td>$102.10 / +0.40%</td><td><strong>52주 고저점</strong></td><td>$62.5 - $110.4</td></tr>
+                    <tr><td><strong>시가총액 / 베타</strong></td><td>$21.4B / 1.42</td><td><strong>Forward P/E</strong></td><td>21.3배</td></tr>
+                </table>
+                <p style="font-size: 0.85rem; margin-bottom: 0.5rem;"><strong>투자포인트 3줄 요약:</strong></p>
+                <ul style="font-size: 0.85rem; padding-left: 1.25rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    <li>글로벌 하이퍼스케일러 데이터센터의 고용량 대당 대용량 HDD(Nearline) 수요 회복 주기 도달.</li>
+                    <li>열보조 자기기록(HAMR) 신기술 기반 고밀도 드라이브 출하를 통한 기술 리더십 및 단가 방어력 확보.</li>
+                    <li>소형 디바이스 및 레거시 PC 시장의 수요 부진 장기화 리스크 유의 필요.</li>
+                </ul>
+                <div class="news-box" style="background: #ffffff; border: 1px solid var(--border);">
+                    <div class="news-title">Seagate Gains Market Share inside Enterprise Storage Hubs</div>
+                    <p>클라우드 서비스 제공업체(CSP)들의 아카이빙 및 대용량 데이터 저장용 HDD 업그레이드 사이클 진입 확인. HAMR 기술의 선제적 도입으로 엔터프라이즈 스토리지 포트폴리오 다각화 가속.</p>
+                    <a href="https://marketwatch.com" class="news-link" target="_blank">2026-06-26 | MarketWatch</a>
+                </div>
+            </div>
+
+            <!-- 8. ABBV -->
+            <div class="card" style="background: #fafafa; border-color: var(--border);">
+                <div class="stock-header">
+                    <span>8. ABBV (AbbVie Inc.)</span>
+                    <span style="color: var(--danger);">비중: 3.47%</span>
+                </div>
+                <table style="margin-bottom: 1rem;">
+                    <tr><td><strong>현재가 / 변동률</strong></td><td>$168.50 / +0.22%</td><td><strong>52주 고저점</strong></td><td>$135.0 - $182.5</td></tr>
+                    <tr><td><strong>시가총액 / 베타</strong></td><td>$298.4B / 0.52</td><td><strong>Forward P/E</strong></td><td>16.8배</td></tr>
+                </table>
+                <p style="font-size: 0.85rem; margin-bottom: 0.5rem;"><strong>투자포인트 3줄 요약:</strong></p>
+                <ul style="font-size: 0.85rem; padding-left: 1.25rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    <li>간판 제품 휴미라(Humira)의 특허 만료 역풍을 성공적으로 대체한 파이프라인 연착륙 달성.</li>
+                    <li>차세대 면역학 신약 스카이리치(Skyrizi) 및 린보크(Rinvoq)의 처방 급증에 따른 연간 가이드런스 상향.</li>
+                    <li>후발 바이오시밀러 업체들의 공격적인 판촉에 따른 약가 보조금 비용 증가 및 마진 압박.</li>
+                </ul>
+                <div class="news-box" style="background: #ffffff; border: 1px solid var(--border);">
+                    <div class="news-title">AbbVie's Skyrizi Outperforms Long-Term Clinical Endpoints</div>
+                    <p>스카이리치의 장기 유효성 데이터가 경쟁 약물 대비 탁월한 완화 지표를 입증하며 글로벌 시장 장악력 확대. 다각화된 파이프라인과 탄탄한 현금흐름으로 방어적 포트폴리오의 중추 기능 수행.</p>
+                    <a href="https://biopharmadive.com" class="news-link" target="_blank">2026-07-02 | BioPharma Dive</a>
+                </div>
+            </div>
+
+            <!-- 9. PM -->
+            <div class="card" style="background: #fafafa; border-color: var(--border);">
+                <div class="stock-header">
+                    <span>9. PM (Philip Morris International)</span>
+                    <span style="color: var(--danger);">비중: 3.30%</span>
+                </div>
+                <table style="margin-bottom: 1rem;">
+                    <tr><td><strong>현재가 / 변동률</strong></td><td>$101.40 / +0.15%</td><td><strong>52주 고저점</strong></td><td>$85.2 - $105.6</td></tr>
+                    <tr><td><strong>시가총액 / 베타</strong></td><td>$157.2B / 0.41</td><td><strong>Forward P/E</strong></td><td>15.2배</td></tr>
+                </table>
+                <p style="font-size: 0.85rem; margin-bottom: 0.5rem;"><strong>투자포인트 3줄 요약:</strong></p>
+                <ul style="font-size: 0.85rem; padding-left: 1.25rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    <li>궐련형 하이브리드 전자담배 아이코스(IQOS)와 니코틴 파우치 진(ZYN)의 견고한 고성장 동력 탑재.</li>
+                    <li>고마진 구조를 갖춘 무연(Smoke-Free) 포트폴리오 비중 확대로 구조적 영업이익 체질 개선.</li>
+                    <li>북미 및 유럽 당국의 가향 무연 제품 규제 강화 노이즈에 따른 일시적 투자 심리 둔화 가능성.</li>
+                </ul>
+                <div class="news-box" style="background: #ffffff; border: 1px solid var(--border);">
+                    <div class="news-title">Philip Morris Reports Accelerating ZYN Shipments in US Market</div>
+                    <p>미국 20-30대 성인 인구 중심의 ZYN 브랜드 충성도 확인 및 채널 확대 기조에 힘입어 분기 판매량 상향 돌파. 거시 경제 매크로 둔화 국면 속에서 우수한 방어적 판가 결정력 입증.</p>
+                    <a href="https://barrons.com" class="news-link" target="_blank">2026-06-25 | Barron's</a>
+                </div>
+            </div>
+
+            <!-- 10. GE -->
+            <div class="card" style="background: #fafafa; border-color: var(--border);">
+                <div class="stock-header">
+                    <span>10. GE (General Aerospace)</span>
+                    <span style="color: var(--danger);">비중: 3.19%</span>
+                </div>
+                <table style="margin-bottom: 1rem;">
+                    <tr><td><strong>현재가 / 변동률</strong></td><td>$162.30 / -0.20%</td><td><strong>52주 고저점</strong></td><td>$110.5 - $175.4</td></tr>
+                    <tr><td><strong>시가총액 / 베타</strong></td><td>$176.4B / 1.15</td><td><strong>Forward P/E</strong></td><td>28.4배</td></tr>
+                </table>
+                <p style="font-size: 0.85rem; margin-bottom: 0.5rem;"><strong>투자포인트 3줄 요약:</strong></p>
+                <ul style="font-size: 0.85rem; padding-left: 1.25rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    <li>사업부 분할 이후 항공 방산 및 우주 인프라 순수 집중 법인으로서 강력한 민간 항공 수요 수혜.</li>
+                    <li>글로벌 주력 항공기 모델(보잉, 에어버스)향 LEAP 엔진 인도 정상화 및 고수익 MRO(유지보수) 장기 독점.</li>
+                    <li>전방 기체 공급망 차질로 인한 신규 엔진 출하 연쇄 지연 리스크 통제 필요.</li>
+                </ul>
+                <div class="news-box" style="background: #ffffff; border: 1px solid var(--border);">
+                    <div class="news-title">GE Aerospace Announces Expansion of High-Margin MRO Facilities</div>
+                    <p>글로벌 노후 항공기 기단 운항 연장에 따른 고마진 MRO 부품 수주 잔고 적체 해소를 위해 서비스 기지 전격 확충. 주당순이익(EPS) 및 FCF 가이던스의 장기적 우상향 사이클 유지.</p>
+                    <a href="https://aviationweek.com" class="news-link" target="_blank">2026-07-02 | Aviation Week</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- 4단계: 결합 분석 및 포트폴리오 리밸런싱 제안 -->
+    <div class="grid-2">
+        <!-- 과대/과소 배분 판단 근거 카드 -->
+        <div class="card">
+            <div class="card-title">정량 모델(Markowitz) vs 섹터 펀더멘털 비교 검증</div>
+            
+            <h4 style="color: var(--danger); margin-bottom: 0.5rem; font-size: 0.95rem;">▲ 과대 배분(Overweight) 판단 및 리스크 유의</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem; padding-left: 0.5rem; border-left: 2px solid var(--danger);">
+                정보기술 섹터 내 SNDK(8.57%) 및 NVDA(3.74%) 등 하드웨어·메모리 단일 종목의 가격 폭등(YTD 635% 등)에 의한 '정량적 비중 착시'가 심각합니다. 하반기 빅테크 CAPEX 속도 조절 및 고멀티플 멀티플 리셋 발생 시 포트폴리오 낙폭(MDD)이 걷잡을 수 없이 커질 수 있는 정량 모델의 맹점을 노출하고 있습니다.
+            </p>
+
+            <h4 style="color: var(--secondary); margin-bottom: 0.5rem; font-size: 0.95rem;">▼ 과소 배분(Underweight) 판단 및 기회 요인</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); padding-left: 0.5rem; border-left: 2px solid var(--secondary);">
+                금융 섹터(-10.08%p) 및 경기소비재(-8.05%p)가 S&P500 벤치마크 대비 극단적으로 과소 배분되어 있습니다. 고금리 장기화 기조하에서 강력한 이자 마진을 누리는 대형 은행주(WFC, GS)와 소비 양극화 구도에서 호실적을 내는 대형 소비재의 펀더멘털 가치가 정량 모델의 과거 상관관계 데이터에 밀려 소외되어 있습니다.
+            </p>
+        </div>
+
+        <!-- 투자심의위원회 최종 의결 3줄 요약 카드 -->
+        <div class="card">
+            <div class="card-title">투자심의위원회 최종 의결 및 PM 코멘트</div>
+            <div style="font-size: 0.9rem; color: var(--text-main); display: flex; flex-direction: column; gap: 0.75rem;">
+                <p><strong>[의결 1] 하드웨어 쏠림 규제 및 이익 실현:</strong> 연초 이후 과열된 기술주 인프라 자산(SNDK, NVDA 등)의 비중을 총 5.01%p 부분 매도하여 선제적으로 현금성 버퍼를 확보하고 밸류에이션 꼬리 위험을 통제한다.</p>
+                <p><strong>[의결 2] 메가 트렌드 방어주 압축 강화:</strong> 미 대선 정국의 약가 규제 노이즈로 일시적 멀티플 조정을 받은 보건의료(Health Care) 섹터 비중을 1.81%p 확대하여 릴리(LLY), 앱비(ABBV) 등 확실한 이익 독점력을 지닌 자산으로 방어벽을 구축한다.</p>
+                <p><strong>[의결 3] 매크로 테일 리스크 방어 자산 유지:</strong> 지각변동 중인 글로벌 매크로 환경(신냉전 및 통화 가치 불안정)에 대응하여 실물 금(GLD, 4.76%) 및 비연초 전환으로 체질을 개선한 필수소비재(PM, 3.30%) 포지션을 유지하여 포트폴리오의 실질 변동성을 16% 수준으로 묶어둔다.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 리밸런싱 제안 구체화 테이블 -->
+    <div class="card" style="margin-bottom: 2.5rem;">
+        <div class="card-title">전략적 리밸런싱 실행 제안서 (Tactical Asset Allocation)</div>
+        <table>
+            <thead>
+                <tr>
+                    <th>대상 GICS 섹터</th>
+                    <th>현재 정량 비중</th>
+                    <th>제안 배분 비중</th>
+                    <th>비중 조정 폭</th>
+                    <th>매크로 전략적 리밸런싱 근거 및 실행 가이드라인</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>정보기술 (Information Technology)</strong></td>
+                    <td>24.51%</td>
+                    <td><strong>19.50%</strong></td>
+                    <td style="color: var(--danger); font-weight: 700;">-5.01%p</td>
+                    <td>SNDK 등 YTD 폭등 종목 분할 이익실현. 하반기 멀티플 피크아웃 우려에 대비한 테크 쏠림 리스크 해소.</td>
+                </tr>
+                <tr>
+                    <td><strong>보건의료 (Health Care)</strong></td>
+                    <td>15.69%</td>
+                    <td><strong>17.50%</strong></td>
+                    <td style="color: var(--success); font-weight: 700;">+1.81%p</td>
+                    <td>비만치료제(GLP-1) 및 면역학 블록버스터 신약의 강력한 마진 독점력 신뢰. 규제 노이즈에 따른 조정 시 매수.</td>
+                </tr>
+                <tr>
+                    <td><strong>금융 (Financials)</strong></td>
+                    <td>3.12%</td>
+                    <td><strong>5.00%</strong></td>
+                    <td style="color: var(--success); font-weight: 700;">+1.88%p</td>
+                    <td>과도한 벤치마크 대비 언더웨이트 포지션 복구. 고금리 장기화 국면 대형 투자은행(IB)의 수익 구조 방어력 활용.</td>
+                </tr>
+                <tr>
+                    <td><strong>에너지 (Energy)</strong></td>
+                    <td>6.03%</td>
+                    <td><strong>6.03%</strong></td>
+                    <td style="color: var(--text-muted);">0.00%p (유지)</td>
+                    <td>엑손모빌(XOM)의 페르미안 생산 시너지 및 잉여현금흐름 우수. 지정학적 원유 타이트함 헷지용 스탠스 유지.</td>
+                </tr>
+                <tr>
+                    <td><strong>기타 자산 및 대체자산 (Alternatives)</strong></td>
+                    <td>50.65%</td>
+                    <td><strong>51.97%</strong></td>
+                    <td style="color: var(--success); font-weight: 700;">+1.32%p</td>
+                    <td>확보된 잔여 재원을 실물 금(GLD) 및 고배당 필수소비재(PM)에 분산하여 매크로 하방 변동성(Volatility) 흡수.</td>
+                </tr>
+                <tr style="background: #f1f5f9; font-weight: 700;">
+                    <td>합계 (Total Portfolio)</td>
+                    <td>100.00%</td>
+                    <td>100.00%</td>
+                    <td>0.00%p</td>
+                    <td>샤프지수 2.15 수준의 효율성을 훼손하지 않으면서 꼬리 위험을 제거한 펀더멘털 최적화 완료.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</div> <!-- .container 마감 -->
+<footer style="text-align: center; padding: 2rem 0; color: var(--text-muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 5rem;">
+        <p>본 자료는 Qracle Team 내부 교육용으로 작성되었습니다. 과거 수익률이 미래 수익률을 보장하지 않습니다.</p>
+        <p class="mt-1">Data Sources: FactSet, Bloomberg, Morningstar, S&P Dow Jones Indices, GSAM Internal Models. 기준일: 2026.07.06</p>
+</footer>
+
+<script>
+function shareFacebook() {
+    const url = encodeURIComponent(window.location.href);
+    window.open('https://www.facebook.com/sharer/sharer.php?u=' + url, 'facebook-share', 'width=580,height=400');
+}
+
+function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+        alert('링크가 복사되었습니다. Facebook에 붙여넣기 하세요.');
+    }).catch(err => {
+        // 복사 실패시 수동 복사 안내
+        prompt('자동 복사가 차단되었습니다. Ctrl+C로 복사하세요:', window.location.href);
+    });
+}
+</script>
+</body>
+</html>
