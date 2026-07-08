@@ -22,71 +22,92 @@
             background-color: var(--bg-primary);
             color: var(--text-main);
             margin: 0;
-            padding: 24px;
+            padding: 40px 24px; /* 상하 여백을 늘려 데스크톱에서 더 안정감 있게 변경 */
             line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
         }
         .container {
             max-width: 1200px;
             margin: 0 auto;
         }
         header {
-            margin-bottom: 32px;
+            margin-bottom: 40px;
             border-bottom: 2px solid var(--text-main);
-            padding-bottom: 16px;
+            padding-bottom: 20px;
         }
         header h1 {
-            font-size: 28px;
-            margin: 0 0 8px 0;
+            font-size: 32px; /* 데스크톱 타이틀 강조 */
+            margin: 0 0 12px 0;
             font-weight: 800;
             letter-spacing: -0.5px;
+            line-height: 1.2;
         }
         .meta-box {
             display: flex;
-            gap: 24px;
+            flex-wrap: wrap; /* 모바일에서 텍스트가 겹치지 않고 줄바꿈되도록 설정 */
+            gap: 12px 24px;
             color: var(--text-muted);
             font-size: 14px;
         }
         .grid-3 {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
+            /* 데스크톱 해상도에 따라 유연하게 3열/2열/1열 변환 */
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 28px;
+            margin-bottom: 40px;
         }
         .card {
             background: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border-radius: 16px; /* 라운드 값을 높여 트렌디한 느낌 부여 */
+            padding: 28px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02), 0 2px 4px -1px rgba(0,0,0,0.02); /* 부드러운 그림자 */
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        /* 데스크톱 마우스 오버 시 미세한 인터랙션 추가 */
+        @media (hover: hover) {
+            .card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+            }
         }
         .card-title {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
             margin-top: 0;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
+            justify-content: space-between; /* 배지를 우측 끝으로 밀어 시각적 균형 유지 */
             gap: 8px;
         }
         .badge {
             font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 4px;
+            padding: 4px 10px; /* 여백 최적화 */
+            border-radius: 6px;
             font-weight: 600;
             color: #fff;
+            white-space: nowrap; /* 배지 글자 잘림 방지 */
         }
         .badge-tech { background-color: var(--tech-color); }
         .badge-fin { background-color: var(--fin-color); }
         .badge-ind { background-color: var(--ind-color); }
         
+        /* 모바일에서 테이블 스크롤이 가능하도록 감싸는 그릇 스타일 추가 */
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            margin: 16px 0 24px 0;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin: 12px 0 20px 0;
             font-size: 14px;
+            min-width: 300px; /* 테이블 최소 너비 보장 */
         }
         th, td {
-            padding: 10px 12px;
+            padding: 12px 14px;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
         }
@@ -100,37 +121,48 @@
         .text-bear { color: var(--accent-bear); font-weight: 600; }
         
         .news-section {
-            margin-top: 16px;
+            margin-top: 20px;
             border-top: 1px dashed var(--border-color);
-            padding-top: 16px;
+            padding-top: 20px;
         }
         .news-item {
-            font-size: 13px;
-            margin-bottom: 12px;
+            font-size: 14px;
+            margin-bottom: 16px;
         }
+        .news-item:last-child { margin-bottom: 0; }
         .news-title {
             font-weight: 600;
             color: #1e293b;
             text-decoration: none;
+            display: block; /* 클릭 영역 확대 */
         }
-        .news-title:hover { text-decoration: underline; }
+        .news-title:hover { color: var(--accent-bear); }
         .news-meta {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--text-muted);
-            margin-top: 2px;
+            margin-top: 4px;
         }
         .bullet-list {
             margin: 0;
             padding-left: 20px;
-            font-size: 13.5px;
+            font-size: 14px;
         }
-        .bullet-list li { margin-bottom: 6px; }
+        .bullet-list li { margin-bottom: 8px; }
+        .bullet-list li:last-child { margin-bottom: 0; }
         
+        /* 스마트폰 (모바일) 최적화 화면 */
         @media (max-width: 768px) {
-            body { padding: 12px; }
-            .grid-3 { grid-template-columns: 1fr; }
+            body { padding: 20px 16px; } /* 좁은 화면 분배 조정 */
+            header { margin-bottom: 28px; padding-bottom: 16px; }
+            header h1 { font-size: 24px; } /* 모바일 타이틀 크기 축소 */
+            .meta-box { font-size: 13px; gap: 8px 16px; }
+            .grid-3 { grid-template-columns: 1fr; gap: 20px; } /* 간격 축소 */
+            .card { padding: 20px; border-radius: 12px; } /* 모바일 카드 여백 축소 */
+            .card-title { font-size: 18px; margin-bottom: 16px; }
+            th, td { padding: 10px 8px; font-size: 13px; } /* 모바일 테이블 가독성 */
         }
-    </style>
+</style>
+
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta property="og:title" content="Markowitz" />
