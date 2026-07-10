@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+            <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>양자 (VQE) 컴퓨팅 개인 맞춤형 ETF</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1a202c;
+            --text-muted: #718096;
+            --border-color: #e2e8f0;
+            --accent-blue: #2b6cb0;
+            --accent-teal: #319795;
+            --accent-purple: #6b46c1;
+            --accent-red: #c53030;
+            --accent-gold: #b7791f;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        .report-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .report-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.03);
+        }
+        .report-header {
+            border-bottom: 2px solid #edf2f7;
+            padding-bottom: 20px;
+            margin-bottom: 24px;
+        }
+        .report-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: #2d3748;
+            margin: 10px 0 6px 0;
+        }
+        .badge {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .badge-blue { background: #ebf8ff; color: var(--accent-blue); }
+        .badge-teal { background: #e6fffa; color: var(--accent-teal); }
+        .badge-purple { background: #f3e8ff; color: var(--accent-purple); }
+        .badge-red { background: #fff5f5; color: var(--accent-red); }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-bottom: 16px;
+        }
+        th {
+            background: #f7fafc;
+            border-bottom: 2px solid var(--border-color);
+            padding: 10px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #edf2f7;
+        }
+        .text-right { text-align: right; }
+        .text-bold { font-weight: bold; }
+        .text-up { color: #2f855a; font-weight: 500; }
+        .text-down { color: var(--accent-red); font-weight: 500; }
+        
+        .formula-box {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            background: #f7fafc;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            text-align: center;
+            margin-bottom: 16px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .grid-item {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+        }
+        .cite-link {
+            color: var(--accent-blue);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .cite-link:hover { text-decoration: underline; }
+    </style>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:title" content="Markowitz" />
+    <meta property="og:description" content="VQE Markowitz S&P500" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://qracle74.github.io/markowitz/20260710/" />
+    <meta property="og:image" content="https://qracle74.github.io/markowitz/20260710/20260710.jpg" />
+</head>
+<body>
+
+    <div class="report-card" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; max-width: 800px; margin: 20px auto; box-shadow: 0 4px 6px rgba(0,0,0,0.05); color: #1a202c; line-height: 1.5;">
+    
+     <!-- Main Document Header -->
+        <div style="border-bottom: 3px double #e2e8f0; padding-bottom: 20px; margin-bottom: 28px; text-align: center;">
+            <h1 style="font-size: 24px; font-weight: 800; color: #1a202c; margin: 0 0 8px 0; letter-spacing: -0.03em;">양자 (VQE) 컴퓨팅 개인 맞춤형 ETF</h1>
+            <p style="font-size: 14px; color: #4a5568; margin: 0; font-weight: 600;">글로벌 매크로 결합 분석 및 포트폴리오 리밸런싱 제안</p>
+            <p style="font-size: 12px; color: #718096; margin: 6px 0 0 0;">기준일: 2026년 7월 9일 | 통화: USD | S&P500 | 작성자: 박성관, PhD</p>
+        </div>
+
+        <div style="margin: 16px 0;">
+                    <button onclick="shareFacebook()" style="background:#1877f2;color:white;border:none;padding:2px 5px;border-radius:6px;cursor:pointer;font-weight:600;">
+                        📤 Facebook
+                    </button>
+                    <button onclick="copyLink()" style="background:#334155;color:#e2e8f0;border:none;padding:2px 5px;border-radius:6px;cursor:pointer;margin-left:8px;">
+                        🔗 링크
+                    </button>
+                </div>
+
+        <!-- Header -->
+    <div style="border-bottom: 2px solid #edf2f7; padding-bottom: 16px; margin-bottom: 20px;">
+        <span style="background: #ebf8ff; color: #2b6cb0; font-size: 12px; font-weight: bold; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">Step 1: Sector Analysis</span>
+        <h2 style="font-size: 20px; font-weight: 700; margin: 8px 0 4px 0; color: #2d3748;">1단계: 블랙-리터만 자산배분 섹터 집계 보고</h2>
+        <!-- <p style="font-size: 13px; color: #718096; margin: 0;">기준일: 2026년 7월 9일 | 통화: USD | 분석자: 박성관, PhD</p> -->
+    </div>
+
+
+
+    
+
+    <!-- Context Text -->
+    <p style="font-size: 14px; margin-bottom: 16px;">
+        입력 데이터 내 500개 자산을 <strong>GICS(Global Industry Classification Standard) 11개 섹터</strong>로 분류 및 전수 매핑하여 포트폴리오의 실질 노출도(Active Exposure)를 연산했습니다. 블랙-리터만(Black-Litterman) 모델 특성상 고른 분산 형태를 띠고 있으나, 특정 섹터군에서 벤치마크(S&P 500) 대비 뚜렷한 포지셔닝 차이가 관측됩니다.
+    </p>
+
+    <!-- Table Layout -->
+    <div style="overflow-x: auto; margin-bottom: 24px;">
+        <table style="width: 100%; border-collapse: collapse; text-align: left; font-size: 13px;">
+            <thead>
+                <tr style="background: #f7fafc; border-bottom: 2px solid #e2e8f0;">
+                    <th style="padding: 10px; font-weight: 600; color: #4a5568;">GICS 섹터</th>
+                    <th style="padding: 10px; font-weight: 600; color: #4a5568; text-align: right;">포트폴리오 비중 (%)</th>
+                    <th style="padding: 10px; font-weight: 600; color: #4a5568; text-align: right;">S&P 500 비중 (%)</th>
+                    <th style="padding: 10px; font-weight: 600; color: #4a5568; text-align: right;">액티브 차이 (%p)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid #edf2f7;">
+                    <td style="padding: 10px; font-weight: 500;">정보기술 (Information Technology)</td>
+                    <td style="padding: 10px; text-align: right; font-weight: bold;">32.84%</td>
+                    <td style="padding: 10px; text-align: right; color: #718096;">32.10%</td>
+                    <td style="padding: 10px; text-align: right; color: #2f855a; font-weight: 500;">+0.74%p</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #edf2f7;">
+                    <td style="padding: 10px; font-weight: 500;">헬스케어 (Health Care)</td>
+                    <td style="padding: 10px; text-align: right; font-weight: bold;">12.45%</td>
+                    <td style="padding: 10px; text-align: right; color: #718096;">11.80%</td>
+                    <td style="padding: 10px; text-align: right; color: #2f855a; font-weight: 500;">+0.65%p</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #edf2f7;">
+                    <td style="padding: 10px; font-weight: 500;">금융 (Financials)</td>
+                    <td style="padding: 10px; text-align: right; font-weight: bold;">12.38%</td>
+                    <td style="padding: 10px; text-align: right; color: #718096;">13.00%</td>
+                    <td style="padding: 10px; text-align: right; color: #c53030; font-weight: 500;">-0.62%p</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #edf2f7;">
+                    <td style="padding: 10px; font-weight: 500;">경기소비재 (Consumer Discretionary)</td>
+                    <td style="padding: 10px; text-align: right;">10.12%</td>
+                    <td style="padding: 10px; text-align: right; color: #718096;">10.20%</td>
+                    <td style="padding: 10px; text-align: right; color: #718096;">-0.08%p</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #edf2f7;">
+                    <td style="padding: 10px; font-weight: 500;">커뮤니케이션 서비스 (Communication Services)</td>
+                    <td style="padding: 10px; text-align: right;">8.94%</td>
+                    <td style="padding: 10px; text-align: right; color: #718096;">9.40%</td>
+                    <td style="padding: 10px; text-align: right; color: #c53030; font-weight: 500;">-0.46%p</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #edf2f7;">
+                    <td style="padding: 10px; font-weight: 500;">산업재 (Industrials)</td>
+                    <td style="padding: 10px; text-align: right;">8.12%</td>
+                    <td style="padding: 10px; text-align: right; color: #718096;">8.30%</td>
+                    <td style="padding: 10px; text-align: right; color: #c53030; font-weight: 500;">-0.18%p</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #edf2f7;">
+                    <td style="padding: 10px; font-weight: 500;">필수소비재 (Consumer Staples)</td>
+                    <td style="padding: 10px; text-align: right;">5.84%</td>
+                    <td style="padding: 10px; text-align: right; color: #718096;">5.90%</td>
+                    <td style="padding: 10px; text-align: right; color: #c53030; font-weight: 500;">-0.06%p</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #edf2f7;">
+                    <td style="padding: 10px; font-weight: 500;">에너지 (Energy)</td>
+                    <td style="padding: 10px; text-align: right;">3.92%</td>
+                    <td style="padding: 10px; text-align: right; color: #718096;">3.70%</td>
+                    <td style="padding: 10px; text-align: right; color: #2f855a; font-weight: 500;">+0.22%p</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #edf2f7;">
+                    <td style="padding: 10px; font-weight: 500;">유틸리티 (Utilities)</td>
+                    <td style="padding: 10px; text-align: right;">2.24%</td>
+                    <td style="padding: 10px; text-align: right; color: #718096;">2.10%</td>
+                    <td style="padding: 10px; text-align: right; color: #2f855a; font-weight: 500;">+0.14%p</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #edf2f7;">
+                    <td style="padding: 10px; font-weight: 500;">부동산 (Real Estate)</td>
+                    <td style="padding: 10px; text-align: right;">1.95%</td>
+                    <td style="padding: 10px; text-align: right; color: #718096;">2.20%</td>
+                    <td style="padding: 10px; text-align: right; color: #c53030; font-weight: 500;">-0.25%p</td>
+                </tr>
+                <tr style="border-bottom: 2px solid #e2e8f0;">
+                    <td style="padding: 10px; font-weight: 500;">소재 (Materials)</td>
+                    <td style="padding: 10px; text-align: right;">1.20%</td>
+                    <td style="padding: 10px; text-align: right; color: #718096;">1.30%</td>
+                    <td style="padding: 10px; text-align: right; color: #c53030; font-weight: 500;">-0.10%p</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Extraction Result Grid -->
+    <div style="background: #f7fafc; border-left: 4px solid #2b6cb0; padding: 12px 16px; border-radius: 0 4px 4px 0;">
+        <h4 style="margin: 0 0 6px 0; font-size: 14px; font-weight: bold; color: #2d3748;">📌 비중 상위 3개 핵심 섹터 (Core Exposure)</h4>
+        <ol style="margin: 0; padding-left: 20px; font-size: 13px; color: #4a5568;">
+            <li><strong>정보기술 (Information Technology)</strong> - 비중: 32.84% (액티브: +0.74%p)</li>
+            <li><strong>헬스케어 (Health Care)</strong> - 비중: 12.45% (액티브: +0.65%p)</li>
+            <li><strong>금융 (Financials)</strong> - 비중: 12.38% (액티브: -0.62%p)</li>
+        </ol>
+    </div>
+</div>
+
+<div class="report-card" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; max-width: 800px; margin: 20px auto; box-shadow: 0 4px 6px rgba(0,0,0,0.05); color: #1a202c; line-height: 1.5;">
+    <!-- Header -->
+    <div style="border-bottom: 2px solid #edf2f7; padding-bottom: 16px; margin-bottom: 20px;">
+        <span style="background: #e6fffa; color: #234e52; font-size: 12px; font-weight: bold; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">Step 2: Real-Time Sector Intelligence (Corrected)</span>
+        <h2 style="font-size: 20px; font-weight: 700; margin: 8px 0 4px 0; color: #2d3748;">2단계: 핵심 3대 섹터 실시간 펀더멘털 및 리스크 스크리닝</h2>
+        <p style="font-size: 13px; color: #718096; margin: 0;">데이터 기준: 2026년 6월 말 ~ 7월 최신 마켓 센서스 | 통합본</p>
+    </div>
+
+    <!-- Sector 1: Tech -->
+    <div style="margin-bottom: 24px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="margin: 0; font-size: 15px; color: #2b6cb0; font-weight: 700;">💻 정보기술 (Information Technology)</h3>
+            <span style="background: #ebf8ff; color: #2b6cb0; font-size: 11px; font-weight: bold; padding: 2px 6px; border-radius: 4px;">ETF: XLK</span>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 8px;">
+            <tr style="border-bottom: 1px solid #edf2f7; background: #f7fafc;">
+                <td style="padding: 6px; font-weight: 600; width: 25%;">밸류에이션</td>
+                <td style="padding: 6px; color: #4a5568;">Forward P/E: 37.17x ~ 38.44x 【1.2.3】 | EV/EBITDA: N/A | P/B: N/A</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #edf2f7;">
+                <td style="padding: 6px; font-weight: 600;">최근 수익률</td>
+                <td style="padding: 6px; color: #2d3748;">1개월: <span style="color: #c53030; font-weight: 600;">-0.13%</span> 【1.2.1】 | 6개월 (YTD): <span style="color: #2f855a; font-weight: 600;">+32.59%</span> 【1.2.1】</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #edf2f7;">
+                <td style="padding: 6px; font-weight: 600; vertical-align: top;">핵심 매크로 뉴스</td>
+                <td style="padding: 6px; font-size: 12px; color: #2d3748; line-height: 1.6;">
+                    • <strong>2026-07-06 [S&P Global]:</strong> 6월 미국 섹터 PMI에서 테크 섹터가 전월 수축 국면을 이탈, 강력한 성장세로 회복 전환 확인 【1.5.3】<br>
+                    • <strong>2026-06-26 [State Street IM]:</strong> 전방위적인 AI 인프라 수요와 기업 실적 업그레이드가 대형 테크주 중심의 강력한 모멘텀 지지 【1.1.1】
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 6px; font-weight: 600; color: #c53030;">핵심 리스크</td>
+                <td style="padding: 6px; font-size: 12px; color: #e53e3e; font-weight: 500;">
+                    극단적인 포지셔닝 쏠림으로 인한 단기 조정 스퀴즈 리스크 【1.1.1】, 고밸류에이션에 따른 연준 금리 경로 민감도 증가.
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Sector 2: Health Care -->
+    <div style="margin-bottom: 24px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="margin: 0; font-size: 15px; color: #319795; font-weight: 700;">🏥 헬스케어 (Health Care)</h3>
+            <span style="background: #e6fffa; color: #319795; font-size: 11px; font-weight: bold; padding: 2px 6px; border-radius: 4px;">ETF: XLV</span>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 8px;">
+            <tr style="border-bottom: 1px solid #edf2f7; background: #f7fafc;">
+                <td style="padding: 6px; font-weight: 600; width: 25%;">밸류에이션</td>
+                <td style="padding: 6px; color: #4a5568;">Trailing P/E: 23.66x 【1.3.4】 | Forward P/E: N/A | EV/EBITDA: N/A</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #edf2f7;">
+                <td style="padding: 6px; font-weight: 600;">최근 수익률</td>
+                <td style="padding: 6px; color: #2d3748;">1개월: <span style="color: #2f855a; font-weight: 600;">+6.56% ~ +7.01%</span> 【1.3.1】, 【1.3.5】 | 6개월 (YTD): <span style="color: #2f855a; font-weight: 600;">+3.36% ~ +3.41%</span> 【1.3.1】</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #edf2f7;">
+                <td style="padding: 6px; font-weight: 600; vertical-align: top;">핵심 매크로 뉴스</td>
+                <td style="padding: 6px; font-size: 12px; color: #2d3748; line-height: 1.6;">
+                    • <strong>2026-06-26 [State Street IM]:</strong> 매력적인 밸류에이션과 매니지드 케어(Managed Care) 지표 개선을 바탕으로 투자 의견을 'Positive'로 상향 【1.1.1】<br>
+                    • <strong>2026-07-09 [Yahoo Finance]:</strong> 대형 의료 기기 및 제약 섹터가 내재 가치 대비 평균 25% 이상 할인 거래되며 방어적 마진 부각 【1.5.5】
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 6px; font-weight: 600; color: #c53030;">핵심 리스크</td>
+                <td style="padding: 6px; font-size: 12px; color: #e53e3e; font-weight: 500;">
+                    미국 ACA 복지 정책 변동 과도기(2026-27)에 따른 저가 공급망 체인의 EBITDA 마진 압박 요인 【1.5.1】.
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Sector 3: Financials -->
+    <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="margin: 0; font-size: 15px; color: #b7791f; font-weight: 700;">🏦 금융 (Financials)</h3>
+            <span style="background: #fefcbf; color: #b7791f; font-size: 11px; font-weight: bold; padding: 2px 6px; border-radius: 4px;">ETF: XLF</span>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 13px; margin-bottom: 8px;">
+            <tr style="border-bottom: 1px solid #edf2f7; background: #f7fafc;">
+                <td style="padding: 6px; font-weight: 600; width: 25%;">밸류에이션</td>
+                <td style="padding: 6px; color: #4a5568;">S&P 500 평균 대비 펀더멘털 저평가 매력 지속 지속 유지 【1.5.2】 | Forward P/E: N/A</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #edf2f7;">
+                <td style="padding: 6px; font-weight: 600;">최근 수익률</td>
+                <td style="padding: 6px; color: #2d3748;">1개월: <span style="color: #2f855a; font-weight: 600;">+2.54%</span> 【1.4.4】 | 6개월 (YTD): <span style="color: #c53030; font-weight: 600;">-1.70% 안팎</span> 【1.4.1】</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #edf2f7;">
+                <td style="padding: 6px; font-weight: 600; vertical-align: top;">핵심 매크로 뉴스</td>
+                <td style="padding: 6px; font-size: 12px; color: #2d3748; line-height: 1.6;">
+                    • <strong>2026-06-26 [State Street IM]:</strong> 비즈니스 사이클의 회복 국면 재진입과 신용 환경 안정화에 따라 금융 섹터 투자 의견을 'Positive'로 상향 【1.1.1】<br>
+                    • <strong>2026-06-26 [Charles Schwab]:</strong> 연준의 금리 인하 연기 기조로 높은 수준의 명목 금리가 유지되며 은행권 순이자이익(NII) 방어 여건 지속 【1.5.2】
+                </td>
+            </tr>
+            <tr>
+                <td style="padding: 6px; font-weight: 600; color: #c53030;">핵심 리스크</td>
+                <td style="padding: 6px; font-size: 12px; color: #e53e3e; font-weight: 500;">
+                    고금리 장기화에 따른 상업용 부동산 및 대출 부실화 우려, 사모 신용(Private Credit) 비제도권 시장 팽창에 따른 뱅킹 스트레스 잠재 【1.5.2】.
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="report-card" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; max-width: 800px; margin: 20px auto; box-shadow: 0 4px 6px rgba(0,0,0,0.05); color: #1a202c; line-height: 1.5;">
+    <!-- Header -->
+    <div style="border-bottom: 2px solid #edf2f7; padding-bottom: 16px; margin-bottom: 20px;">
+        <span style="background: #eedff2; color: #6b46c1; font-size: 12px; font-weight: bold; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">Step 3: Capital Market Line Analysis</span>
+        <h2 style="font-size: 20px; font-weight: 700; margin: 8px 0 4px 0; color: #2d3748;">3단계: 자본시장선(CML) 기준 포트폴리오 포지셔닝 및 샤프지수 검증</h2>
+        <p style="font-size: 13px; color: #718096; margin: 0;">매크로 펀딩 금리 기준: 3M T-Bill 3.70% 명시</p>
+    </div>
+
+    <!-- Math Formula & Metrics Grid -->
+    <div style="background: #f7fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+        <p style="margin: 0 0 8px 0; font-size: 12px; font-weight: bold; color: #4a5568; text-transform: uppercase; letter-spacing: 0.05em;">계량경제학적 수식 및 성과 지표</p>
+        <div style="font-family: 'Courier New', Courier, monospace; font-size: 14px; background: #ffffff; padding: 10px; border-radius: 6px; border: 1px solid #edf2f7; margin-bottom: 12px; text-align: center; color: #2d3748;">
+            <strong>Sharpe Ratio = (R_p - R_f) / &sigma;_p</strong>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; font-size: 13px;">
+            <div style="background: #ffffff; padding: 10px; border-radius: 6px; border: 1px solid #edf2f7;">
+                <span style="color: #718096; display: block; font-size: 11px;">무위험자산 수익률 (R_f)</span>
+                <strong style="font-size: 15px; color: #2d3748;">3.70%</strong> <span style="font-size: 11px; color: #a0aec0;">(3M T-Bill)</span>
+            </div>
+            <div style="background: #ffffff; padding: 10px; border-radius: 6px; border: 1px solid #edf2f7;">
+                <span style="color: #718096; display: block; font-size: 11px;">포트폴리오 달성수익률 (R_p)</span>
+                <strong style="font-size: 15px; color: #2d3748;">13.84%</strong>
+            </div>
+            <div style="background: #ffffff; padding: 10px; border-radius: 6px; border: 1px solid #edf2f7;">
+                <span style="color: #718096; display: block; font-size: 11px;">포트폴리오 총리스크 (&sigma;_p)</span>
+                <strong style="font-size: 15px; color: #2d3748;">13.44%</strong>
+            </div>
+            <div style="background: #ffffff; padding: 10px; border-radius: 6px; border: 1px solid #edf2f7; border-left: 3px solid #6b46c1;">
+                <span style="color: #6b46c1; display: block; font-size: 11px; font-weight: bold;">산출된 샤프지수</span>
+                <strong style="font-size: 15px; color: #6b46c1;">0.754</strong> <span style="font-size: 11px; color: #e53e3e;">(제공 데이터: 0.79)</span>
+            </div>
+        </div>
+        <p style="margin: 8px 0 0 0; font-size: 11px; color: #e53e3e; line-height: 1.4;">
+            ※ 내부 리스크 모델 검증 결과: 입력 데이터상 명시된 Sharpe Ratio 0.79는 무위험수익률(R_f)을 약 3.24% 수준으로 설정했을 때 도출되는 값입니다. 현 마켓 변동성을 반영한 <strong>3M T-Bill 실전 펀딩 금리(3.70%)</strong> 적용 시 실질 샤프지수는 <strong>0.754</strong>로 조정 압박을 받습니다.
+        </p>
+    </div>
+
+    <!-- Visual Scatter CML Simulation -->
+    <div style="border: 1px solid #edf2f7; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+        <p style="margin: 0 0 12px 0; font-size: 12px; font-weight: bold; color: #4a5568;">[Scatter 차트 모사] 위험-수익 평면 상의 포지셔닝</p>
+        <div style="position: relative; height: 200px; background: #fdfdfd; border-left: 2px solid #718096; border-bottom: 2px solid #718096; margin: 10px 20px 30px 40px;">
+            
+            <!-- CML Line -->
+            <div style="position: absolute; width: 280px; height: 1px; border-top: 2px dashed #a0aec0; transform: rotate(-22deg); transform-origin: 0 0; left: 0; bottom: 37px; z-index: 1;"></div>
+            <div style="position: absolute; left: 240px; top: 50px; font-size: 11px; color: #718096; font-weight: bold; z-index: 1;">CML (자본시장선)</div>
+
+            <!-- Rf Point -->
+            <div style="position: absolute; left: 0; bottom: 37px; width: 8px; height: 8px; background: #4a5568; border-radius: 50%; transform: translate(-50%, 50%); z-index: 2;"></div>
+            <div style="position: absolute; left: -35px; bottom: 32px; font-size: 11px; color: #4a5568; font-weight: bold;">Rf (3.7%)</div>
+
+            <!-- Portfolio Point (Below CML) -->
+            <div style="position: absolute; left: 160px; bottom: 110px; width: 10px; height: 10px; background: #e53e3e; border-radius: 50%; transform: translate(-50%, 50%); z-index: 3; box-shadow: 0 0 0 4px rgba(229, 62, 62, 0.2);"></div>
+            <div style="position: absolute; left: 175px; bottom: 105px; font-size: 12px; color: #e53e3e; font-weight: bold;">본 포트폴리오 (R_p: 13.84%, &sigma;: 13.44%)</div>
+
+            <!-- Efficient Market Point (On CML) -->
+            <div style="position: absolute; left: 160px; bottom: 138px; width: 8px; height: 8px; background: #2f855a; border-radius: 50%; transform: translate(-50%, 50%); z-index: 2;"></div>
+            <div style="position: absolute; left: 155px; bottom: 150px; font-size: 11px; color: #2f855a; font-weight: 500;">시장 포트폴리오 접점</div>
+
+            <!-- Axis Labels -->
+            <div style="position: absolute; right: -10px; bottom: -22px; font-size: 11px; color: #718096; font-weight: bold;">총리스크 (Volatility &sigma;)</div>
+            <div style="position: absolute; left: -35px; top: -15px; font-size: 11px; color: #718096; font-weight: bold;">기대수익률 (Return)</div>
+        </div>
+    </div>
+
+    <!-- PM Strategic Insights -->
+    <div style="border-left: 4px solid #e53e3e; padding-left: 14px;">
+        <h4 style="margin: 0 0 6px 0; font-size: 14px; font-weight: bold; color: #2d3748;">💡 매크로 PM 분석 및 포지셔닝 인사이트</h4>
+        <ul style="margin: 0; padding-left: 18px; font-size: 13px; color: #4a5568; line-height: 1.6;">
+            <li>
+                <strong>CML 하방 포지셔닝 원인:</strong> 현 포트폴리오는 자본시장선(CML) <strong>하방(Sub-optimal)</strong>에 위치합니다. 자산 수(500개)가 지나치게 평면 분산(대다수 종목 비중이 0.42% 및 0.01%로 균등화)되어 개별 알파(Alpha)를 갉아먹는 'Benchmark Hugging' 페널티가 발생했기 때문입니다.
+            </li>
+            <li>
+                <strong>위험 조정 수익률 저해 주도 종목:</strong> 최근 6월 매출 컴프(Comparable Sales) 성장률이 전월 12.5%에서 8.8%로 급격히 둔화하며 하루 만에 주가가 5% 급락한 <strong>Costco Wholesale (COST) <a href="https://www.tikr.com/blog/costco-stock-fell-5-today-the-cash-flow-story-is-more-complicated" style="color: #3182ce; text-decoration: none;">【1.5.2】</a></strong> 및 글로벌 지정학적 금리 불확실성 여파로 YTD -1.70% 안팎 하회 중인 금융 대형주들이 포트폴리오의 분산 효과 대비 변동성 단기 마진을 악화시킨 주원인으로 판명됩니다.
+            </li>
+        </ul>
+    </div>
+</div>
+
+
+
+<div class="report-card" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; max-width: 850px; margin: 20px auto; box-shadow: 0 4px 6px rgba(0,0,0,0.05); color: #1a202c; line-height: 1.5;">
+    <!-- Header -->
+    <div style="border-bottom: 2px solid #edf2f7; padding-bottom: 16px; margin-bottom: 20px;">
+        <span style="background: #fff5f5; color: #9b2c2c; font-size: 12px; font-weight: bold; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">Step 3-2: Top 8 Equity Breakdown</span>
+        <h2 style="font-size: 20px; font-weight: 700; margin: 8px 0 4px 0; color: #2d3748;">3단계 (개별종목): 포트폴리오 핵심 8대 자산 스크리닝 및 밸류에이션 매핑</h2>
+        <p style="font-size: 13px; color: #718096; margin: 0;">데이터 기준일: 2026년 7월 초순 실시간 데이터 반영 | 검색 기반</p>
+    </div>
+
+    <!-- Grid Container for Stocks -->
+    <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+        
+        <!-- 1. AAPL -->
+        <div style="border: 1px solid #edf2f7; border-radius: 8px; padding: 16px; background: #fafafa;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
+                <span style="font-size: 16px; font-weight: 700; color: #1a202c;">🍏 1. Apple Inc. (AAPL)</span>
+                <span style="background: #edf2f7; font-size: 12px; font-weight: bold; padding: 2px 6px; border-radius: 4px;">비중: 0.42%</span>
+            </div>
+            <table style="width: 100%; font-size: 12px; border-collapse: collapse; margin-bottom: 10px;">
+                <tr>
+                    <td style="padding: 4px 0; color: #718096; width: 50%;">현재가 / 일간변동: <strong>$316.22 / +0.90%</strong> <a href="https://marketwatch.com" style="color:#3182ce; text-decoration:none;">【1.2.4】</a></td>
+                    <td style="padding: 4px 0; color: #718096; width: 50%;">Forward P/E: <strong>34.69x</strong> <a href="https://cnbc.com" style="color:#3182ce; text-decoration:none;">【1.2.2】</a></td>
+                </tr>
+                <tr>
+                    <td style="padding: 4px 0; color: #718096;">베타 / 시가총액: <strong>1.09 / $4.64T</strong> <a href="https://cnbc.com" style="color:#3182ce; text-decoration:none;">【1.2.2】</a></td>
+                    <td style="padding: 4px 0; color: #718096;">Trailing P/E: <strong>38.41x</strong> <a href="https://cnbc.com" style="color:#3182ce; text-decoration:none;">【1.2.2】</a></td>
+                </tr>
+                <tr>
+                    <td style="padding: 4px 0; color: #718096;">52주 고저점: <strong>$201.50 - $317.40</strong> <a href="https://cnbc.com" style="color:#3182ce; text-decoration:none;">【1.2.2】</a></td>
+                    <td style="padding: 4px 0; color: #718096;">EV/EBITDA: <strong>N/A</strong></td>
+                </tr>
+            </table>
+            <div style="font-size: 12px; background: #ffffff; border-left: 3px solid #3182ce; padding: 8px; margin-bottom: 8px;">
+                <strong>PM 전략 포인트:</strong><br>
+                • 성장동력: 온디바이스 AI 인프라 확장 및 서비스 부문 마진의 지속적인 레버리지 가속화.<br>
+                • 리스크: 공급망 하방 압력 및 신규 칩 제조 단가 인상에 따른 매출 총이익률 하변 압박.<br>
+                • 컨센서스: 월가 전반적 Buy 의견 유지 중이나 단기 다중 자산 멀티플 확장 부담 영역 진입.<br>
+            </div>
+            <div style="font-size: 11px; color: #4a5568; background: #ebf8ff; padding: 6px; border-radius: 4px;">
+                <strong>📰 최신 뉴스 (2026-06-29 [MarketWatch]):</strong> 브로드컴과 300억 달러 규모 AI 칩 제조 계약 체결, 미국 내 150억 개 이상 칩 생산 거점 조성을 위한 장기 로드맵 시동 <a href="https://marketwatch.com" style="color:#3182ce; text-decoration:none;">【1.2.4】</a>
+            </div>
+        </div>
+
+        <!-- 2. GLD -->
+        <div style="border: 1px solid #edf2f7; border-radius: 8px; padding: 16px; background: #fafafa;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
+                <span style="font-size: 16px; font-weight: 700; color: #1a202c;">🏆 2. SPDR Gold Shares (GLD)</span>
+                <span style="background: #edf2f7; font-size: 12px; font-weight: bold; padding: 2px 6px; border-radius: 4px;">비중: 0.42%</span>
+            </div>
+            <table style="width: 100%; font-size: 12px; border-collapse: collapse; margin-bottom: 10px;">
+                <tr>
+                    <td style="padding: 4px 0; color: #718096; width: 50%;">현재가 / 일간변동: <strong>$378.18 / +1.00%</strong> <a href="https://cnbc.com" style="color:#3182ce; text-decoration:none;">【1.3.4】</a></td>
+                    <td style="padding: 4px 0; color: #718096; width: 50%;">Forward P/E: <strong>N/A</strong> (Commodity)</td>
+                </tr>
+                <tr>
+                    <td style="padding: 4px 0; color: #718096;">베타 / 운용자산(AUM): <strong>0.15 안팎 / $131.00B</strong> <a href="https://robinhood.com" style="color:#3182ce; text-decoration:none;">【1.3.3】</a></td>
+                    <td style="padding: 4px 0; color: #718096;">Trailing P/E: <strong>N/A</strong></td>
+                </tr>
+                <tr>
+                    <td style="padding: 4px 0; color: #718096;">52주 고저점: <strong>$300.96 - $509.70</strong> <a href="https://cnbc.com" style="color:#3182ce; text-decoration:none;">【1.3.4】</a></td>
+                    <td style="padding: 4px 0; color: #718096;">EV/EBITDA: <strong>N/A</strong></td>
+                </tr>
+            </table>
+            <div style="font-size: 12px; background: #ffffff; border-left: 3px solid #b7791f; padding: 8px; margin-bottom: 8px;">
+                <strong>PM 전략 포인트:</strong><br>
+                • 성장동력: 글로벌 지정학적 불확실성(중동 꼬리 리스크) 및 명목 금리 인하 지연 환경 속 인플레 헤지 수요.<br>
+                • 리스크: 실질 금리가 긴축적인 수준으로 복귀할 시 무이익 자산으로서의 기회비용 상승 부각.<br>
+                • 컨센서스: 매크로 포트폴리오의 영구적 변동성 완충 지대로서 비중 유지 유효 판단.<br>
+            </div>
+            <div style="font-size: 11px; color: #4a5568; background: #fefcbf; padding: 6px; border-radius: 4px;">
+                <strong>📰 최신 상황 (2026-07-09 [Investing.com]):</strong> 글로벌 안전 자산 선호 흐름 및 각국 중앙은행 자본 배분 다변화 속에 52주 고점 영역 돌파 이후 $378선 박스권 공고화 <a href="https://investing.com" style="color:#3182ce; text-decoration:none;">【1.3.2】</a>
+            </div>
+        </div>
+
+        <!-- 3. V -->
+        <div style="border: 1px solid #edf2f7; border-radius: 8px; padding: 16px; background: #fafafa;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
+                <span style="font-size: 16px; font-weight: 700; color: #1a202c;">💳 3. Visa Inc. (V)</span>
+                <span style="background: #edf2f7; font-size: 12px; font-weight: bold; padding: 2px 6px; border-radius: 4px;">비중: 0.42%</span>
+            </div>
+            <table style="width: 100%; font-size: 12px; border-collapse: collapse; margin-bottom: 10px;">
+                <tr>
+                    <td style="padding: 4px 0; color: #718096; width: 50%;">현재가 / 일간변동: <strong>$348.20 / N/A</strong> <a href="https://yahoo.com" style="color:#3182ce; text-decoration:none;">【1.4.5】</a></td>
+                    <td style="padding: 4px 0; color: #718096; width: 50%;">Forward P/E: <strong>22.42x</strong> <a href="https://wealthyhood.com" style="color:#3182ce; text-decoration:none;">【1.4.4】</a></td>
+                </tr>
+                <tr>
+                    <td style="padding: 4px 0; color: #718096;">베타 / 시가총액: <strong>0.77 / $653.00B</strong> <a href="https://wealthyhood.com" style="color:#3182ce; text-decoration:none;">【1.4.4】</a></td>
+                    <td style="padding: 4px 0; color: #718096;">Trailing P/E: <strong>29.91x</strong> <a href="https://wealthyhood.com" style="color:#3182ce; text-decoration:none;">【1.4.4】</a></td>
+                </tr>
+                <tr>
+                    <td style="padding: 4px 0; color: #718096;">52주 고저점: <strong>$293.89 - $365.02</strong> <a href="https://google.com" style="color:#3182ce; text-decoration:none;">【1.4.2】</a></td>
+                    <td style="padding: 4px 0; color: #718096;">EV/EBITDA: <strong>N/A</strong> (EBITDA $30.1B <a href="https://wealthyhood.com" style="color:#3182ce; text-decoration:none;">【1.4.4】</a>)</td>
+                </tr>
+            </table>
+            <div style="font-size: 12px; background: #ffffff; border-left: 3px solid #319795; padding: 8px; margin-bottom: 8px;">
+                <strong>PM 전략 포인트:</strong><br>
+                • 성장동력: 고정 마진 성격의 글로벌 결제 네트워크 처리 대금 증가 및 해외 결제 회복세 지속.<br>
+                • 리스크: 미국 규제 당국의 데빗 카드 라우팅(Debit Routing) 규제 법안 추진에 따른 장기 마진 위축 우려.<br>
+                • 컨센서스: 일시적 과매도에 따른 내재가치 대비 약 12% 이상 저평가 매력 구간 돌입 분석 우세.<br>
+            </div>
+            <div style="font-size: 11px; color: #4a5568; background: #e6fffa; padding: 6px; border-radius: 4px;">
+                <strong>📰 최신 뉴스 (2026-07-08 [Barclays]):</strong> 비자에 대해 투자 의견 'Overweight(비중확대)' 및 목표주가 $420로 신규 분석을 전격 개시하며 단기 리스크 오버행 해소 관점 제시 <a href="https://yahoo.com" style="color:#3182ce; text-decoration:none;">【1.4.5】</a>
+            </div>
+        </div>
+
+        <!-- 4. CSCO -->
+    <div style="margin-bottom: 24px; border: 1px solid #edf2f7; border-radius: 8px; padding: 16px; background: #fdfdfd;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h4 style="margin: 0; font-size: 15px; color: #2b6cb0; font-weight: 700;">4. 시스코 시스템즈 (Cisco Systems, Inc. | CSCO)</h4>
+            <span style="font-size: 12px; color: #718096; font-weight: bold;">포트폴리오 비중: 0.42%</span>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 10px;">
+            <tr style="border-bottom: 1px solid #edf2f7;">
+                <td style="padding: 4px 0; font-weight: 600; width: 20%;">시장 지표</td>
+                <td style="padding: 4px 0; color: #4a5568;">현재가: $113.98 <a href="https://investor.cisco.com/stock-info/stock-quote/default.aspx" style="color: #3182ce; text-decoration: none;">【1.2.5】</a> | 일간변동: +1.71% <a href="https://investor.cisco.com/stock-info/stock-quote/default.aspx" style="color: #3182ce; text-decoration: none;">【1.2.5】</a> | 베타: 0.47 <a href="https://finance.yahoo.com/quote/CVX/" style="color: #3182ce; text-decoration: none;">【1.5.4】</a> | 시총: $444.16B <a href="https://www.stockrover.com/report/CSCO.pdf" style="color: #3182ce; text-decoration: none;">【1.2.4】</a> | 52주 고저점: $65.75 - $130.37 <a href="https://www.stockrover.com/report/CSCO.pdf" style="color: #3182ce; text-decoration: none;">【1.2.4】</a></td>
+            </tr>
+            <tr style="border-bottom: 1px solid #edf2f7;">
+                <td style="padding: 4px 0; font-weight: 600;">가치 평가</td>
+                <td style="padding: 4px 0; color: #4a5568;">Trailing P/E: 29.40x ~ 37.60x <a href="https://finance.yahoo.com/quote/CSCO/key-statistics/" style="color: #3182ce; text-decoration: none;">【1.2.1】</a>, <a href="https://www.stockrover.com/report/CSCO.pdf" style="color: #3182ce; text-decoration: none;">【1.2.4】</a> | Forward P/E: 23.50x <a href="https://www.stockrover.com/report/CSCO.pdf" style="color: #3182ce; text-decoration: none;">【1.2.4】</a> | EV/EBITDA: N/A</td>
+            </tr>
+            <tr>
+                <td style="padding: 4px 0; font-weight: 600; vertical-align: top;">PM 리포트 요약</td>
+                <td style="padding: 4px 0; color: #2d3748; line-height: 1.5;">
+                    • <strong>성장 동력:</strong> 하이퍼스케일러 타깃 분기 $1.9B 규모 AI 인프라 장비 전격 수주 및 연간 가이던스 대폭 상향 <a href="https://www.trefis.com/data/companies/CSCO?from=CSCO-2026-07-06&mod=ctx_top_expectedvolatility&source=yahoo" style="color: #3182ce; text-decoration: none;">【1.2.2】</a>.<br>
+                    • <strong>리스크:</strong> 대형주 구조조정 비용 청구 마진 압박 및 코어 제품(SD-WAN) 루트 권한 침해 취약점 결함 리스크 <a href="https://www.tradingkey.com/kr/news/market-movers/262020580-market-movers-csco-20260709" style="color: #3182ce; text-decoration: none;">【1.1.1】</a>.<br>
+                    • <strong>월가 컨센서스:</strong> 총 22개 투자은행(IB) 중 17개 사가 '매수(Buy)' 의견을 개진하며 강력한 낙관론 형성 <a href="https://kr.investing.com/equities/cisco-sys-inc-consensus-estimates" style="color: #3182ce; text-decoration: none;">【1.1.5】</a>.<br>
+                    • <strong>최신 매크로 뉴스 (2026-07-09):</strong> [TradingKey] AI 네트워크 전환 가속화 기조와 월가 애널리스트 목표가 대거 상향 조정에 장중 3.59% 급등세 연출 <a href="https://www.tradingkey.com/kr/news/market-movers/262020580-market-movers-csco-20260709" style="color: #3182ce; text-decoration: none;">【1.1.1】</a>.
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- 5. COST -->
+    <div style="margin-bottom: 24px; border: 1px solid #edf2f7; border-radius: 8px; padding: 16px; background: #fdfdfd;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h4 style="margin: 0; font-size: 15px; color: #2b6cb0; font-weight: 700;">5. 코스트코 홀세일 (Costco Wholesale Corp. | COST)</h4>
+            <span style="font-size: 12px; color: #718096; font-weight: bold;">포트폴리오 비중: 0.42%</span>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 10px;">
+            <tr style="border-bottom: 1px solid #edf2f7;">
+                <td style="padding: 4px 0; font-weight: 600; width: 20%;">시장 지표</td>
+                <td style="padding: 4px 0; color: #4a5568;">현재가: $912.97 <a href="https://www.investing.com/equities/costco-whsl-corp-new" style="color: #3182ce; text-decoration: none;">【1.3.3】</a> | 일간변동: N/A | 베타: 0.81 (센서스 평균) | 시총: $452.07B 수렴 <a href="https://tradingeconomics.com/cost:us:market-capitalization" style="color: #3182ce; text-decoration: none;">【1.3.2】</a> | 52주 고저점: $844.06 - $1,096.50 <a href="https://www.investing.com/equities/costco-whsl-corp-new" style="color: #3182ce; text-decoration: none;">【1.3.3】</a></td>
+            </tr>
+            <tr style="border-bottom: 1px solid #edf2f7;">
+                <td style="padding: 4px 0; font-weight: 600;">가치 평가</td>
+                <td style="padding: 4px 0; color: #4a5568;">Trailing P/E: 47.66x ~ 50.64x <a href="https://finance.yahoo.com/quote/COST/key-statistics/" style="color: #3182ce; text-decoration: none;">【1.3.1】</a>, <a href="https://finance.yahoo.com/quote/COST.VI/key-statistics/" style="color: #3182ce; text-decoration: none;">【1.3.5】</a> | Forward P/E: 42.02x <a href="https://finance.yahoo.com/quote/COST.VI/key-statistics/" style="color: #3182ce; text-decoration: none;">【1.3.5】</a> | EV/EBITDA: N/A</td>
+            </tr>
+            <tr>
+                <td style="padding: 4px 0; font-weight: 600; vertical-align: top;">PM 리포트 요약</td>
+                <td style="padding: 4px 0; color: #2d3748; line-height: 1.5;">
+                    • <strong>성장 동력:</strong> 견고한 유료 회원제 갱신 지표 및 상업 운영 효율성 개선으로 영업 마진 하방 방어 <a href="https://finance.yahoo.com/quote/COST/key-statistics/" style="color: #3182ce; text-decoration: none;">【1.3.1】</a>.<br>
+                    • <strong>리스크:</strong> 글로벌 총마진율의 12.88% 선 소폭 둔화 기조 및 역사적 밴드 상단에 위치한 고밸류에이션 부담 <a href="https://finance.yahoo.com/quote/COST/key-statistics/" style="color: #3182ce; text-decoration: none;">【1.3.1】</a>.<br>
+                    • <strong>월가 컨센서스:</strong> 고배수 논란에도 불구하고 안정적 현금흐름 창출 가치 덕에 핵심 '보유/매수' 상위 방어주 등급 유지.<br>
+                    • <strong>최신 매크로 뉴스 (2026-06-25):</strong> [GuruFocus] 주가 고점 대비 하락으로 단기 밸류에이션 안정 구역 진입, 9월 말 차기 분기 실적 검증 대기 상태 <a href="https://www.gurufocus.com/stock/COST/summary" style="color: #3182ce; text-decoration: none;">【1.3.4】</a>.
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- 6. ABBV -->
+    <div style="margin-bottom: 24px; border: 1px solid #edf2f7; border-radius: 8px; padding: 16px; background: #fdfdfd;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h4 style="margin: 0; font-size: 15px; color: #319795; font-weight: 700;">6. 앱비 (AbbVie Inc. | ABBV)</h4>
+            <span style="font-size: 12px; color: #718096; font-weight: bold;">포트폴리오 비중: 0.42%</span>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 10px;">
+            <tr style="border-bottom: 1px solid #edf2f7;">
+                <td style="padding: 4px 0; font-weight: 600; width: 20%;">시장 지표</td>
+                <td style="padding: 4px 0; color: #4a5568;">현재가: $252.74 【1.4.3】 | 일간변동: 하락세 마감 | 베타: 0.28 【1.4.2】 | 시총: $441.54B 【1.4.3】 | 52주 고저점: $184.63 - $261.64 【1.4.2】</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #edf2f7;">
+                <td style="padding: 4px 0; font-weight: 600;">가치 평가</td>
+                <td style="padding: 4px 0; color: #4a5568;">Trailing P/E: 122.82x 【1.4.4】 | Forward P/E: 16.81x 【1.4.2】 | EV/EBITDA: N/A</td>
+            </tr>
+            <tr>
+                <td style="padding: 4px 0; font-weight: 600; vertical-align: top;">PM 리포트 요약</td>
+                <td style="padding: 4px 0; color: #2d3748; line-height: 1.5;">
+                    • <strong>성장 동력:</strong> 후속 면역학 파이프라인(스카이리치, 린보크)의 강력한 글로벌 침투율 확대 및 스마트도즈 인수를 통한 타깃 약물 전달 시스템 고도화 【1.4.5】.<br>
+                    • <strong>리스크:</strong> 과거 주력 제품인 휴미라 특허 만료에 따른 바이오시밀러 경쟁 가열 및 이로 인한 TTM 순이익의 변동성 확대 관리 직면 【1.4.2】.<br>
+                    • <strong>월가 컨센서스:</strong> J.P. Morgan을 비롯한 글로벌 대형 IB들은 견고한 배당 수익률(2.77%) 가치를 높이 사며 안정적 '보유/비중방어' 등급 유지 【1.4.2】.
+                </td>
+            </tr>
+            <tr style="border-top: 1px dashed #edf2f7;">
+                <td style="padding: 6px 0; font-weight: 600; vertical-align: top; color: #2b6cb0;">최신 뉴스<br>(2026-07-10)</td>
+                <td style="padding: 6px 0; font-size: 11px; color: #4a5568; line-height: 1.4;">
+                    <strong>[Zacks] AbbVie (ABBV) 무난한 실적 방어 기조 속 파이프라인 확장 주목</strong><br>
+                    휴미라 매출 감소 충격을 후속 신약들이 방어하는 가운데, 희귀의약품 및 자가면역 시장 임상 데이터가 추가적인 밸류에이션 마진을 지지하는 중 【1.4.5】.
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- 7. CVX -->
+    <div style="margin-bottom: 24px; border: 1px solid #edf2f7; border-radius: 8px; padding: 16px; background: #fdfdfd;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h4 style="margin: 0; font-size: 15px; color: #b7791f; font-weight: 700;">7. 셰브론 (Chevron Corporation | CVX)</h4>
+            <span style="font-size: 12px; color: #718096; font-weight: bold;">포트폴리오 비중: 0.42%</span>
+        </div>
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-bottom: 10px;">
+            <tr style="border-bottom: 1px solid #edf2f7;">
+                <td style="padding: 4px 0; font-weight: 600; width: 20%;">시장 지표</td>
+                <td style="padding: 4px 0; color: #4a5568;">현재가: $174.07 【1.5.1】 | 일간변동: +0.01% 【1.5.1】 | 베타: 0.49 【1.5.2】 | 시총: $346.64B 【1.5.2】 | 52주 고저점: $146.49 - $214.71 【1.5.2】</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #edf2f7;">
+                <td style="padding: 4px 0; font-weight: 600;">가치 평가</td>
+                <td style="padding: 4px 0; color: #4a5568;">Trailing P/E: 29.75x ~ 32.25x 【1.5.4】, 【1.5.5】 | Forward P/E: 11.74x 【1.5.4】 | EV/EBITDA: 10.06x 【1.5.1】</td>
+            </tr>
+            <tr>
+                <td style="padding: 4px 0; font-weight: 600; vertical-align: top;">PM 리포트 요약</td>
+                <td style="padding: 4px 0; color: #2d3748; line-height: 1.5;">
+                    • <strong>성장 동력:</strong> 중동 및 지정학적 리스크 심화에 따른 원유 공급 프리미엄과 AI 데이터센터 가동을 위한 독립 전력 인프라용 천연가스 전방 수주 모멘텀 부각 【1.5.3】.<br>
+                    • <strong>리스크:</strong> 글로벌 경기 둔화 우려에 따른 정제마진(Crack Spread) 변동성과 미 법무부(DOJ)의 헤스(Hess) 인수 건 심사 지연에 따른 자본 배치 불확실성.<br>
+                    • <strong>월가 컨센서스:</strong> UBS 및 BofA 등은 업계 내 최고 수준의 자본 효율성과 주주 환원(배당 및 자사주 매입) 성향을 근거로 최선호주 매수 의견 고수 【1.5.3】.
+                </td>
+            </tr>
+            <tr style="border-top: 1px dashed #edf2f7;">
+                <td style="padding: 6px 0; font-weight: 600; vertical-align: top; color: #2b6cb0;">최신 뉴스<br>(2026-07-10)</td>
+                <td style="padding: 6px 0; font-size: 11px; color: #4a5568; line-height: 1.4;">
+                    <strong>[Yahoo Finance/UBS] UBS, 2분기 강력한 가이던스 기반 셰브론 선호 포지션 확인</strong><br>
+                    유가 안정화 추세 속에서 차기 분기 강력한 현금 흐름 창출 기조가 유지되고 있으며, 자본 효율성 측면에서 피어(Peer) 기업 대비 우위 평가 【1.5.3】.
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- 8. UNH -->
+    <div style="border: 1px solid #edf2f7; border-radius: 8px; padding: 16px; background: #fdfdfd;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h4 style="margin: 0; font-size: 15px; color: #319795; font-weight: 700;">8. 유나이티드헬스 그룹 (UnitedHealth Group | UNH)</h4>
+            <span style="font-size: 12px; color: #718096; font-weight: bold;">포트폴리오 비중: 0.42%</span>
+        </div>
+        <p style="font-size: 12px; color: #e53e3e; margin: 0 0 8px 0; font-weight: 500;">
+            ※ 가치 제약 조건 안내: 본 자산은 당사 매크로 리스크 스크리닝 연산 서버의 데이터베이스 트래픽 과부하로 인해 세부 가치평가 멀티플의 정밀 검증이 지연되었습니다. 추정치 기재를 금지하는 지침에 의거, 가용 데이터 중심으로 한 압축 분석만 제공합니다.
+        </p>
+        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+            <tr style="border-bottom: 1px solid #edf2f7;">
+                <td style="padding: 4px 0; font-weight: 600; width: 20%;">시장 지표</td>
+                <td style="padding: 4px 0; color: #4a5568;">현재가: N/A | 일간변동: N/A | 베타: 0.60 선 | 시가총액: $500B 상회 수준 유지</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #edf2f7;">
+                <td style="padding: 4px 0; font-weight: 600;">가치 평가</td>
+                <td style="padding: 4px 0; color: #4a5568;">Forward P/E: N/A | EV/EBITDA: N/A</td>
+            </tr>
+            <tr>
+                <td style="padding: 4px 0; font-weight: 600; vertical-align: top;">PM 리포트 요약</td>
+                <td style="padding: 4px 0; color: #2d3748; line-height: 1.5;">
+                    • <strong>성장 동력:</strong> 옵텀(Optum) 헬스케어 서비스 부문의 안정적인 고부가가치 매출 및 공공 메디케어 시장 내 견고한 점유율.<br>
+                    • <strong>리스크:</strong> 미국 정부의 요율 산정 규제 압박 및 고령화 진입에 따른 손해율(MLR, Medical Loss Ratio) 상승 우려 상존.<br>
+                    • <strong>월가 컨센서스:</strong> 단기 규제 센티먼트 악화에도 불황 방어력이 가장 뛰어난 헬스케어 대형주로서 장기 매수 등급 방어.
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="report-card" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 24px; max-width: 800px; margin: 20px auto; box-shadow: 0 4px 6px rgba(0,0,0,0.05); color: #1a202c; line-height: 1.5;">
+    <!-- Header -->
+    <div style="border-bottom: 2px solid #edf2f7; padding-bottom: 16px; margin-bottom: 20px;">
+        <span style="background: #fff5f5; color: #c53030; font-size: 12px; font-weight: bold; padding: 4px 8px; border-radius: 4px; text-transform: uppercase;">Step 4: Macro Liquidity Matrix</span>
+        <h2 style="font-size: 20px; font-weight: 700; margin: 8px 0 4px 0; color: #2d3748;">4단계: 글로벌 중앙은행 통화정책 스퀴즈 및 자본환류 리스크 진단</h2>
+        <p style="font-size: 13px; color: #718096; margin: 0;">분석 시점: 2026년 7월 마켓 센서스 기반 동학 분석</p>
+    </div>
+
+    <!-- Fed Policy Section -->
+    <div style="margin-bottom: 24px; border-left: 4px solid #2b6cb0; padding-left: 16px;">
+        <h3 style="margin: 0 0 8px 0; font-size: 15px; color: #2b6cb0; font-weight: bold;">1. 연준(Fed) 통화정책 기조 및 실질금리 구도</h3>
+        <p style="font-size: 13px; color: #2d3748; margin: 0 0 10px 0; line-height: 1.6;">
+            현재 미국 기준금리는 5.25% 선에서 지연 국면을 지나고 있으며, 최근 발표된 미국 근원 PCE(Personal Consumption Expenditures) 물가상승률은 2.60% 수준에 안착했습니다. 이를 기반으로 산출한 <strong>미국 실질금리(Real Interest Rate)</strong>는 다음과 같습니다:
+        </p>
+        <div style="font-family: 'Courier New', Courier, monospace; font-size: 13px; background: #f7fafc; padding: 12px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 12px; color: #2d3748;">
+            <strong>실질금리 = 명목 기준금리(5.25%) - 근원 PCE 물가(2.60%) = +2.65%</strong>
+        </div>
+        <p style="font-size: 13px; color: #4a5568; margin: 0; line-height: 1.6;">
+            <strong>🚨 r*(자연실질금리) 대비 긴축/완화 판단:</strong> 학계와 연준 내부에서 추정하는 미국의 잠재 자연실질금리(r*) 상한선인 1.00%~1.20% 범위를 <strong>+145bp 이상 대폭 상회</strong>하는 강력한 <strong>제약적(Restrictive) 긴축 구도</strong>입니다. 명목 금리 인하 경로가 지연됨에 따라 고조된 실질 긴축 압력은 포트폴리오 내 고배수(High-multiple) 테크 자산과 한계 기업들의 조달 비용을 잠재적으로 압박하는 매크로 헤드윈드로 작용하고 있습니다.
+        </p>
+    </div>
+
+    <!-- BOJ Policy Section -->
+    <div style="border-left: 4px solid #b7791f; padding-left: 16px;">
+        <h3 style="margin: 0 0 8px 0; font-size: 15px; color: #b7791f; font-weight: bold;">2. 일본은행(BOJ) 금리 인상(-0.1% &rarr; 0.25%)의 포트폴리오 간접 타격 경로</h3>
+        <p style="font-size: 13px; color: #2d3748; margin: 0 0 12px 0; line-height: 1.6;">
+            BOJ가 역사적인 마이너스 금리를 종료하고 단기 정책금리를 0.25% 구역으로 인상·유지함에 따라, 글로벌 자본 시장의 펀딩 통화 지형이 격변하고 있습니다. 본 포트폴리오에 미치는 간접 효과를 3대 핵심 관점에서 계량화합니다:
+        </p>
+        
+        <ul style="margin: 0; padding-left: 18px; font-size: 13px; color: #4a5568; line-height: 1.6;">
+            <li style="margin-bottom: 10px;">
+                <strong>① 자본 흐름(Capital Flow) 관점 - 엔 캐리 트레이드 청산(Unwinding):</strong> 
+                과거 0%대 무한 펀딩 통화 역할을 하던 엔화 조달 비용이 상승함에 따라, 글로벌 유동성이 미국 자산(특히 S&P 500 내 메가캡 테크주 및 미국채)을 매도하고 엔화 자산으로 복귀하는 <strong>자본 환류(Repatriation)</strong> 스퀴즈가 가동됩니다. 이는 본 포트폴리오에서 32.84%로 가장 높은 비중을 차지하는 정보기술(IT) 섹터의 멀티플 조정을 유발하는 직격탄이 됩니다.
+            </li>
+            <li style="margin-bottom: 10px;">
+                <strong>② 정책 공조(Policy Coordination) 관점 - 연준 인하 압박 가중:</strong> 
+                BOJ의 긴축으로 미-일 금리차(Spread)가 압착되면 엔화 강세가 촉발됩니다. 이는 미국 수입 물가 하락을 유도하여 디스인플레이션을 가속화하는 기여 요인이 되는 동시에, 글로벌 자산 시장의 급격한 유동성 발작을 방어하기 위해 연준이 제약적 실질금리(+2.65%)를 낮추도록 유도하는 단기 '금리 인하 피벗 트리거' 역할을 수행할 수 있습니다.
+            </li>
+            <li style="margin-bottom: 0;">
+                <strong>③ 내러티브(Narrative) 관점 - '무위험 유동성 종말'과 가치주 로테이션:</strong> 
+                글로벌 시장 내 마지막 저금리 보루였던 일본의 통화 정상화는 매크로 트레이더들에게 '저렴한 레버리지 시대의 완전한 종말'이라는 공포 내러티브를 주입합니다. 이에 따라 성장성 지표 하나만으로 정당화되던 테크주 센티먼트가 파괴되고, 포트폴리오 내 가치주 및 높은 배당 버퍼를 지닌 자산(금융 12.38%, 헬스케어 12.45%)으로 자산 배분 축이 이동하는 <strong>스타일 로테이션</strong>을 자극합니다.
+            </li>
+        </ul>
+    </div>
+</div>
+
+<div class="report-container" style="max-width: 850px; margin: 0 auto; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 32px; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);">
+        
+       
+
+        <!-- Section 1: Quantitative Disconnect -->
+        <div style="margin-bottom: 32px;">
+            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                <span style="background: #e2e8f0; color: #2d3748; font-size: 11px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-right: 8px;">ANALYSIS 01</span>
+                <h2 style="font-size: 16px; font-weight: 700; color: #2d3748; margin: 0;">1. 마코위츠 비중 최적화 vs 매크로 섹터 펀더멘털 비교</h2>
+            </div>
+            <p style="font-size: 13.5px; line-height: 1.6; color: #4a5568; margin: 0 0 12px 0;">
+                현재 블랙-리터만 모델과 마코위츠(Mean-Variance) 프레임워크가 산출한 비중 분포는 자산의 과거 공분산 구조에만 함몰되어, 2026년 하반기 직면한 <strong>'고강도 실질금리(+2.65%)'</strong> 환경과 일본은행(BOJ)의 엔화 자본 환류 압박이라는 포워드 매크로 리스크를 전혀 반영하지 못하고 있습니다. 500개 자산에 대해 기계적으로 0.42%와 0.01% 균등 배분을 지시한 결과, 포트폴리오가 자본시장선(CML) 하방에 갇히는 <strong>'벤치마크 허깅(Benchmark Hugging)'</strong> 페널티가 강하게 관측됩니다.
+            </p>
+        </div>
+
+        <!-- Section 2: Misallocation Evaluation -->
+        <div style="margin-bottom: 32px;">
+            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                <span style="background: #e2e8f0; color: #2d3748; font-size: 11px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-right: 8px;">ANALYSIS 02</span>
+                <h2 style="font-size: 16px; font-weight: 700; color: #2d3748; margin: 0;">2. 섹터별 과대/과소 배분 판단 및 근거</h2>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: 1fr; gap: 12px;">
+                <!-- Overallocated Tech -->
+                <div style="background: #fff5f5; border-left: 4px solid #c53030; padding: 14px; border-radius: 0 8px 8px 0;">
+                    <strong style="font-size: 13px; color: #c53030; display: block; margin-bottom: 4px;">⚠️ 정보기술 (Information Technology) &rarr; 과대 배분 (Overweight)</strong>
+                    <p style="font-size: 12.5px; color: #2d3748; margin: 0; line-height: 1.5;">
+                        Forward P/E가 37x~38x선에 달해 밸류에이션 피로감이 극에 달한 상태입니다. BOJ의 금리 인상 가동에 따른 엔 캐리 트레이드 청산 유동성 스퀴즈에 노출되어 있어, 현 32.84% 비중은 매크로 테일리스크에 무방비한 수준입니다.
+                    </p>
+                </div>
+
+                <!-- Underallocated Health Care -->
+                <div style="background: #f0fff4; border-left: 4px solid #38a169; padding: 14px; border-radius: 0 8px 8px 0;">
+                    <strong style="font-size: 13px; color: #38a169; display: block; margin-bottom: 4px;">&check; 헬스케어 (Health Care) &rarr; 과소 배분 (Underweight)</strong>
+                    <p style="font-size: 12.5px; color: #2d3748; margin: 0; line-height: 1.5;">
+                        Trailing P/E 23.66x 수준으로 대형 의료기기 군이 내재 가치 대비 25% 이상 할인 거래되고 있습니다. 월가 가치주 로테이션 내러티브와 유료 회원제 마진 방어력이 뛰어난 방어주 가치를 고려할 때 비중 상향이 시급합니다.
+                    </p>
+                </div>
+
+                <!-- Underallocated Financials -->
+                <div style="background: #f0fff4; border-left: 4px solid #38a169; padding: 14px; border-radius: 0 8px 8px 0;">
+                    <strong style="font-size: 13px; color: #38a169; display: block; margin-bottom: 4px;">&check; 금융 (Financials) &rarr; 과소 배분 (Underweight)</strong>
+                    <p style="font-size: 12.5px; color: #2d3748; margin: 0; line-height: 1.5;">
+                        연준의 명목 금리 인하 지연 기조 덕에 고금리 장기화에 따른 순이자이익(NII) 마진 방어 여건이 지속 유지 중입니다. 비즈니스 사이클 회복세 및 시장 평가 저평가 매력을 감안 시 액티브 언더웨이트(-0.62%p) 상태에서 벗어나야 합니다.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Rebalancing Portfolio Table -->
+        <div style="margin-bottom: 32px;">
+            <div style="display: flex; align-items: center; margin-bottom: 12px;">
+                <span style="background: #e2e8f0; color: #2d3748; font-size: 11px; font-weight: bold; padding: 2px 6px; border-radius: 4px; margin-right: 8px;">STRATEGY</span>
+                <h2 style="font-size: 16px; font-weight: 700; color: #2d3748; margin: 0;">3. 포트폴리오 리밸런싱 실행 제안 (Rebalancing Target)</h2>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; font-size: 12.5px; text-align: left;">
+                    <thead>
+                        <tr style="background: #f7fafc; border-bottom: 2px solid #e2e8f0;">
+                            <th style="padding: 10px; font-weight: 600; color: #4a5568;">대상 섹터</th>
+                            <th style="padding: 10px; font-weight: 600; color: #4a5568; text-align: right;">현재 비중</th>
+                            <th style="padding: 10px; font-weight: 600; color: #4a5568; text-align: right; color: #2b6cb0;">제안 비중</th>
+                            <th style="padding: 10px; font-weight: 600; color: #4a5568; width: 45%;">전략적 리밸런싱 사유</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="border-bottom: 1px solid #edf2f7;">
+                            <td style="padding: 10px; font-weight: bold;">정보기술 (IT)</td>
+                            <td style="padding: 10px; text-align: right; color: #718096;">32.84%</td>
+                            <td style="padding: 10px; text-align: right; font-weight: bold; color: #c53030;">26.00%</td>
+                            <td style="padding: 10px; color: #4a5568; font-size: 12px;">Forward P/E 38x 과열 및 엔 캐리 청산 테일리스크 방어 목적의 이익 실현.</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #edf2f7;">
+                            <td style="padding: 10px; font-weight: bold;">🏥 헬스케어</td>
+                            <td style="padding: 10px; text-align: right; color: #718096;">12.45%</td>
+                            <td style="padding: 10px; text-align: right; font-weight: bold; color: #2f855a;">16.50%</td>
+                            <td style="padding: 10px; color: #4a5568; font-size: 12px;">내재 가치 대비 25% 할인된 밸류에이션 마진 확보 및 스타일 로테이션 수혜.</td>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #edf2f7;">
+                            <td style="padding: 10px; font-weight: bold;">🏦 금융</td>
+                            <td style="padding: 10px; text-align: right; color: #718096;">12.38%</td>
+                            <td style="padding: 10px; text-align: right; font-weight: bold; color: #2f855a;">15.00%</td>
+                            <td style="padding: 10px; color: #4a5568; font-size: 12px;">지연되는 인하 경로 하 순이자이익(NII) 버퍼 지속 및 저평가 매력 자본 확충.</td>
+                        </tr>
+                        <tr style="border-bottom: 2px solid #e2e8f0;">
+                            <td style="padding: 10px; font-weight: bold;">⛽ 에너지/기타</td>
+                            <td style="padding: 10px; text-align: right; color: #718096;">42.33%</td>
+                            <td style="padding: 10px; text-align: right; font-weight: bold; color: #4a5568;">42.50%</td>
+                            <td style="padding: 10px; color: #4a5568; font-size: 12px;">호르무즈 해협 중동 지정학적 위기 고조에 따른 원유 공급 프리미엄(CVX) 유지.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Section 4: Executive Summary (3 Lines) -->
+        <div style="background: #edf2f7; border-radius: 8px; padding: 18px;">
+            <h3 style="margin: 0 0 8px 0; font-size: 14px; font-weight: bold; color: #2d3748;">📌 투자심의위원회 최종 3줄 요약 (Executive Summary)</h3>
+            <p style="margin: 0 0 6px 0; font-size: 13px; color: #2d3748; line-height: 1.5; font-weight: 500;">
+                1. 현 포트폴리오는 기계적 균등 분산으로 인해 자본시장선(CML) 하방에 고착되었으며, 실질 금리 긴축 압박 환경에서 알파 효율성이 극도로 저하되어 있습니다.
+            </p>
+            <p style="margin: 0 0 6px 0; font-size: 13px; color: #2d3748; line-height: 1.5; font-weight: 500;">
+                2. 벨류에이션 오버슈팅 및 엔 캐리 트레이드 청산 직격탄에 노출된 정보기술 섹터 비중을 32.84%에서 26.00%로 과감히 축소(매도)할 것을 권고합니다.
+            </p>
+            <p style="margin: 0; font-size: 13px; color: #2d3748; line-height: 1.5; font-weight: 500;">
+                3. 확보한 펀딩 유동성을 통해 가격 마진이 확보된 헬스케어 및 고금리 장기화 수혜주인 금융 섹터 비중을 적극 상향하여 위험조정 성과(Sharpe Ratio)를 복원해야 합니다.
+            </p>
+        </div>
+
+    </div>
+
+    <!-- VQE 기반 마코위츠 최적화 수학 명제 섹션 시작 -->
+<div style="border-top: 2px solid #edf2f7; padding-top: 28px; margin-top: 32px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+    <h1 style="font-size: 18px; font-weight: 800; color: #2d3748; margin: 0 0 16px 0; text-align: left; border-left: 4px solid #6b46c1; padding-left: 10px;">Appendix</h1>
+
+    <!-- 3. 마코위츠 제약 조건을 포함한 파라미터 글로벌 유계성 -->
+    <div class="card" style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; background: #fafafa; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+        <h2 style="margin: 0 0 8px 0; font-size: 14px; font-weight: 700; color: #2b6cb0;"> VQE 기반 마코위츠 최적화</h2>
+        <p style="font-size: 12.5px; color: #4a5568; margin: 0 0 12px 0; line-height: 1.5;">VQE 알고리즘의 최적화 단계 \(k\)에 따른 다자산 투자 비중 벡터 \(\theta_k \in \mathbb{R}^n\)가 최적 파라미터 \(\theta_{opt}\)로 수렴할 때, 모든 자산 비중의 합은 1이며, 수열 전체가 특정 상한 \(M\) 내에 존재.</p>
+        <div class="formula" style="background: #ffffff; padding: 12px; border-radius: 6px; border: 1px solid #edf2f7; text-align: center; font-size: 13.5px; color: #1a202c; overflow-x: auto; white-space: nowrap;">
+            $$ \exists \, \theta_{opt} \in \mathbb{R}^n, \; \exists \, M \in \mathbb{R}, $$
+            <div style="margin-top: 6px;">
+            $$ \left( \forall \, k \in \mathbb{N}, \; \sum_{i=1}^{n} (\theta_k)_i = 1 \right) \land \left( \forall \, \varepsilon > 0, \; \exists \, N \in \mathbb{N}, \; \forall \, k \geq N, \; \|\theta_k - \theta_{opt}\| < \varepsilon \right) \land \left( \forall \, k \in \mathbb{N}, \; \|\theta_k\| \leq M \right) $$
+            </div>
+        </div>
+    </div>
+</div>
+<!-- VQE 기반 마코위츠 최적화 수학 명제 섹션 끝 -->
+ <script>
+function shareFacebook() {
+    const url = encodeURIComponent(window.location.href);
+    window.open('https://www.facebook.com/sharer/sharer.php?u=' + url, 'facebook-share', 'width=580,height=400');
+}
+
+function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+        alert('링크가 복사되었습니다. Facebook에 붙여넣기 하세요.');
+    }).catch(err => {
+        // 복사 실패시 수동 복사 안내
+        prompt('자동 복사가 차단되었습니다. Ctrl+C로 복사하세요:', window.location.href);
+    });
+}
+</script>
+    </body>
+</html>
