@@ -1,39 +1,40 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>deepseek-v4-pro via NVIDIA — final</title>
+<title>Markowitz — deepseek-v4-pro — FINAL</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css">
 <style>body{margin:0;font-family:ui-monospace;background:#0e0e10;color:#e6e6e6;display:flex;height:100vh}#left{width:380px;border-right:1px solid #222;padding:12px;overflow:auto}#center{flex:1;display:flex;flex-direction:column}#term{flex:1;padding:8px;background:#0a0a0b}#diff{height:36%;border-top:1px solid #222;padding:10px;overflow:auto;background:#111113;white-space:pre-wrap;font-size:12px}button,input,select{background:#1a1a1e;color:#e6e6e6;border:1px solid #2a2a2e;padding:10px;border-radius:8px;width:100%;margin:6px 0}button{cursor:pointer;background:#76b900;color:#000;font-weight:800}button:hover{filter:brightness(1.1)}#btn-init{background:#1a1a1e;color:#e6e6e6;font-weight:400}.muted{color:#8a8a90;font-size:12px}.ok{color:#76b900}</style>
 </head><body>
 <div id="left">
-<h3>NVIDIA NIM × deepseek-v4-pro</h3>
-<div class="muted">final worker: autumn-morning-0048<br>owner: parkskwan (your account)</div>
-<input id="apiKey" type="password" placeholder="nvapi-..." />
-<select id="model"><option value="deepseek-ai/deepseek-v4-pro" selected>deepseek-ai/deepseek-v4-pro</option><option value="deepseek-ai/deepseek-v4-flash">deepseek-ai/deepseek-v4-flash</option></select>
+<h3>✅ FINAL — deepseek-v4-pro</h3>
+<div class="muted">Proxy: OK proxy ready for qracle74<br>site: qracle74.github.io/markowitz<br>base_url: integrate.api.nvidia.com/v1</div>
+<label class="muted">NVIDIA API Key (nvapi-...)</label><input id="apiKey" type="password" placeholder="nvapi-..." />
+<select id="model"><option value="deepseek-ai/deepseek-v4-pro" selected>deepseek-ai/deepseek-v4-pro (your config)</option><option value="deepseek-ai/deepseek-v4-flash">deepseek-ai/deepseek-v4-flash</option></select>
 <button id="btn-run">▶ deepseek-v4-pro 호출</button><button id="btn-init">샘플 생성</button>
 <div id="filetree" class="muted" style="margin-top:12px"></div><div class="muted"><span id="wasm-size">-</span> | <span id="wasm-ver">-</span> | <span id="status" class="ok">ready</span></div>
-</div><div id="center"><div id="term"></div><div id="diff">// JSON</div></div>
+</div><div id="center"><div id="term"></div><div id="diff">// ToolCall JSON</div></div>
 <script type="module">
 import { Terminal } from "https://cdn.jsdelivr.net/npm/xterm@5.3.0/+esm"
 import initWasm, * as wasm from "./grok_qcore.js"
-const WORKER_URL = "https://workers-playground-autumn-morning-0048.parkskwan.workers.dev";
+//!!! 만약 당신의 Worker 주소가 다르다면 이 한 줄만 바꾸세요!!!
+const WORKER_URL = "https://nvidia-proxy.parkskwan.workers.dev";
 const term=new Terminal({convertEol:true,fontSize:13,theme:{background:"#0a0a0b"}});term.open(document.getElementById("term"));const $=id=>document.getElementById(id)
-await initWasm();term.writeln(`[ok] ${wasm.version()} — final worker`);$("wasm-ver").textContent=wasm.version()
+await initWasm();term.writeln(`[ok] ${wasm.version()} — FINAL proxy connected`);$("wasm-ver").textContent=wasm.version()
 try{const r=await fetch("./grok_qcore_bg.wasm",{cache:"no-store"});$("wasm-size").textContent=`${((await r.arrayBuffer()).byteLength/1024).toFixed(1)}KB`}catch{}
 $("apiKey").value=localStorage.getItem("nv_key")||""
 const opfsRoot=await navigator.storage.getDirectory()
 async function opfsWrite(p,c){const a=p.split("/").filter(Boolean);const n=a.pop();let d=opfsRoot;for(const x of a){d=await d.getDirectoryHandle(x,{create:true});}const h=await d.getFileHandle(n,{create:true});const w=await h.createWritable();await w.write(c);await w.close();term.writeln(`[wrote] ${p}`)}
 async function opfsList(dh=opfsRoot,pre=""){const o=[];for await(const [nm,hd] of dh.entries()){if(hd.kind==="file")o.push(pre+nm);else o.push(...await opfsList(hd,pre+nm+"/"))}return o}
 async function refresh(){const f=await opfsList();document.getElementById("filetree").innerHTML=f.map(x=>`<div>📄 ${x}</div>`).join("")||"(empty)"}
-document.getElementById("btn-init").onclick=async()=>{await opfsWrite("src/main.rs",`fn main(){ println!("final!"); }`);await refresh()}
+document.getElementById("btn-init").onclick=async()=>{await opfsWrite("src/main.rs",`fn main(){ println!("deepseek-v4-pro via your own proxy!"); }`);await refresh()}
 document.getElementById("btn-run").onclick=async()=>{
   const key=$("apiKey").value.trim(), model=$("model").value
-  if(!key.startsWith("nvapi-")){term.writeln("nvapi- 키 필요");return}
-  localStorage.setItem("nv_key",key);term.writeln(`[nvidia] ${model} 호출...`)
+  if(!key.startsWith("nvapi-")){term.writeln("nvapi- 키 입력");return}
+  localStorage.setItem("nv_key",key);term.writeln(`[nvidia] ${model} 호출 via ${WORKER_URL}...`)
   try{
-    const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`},body:JSON.stringify({model:model,messages:[{role:"system",content:"You are grok-qcore. Output ONE JSON."},{role:"user",content:"Edit src/main.rs add fn add"}],temperature:1,top_p:0.95,max_tokens:16384,chat_template_kwargs:{"thinking":false},stream:false})})
+    const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`},body:JSON.stringify({model:model,messages:[{role:"system",content:"You are grok-qcore. Output ONE JSON ToolCall only."},{role:"user",content:"Edit src/main.rs to add fn add(a:i32,b:i32)->i32{a+b}"}],temperature:1,top_p:0.95,max_tokens:16384,chat_template_kwargs:{"thinking":false},stream:false})})
     if(!res.ok) throw new Error(`${res.status}: ${(await res.text()).slice(0,800)}`)
     const j=await res.json();const out=j.choices?.[0]?.message?.content||"";term.writeln(`[out] ${out.slice(0,800)}`)
     const tool=JSON.parse(out.match(/\{[\s\S]*\}/)?.[0]||out);document.getElementById("diff").textContent=JSON.stringify(tool,null,2)
-    if(tool.type==="Edit"){await opfsWrite(tool.path,tool.diff);await refresh()}
+    if(tool.type==="Edit"){await opfsWrite(tool.path,tool.diff);await refresh();term.writeln(`[ok] ${tool.path} updated`)}
   }catch(e){term.writeln(`[error] ${e.message}`)}
 }
 await refresh()
