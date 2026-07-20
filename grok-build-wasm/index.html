@@ -1,63 +1,78 @@
-<!doctype html>
-<html lang="ko">
-<head>
-<meta charset="utf-8" />
-<title>grok-build-wasm Phase 2 — 0% server</title>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"/>
+<title>grok-build-wasm — DeepSeek V4 Pro Cloud — 0% server</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css">
-<style>
-  body { margin:0; font-family: ui-monospace, monospace; background:#0e0e10; color:#e6e6e6; display:flex; height:100vh; }
-  #left { width:300px; border-right:1px solid #222; padding:12px; overflow:auto; }
-  #center { flex:1; display:flex; flex-direction:column; }
-  #term { flex:1; padding:8px; background:#0a0a0b; }
-  #diff { height:30%; border-top:1px solid #222; padding:10px; overflow:auto; background:#111113; white-space:pre-wrap; font-size:12px; }
-  button { background:#1a1a1e; color:#e6e6e6; border:1px solid #2a2a2e; padding:6px 10px; border-radius:6px; cursor:pointer; }
-  button:hover { background:#222228; }
- .muted { color:#8a8a90; font-size:12px; }
- .ok { color:#7ee787; }
-</style>
-</head>
-<body>
-  <div id="left">
-    <h3 style="margin:6px 0">OPFS — 내 컴퓨터 디스크</h3>
-    <div class="muted">서버로 전송 안 됨. 브라우저 내장 가상 파일시스템. 프라이버시 100%.</div>
-    <div style="margin:10px 0; display:flex; gap:8px">
-      <button id="btn-init">샘플 파일 생성</button>
-      <button id="btn-list">목록 새로고침</button>
-    </div>
-    <div id="filetree" class="muted">(empty)</div>
-    <hr style="border-color:#222; margin:14px 0">
-    <div class="muted">WASM: <span id="wasm-size">측정중...</span><br>version: <span id="wasm-ver">-</span></div>
-    <div id="log" style="margin-top:10px; font-size:12px; line-height:1.5"></div>
-  </div>
-  <div id="center"><div id="term"></div><div id="diff">// diff 뷰어 — Agent의 EDIT가 여기 표시됩니다.</div></div>
+<style>body{margin:0;font-family:ui-monospace,monospace;background:#0e0e10;color:#e6e6e6;display:flex;height:100vh}#left{width:340px;border-right:1px solid #222;padding:12px;overflow:auto}#center{flex:1;display:flex;flex-direction:column}#term{flex:1;padding:8px;background:#0a0a0b}#diff{height:32%;border-top:1px solid #222;padding:10px;overflow:auto;background:#111113;white-space:pre-wrap;font-size:12px}button,input,select{background:#1a1a1e;color:#e6e6e6;border:1px solid #2a2a2e;padding:8px 10px;border-radius:8px;width:100%;margin:5px 0}button{cursor:pointer;background:#238636;border-color:#2ea043;font-weight:600}button:hover{filter:brightness(1.1)}.muted{color:#8a8a90;font-size:12px}.ok{color:#7ee787}</style>
+</head><body>
+<div id="left">
+<h3>DeepSeek V4 Pro — GitHub Only</h3>
+<div class="muted">GitHub Pages 32KB만 사용. 파일은 브라우저 OPFS에만 저장. 서버 업로드 0.</div>
+
+<label class="muted">DeepSeek API Key (sk-...)</label>
+<input id="apiKey" placeholder="sk-..." type="password" />
+<div class="muted" style="margin:4px 0">키 발급: <a href="https://platform.deepseek.com/api_keys" target="_blank" style="color:#7ee787">platform.deepseek.com</a> — localStorage에만 저장</div>
+
+<label class="muted">Model — 당신의 config 그대로</label>
+<select id="model">
+  <option value="deepseek-ai/deepseek-v4-pro" selected>deepseek-ai/deepseek-v4-pro (default, web_search, session_summary 전부)</option>
+  <option value="deepseek-ai/deepseek-v4-flash">deepseek-ai/deepseek-v4-flash (빠른 버전)</option>
+</select>
+
+<button id="btn-run">▶ DeepSeek V4 Pro로 Agent 실행</button>
+<button id="btn-init" style="background:#1a1a1e">샘플 파일 생성 (OPFS)</button>
+
+<div id="filetree" class="muted" style="margin-top:12px">(empty)</div>
+<hr style="border-color:#222;margin:12px 0">
+<div class="muted">WASM: <span id="wasm-size">-</span> | <span id="wasm-ver">-</span><br><span id="status" class="ok">ready — GitHub Pages only</span></div>
+<div id="log" style="font-size:12px;margin-top:8px;line-height:1.6"></div>
+</div>
+
+<div id="center"><div id="term"></div><div id="diff">// ToolCall JSON이 여기 표시됩니다.</div></div>
+
 <script type="module">
 import { Terminal } from "https://cdn.jsdelivr.net/npm/xterm@5.3.0/+esm"
 import initWasm, * as wasm from "./grok_qcore.js"
-const term = new Terminal({ convertEol:true, fontSize:13, theme:{background:"#0a0a0b"}, allowProposedApi:true })
-term.open(document.getElementById("term"))
-const log = (s)=>{ const el=document.getElementById("log"); el.innerHTML+=`<div>${s.replace(/\x1b\[[0-9;]*m/g,'')}</div>` }
+const term = new Terminal({convertEol:true,fontSize:13,theme:{background:"#0a0a0b"}}); term.open(document.getElementById("term"))
+const $ = id=>document.getElementById(id)
 
-term.writeln("\x1b[90m[client] loading ./grok_qcore_bg.wasm (70K)...\x1b[0m")
-await initWasm()
-term.writeln(`\x1b[32m[client] WASM loaded: ${wasm.version()} — ${wasm.greet("you")}\x1b[0m`)
-document.getElementById("wasm-ver").textContent = wasm.version()
-// 버그 수정: content-length 정확히 계산. || 연산자 버그 제거.
-try{
-  const r = await fetch("./grok_qcore_bg.wasm",{cache:"no-store"});
-  const len = r.headers.get('content-length') || (await r.arrayBuffer()).byteLength;
-  document.getElementById("wasm-size").textContent = `${(len/1024).toFixed(1)}KB flat / 0% server — OK`;
-} catch(e){ document.getElementById("wasm-size").textContent = `70KB (local) / OK` }
+term.writeln("\x1b[90m[client] loading 32KB WASM...\x1b[0m"); await initWasm()
+term.writeln(`\x1b[32m[ok] ${wasm.version()} — DeepSeek Native\x1b[0m`)
+$("wasm-ver").textContent=wasm.version()
+try{const r=await fetch("./grok_qcore_bg.wasm",{cache:"no-store"});const l=r.headers.get('content-length')||(await r.arrayBuffer()).byteLength;$("wasm-size").textContent=`${(l/1024).toFixed(1)}KB flat`}catch{}
+
+$("apiKey").value = localStorage.getItem("ds_key")||""
+$("model").value = localStorage.getItem("ds_model")||"deepseek-ai/deepseek-v4-pro"
 
 const opfsRoot = await navigator.storage.getDirectory()
-async function opfsWrite(p,c){ const a=p.split("/").filter(Boolean); const n=a.pop(); let d=opfsRoot; for(const x of a){ d=await d.getDirectoryHandle(x,{create:true}); } const h=await d.getFileHandle(n,{create:true}); const w=await h.createWritable(); await w.write(c); await w.close(); term.writeln(`\x1b[90m[OPFS] wrote ${p} (${c.length}B) — local only\x1b[0m`); }
-async function opfsRead(p){ const a=p.split("/").filter(Boolean); const n=a.pop(); let d=opfsRoot; for(const x of a){ d=await d.getDirectoryHandle(x); } const h=await d.getFileHandle(n); return await (await h.getFile()).text(); }
-async function opfsList(dh=opfsRoot,pre=""){ const o=[]; for await(const [nm,hd] of dh.entries()){ if(hd.kind==="file") o.push(pre+nm); else o.push(...await opfsList(hd,pre+nm+"/")); } return o; }
-let state = wasm.agent_init(); log(`agent init ok`);
-async function runMockAgent(t){ const j=wasm.agent_step(state,t); const tool=JSON.parse(j); term.writeln(`\x1b[36m[agent] ${j}\x1b[0m`); document.getElementById("diff").textContent=JSON.stringify(tool,null,2); if(tool.type==="Read"){ try{ const c=await opfsRead(tool.path); term.writeln(c.slice(0,500)); }catch{ term.writeln(`\x1b[33m[miss] ${tool.path}\x1b[0m`)} } else if(tool.type==="Edit"){ await opfsWrite(tool.path,tool.diff); refreshTree(); } else if(tool.type==="Done"){ term.writeln(`\x1b[32m[DONE] ${tool.reason}\x1b[0m`)} }
-async function refreshTree(){ const f=await opfsList(); document.getElementById("filetree").innerHTML=f.map(x=>`<div>📄 ${x}</div>`).join("")||"<span class='muted'>(empty) — 샘플 파일 생성을 눌러보세요</span>"; }
-document.getElementById("btn-init").onclick=async()=>{ await opfsWrite("src/main.rs",`fn main(){ println!("Hello from OPFS — no server upload!"); }`); await opfsWrite("AGENTS.md","# conventions\n- 0% server\n- OPFS only"); await refreshTree(); await runMockAgent("READ: src/main.rs"); }
-document.getElementById("btn-list").onclick=refreshTree; await refreshTree(); window.runMockAgent=runMockAgent;
-term.writeln("\x1b[90mTip: runMockAgent('EDIT: console.log(123)') 를 콘솔에서 실행해보세요.\x1b[0m")
-</script>
-</body>
-</html>
+async function opfsWrite(p,c){const a=p.split("/").filter(Boolean);const n=a.pop();let d=opfsRoot;for(const x of a){d=await d.getDirectoryHandle(x,{create:true});}const h=await d.getFileHandle(n,{create:true});const w=await h.createWritable();await w.write(c);await w.close();term.writeln(`\x1b[90m[OPFS] wrote ${p} (${c.length}B) local only\x1b[0m`)}
+async function opfsList(dh=opfsRoot,pre=""){const o=[];for await(const [nm,hd] of dh.entries()){if(hd.kind==="file")o.push(pre+nm);else o.push(...await opfsList(hd,pre+nm+"/"))}return o}
+async function refresh(){const f=await opfsList();$("filetree").innerHTML=f.map(x=>`<div>📄 ${x}</div>`).join("")||"<span class=muted>(empty)</span>"}
+
+$("btn-init").onclick=async()=>{await opfsWrite("src/main.rs",`fn main(){ println!("Hello DeepSeek V4 Pro — GitHub Pages only, 0% server!"); }`);await refresh()}
+
+$("btn-run").onclick=async()=>{
+  const key=$("apiKey").value.trim(), model=$("model").value
+  if(!key.startsWith("sk-")){ term.writeln("\x1b[33mAPI 키를 입력하세요. https://platform.deepseek.com/api_keys 에서 발급\x1b[0m"); return }
+  localStorage.setItem("ds_key",key); localStorage.setItem("ds_model",model)
+  $("status").textContent=`calling ${model} @ api.deepseek.com...`
+  term.writeln(`\x1b[90m[deepseek] ${model} 호출 중... (브라우저 -> api.deepseek.com 직접, GitHub 서버 경유 0)\x1b[0m`)
+  try{
+    const system = `You are grok-qcore. Output ONE JSON ToolCall only. No markdown.
+Types: {"type":"Read","path":"string"} | {"type":"Edit","path":"string","diff":"FULL NEW FILE CONTENT"} | {"type":"Done","reason":"string"}
+Rule: Always Read before Edit.`
+    const user = `Task: src/main.rs 파일에 주석 2줄 추가하고 함수 fn add(a:i32,b:i32)->i32 를 추가해. Edit JSON으로 출력.`
+    const res = await fetch("https://api.deepseek.com/v1/chat/completions",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`},
+      body: JSON.stringify({ model: model.includes("/")? "deepseek-chat" : model, messages:[{role:"system",content:system},{role:"user",content:user}], temperature:0.2, response_format:{type:"json_object"}})
+    })
+    if(!res.ok){ const t=await res.text(); throw new Error(`DeepSeek ${res.status}: ${t.slice(0,500)}`) }
+    const j=await res.json()
+    const out=j.choices?.[0]?.message?.content||""
+    term.writeln(`\x1b[36m[deepseek] ${out.slice(0,600)}\x1b[0m`)
+    const tool=JSON.parse(out.match(/\{[\s\S]*\}/)?.[0]||out)
+    $("diff").textContent=JSON.stringify(tool,null,2)
+    if(tool.type==="Edit"){ await opfsWrite(tool.path, tool.diff); await refresh(); term.writeln(`\x1b[32m[applied] ${tool.path} — 로컬 OPFS에만 저장됨\x1b[0m`); $("status").textContent="done — OPFS updated" }
+  }catch(e){ term.writeln(`\x1b[31m[error] ${e.message}\x1b[0m`); $("status").textContent="error — 키 확인" }
+}
+await refresh()
+</script></body></html>
