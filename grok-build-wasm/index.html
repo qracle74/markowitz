@@ -1,60 +1,88 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Markowitz — grok-build 100% — VQE Native</title>
+<title>Markowitz — grok-build 100% — Fixed Agent Loop</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css">
-<style>body{margin:0;font-family:ui-monospace;background:#0e0e10;color:#e6e6e6;display:flex;height:100vh}#left{width:400px;border-right:1px solid #222;padding:12px;overflow:auto}#center{flex:1;display:flex;flex-direction:column}#term{flex:1;padding:8px;background:#0a0a0b}#diff{height:35%;border-top:1px solid #222;padding:10px;overflow:auto;background:#111113;white-space:pre-wrap;font-size:12px}button,input,select,textarea{background:#1a1a1e;color:#e6e6e6;border:1px solid #2a2a2e;padding:10px;border-radius:8px;width:100%;margin:6px 0}button{cursor:pointer;font-weight:800}#btn-run{background:#76b900;color:#000}#btn-vqe{background:#00d1ff;color:#000}#btn-agent{background:#ff8c00;color:#000}.muted{color:#8a8a90;font-size:12px}.ok{color:#76b900}</style>
+<style>
+body{margin:0;font-family:ui-monospace,monospace;background:#0e0e10;color:#e6e6e6;display:flex;height:100vh}
+#left{width:400px;border-right:1px solid #222;padding:12px;overflow:auto;display:flex;flex-direction:column}
+#center{flex:1;display:flex;flex-direction:column}
+#term{flex:1;padding:8px;background:#0a0a0b}
+#diff{height:32%;border-top:1px solid #222;padding:10px;overflow:auto;background:#111113;white-space:pre-wrap;font-size:12px}
+button,input,select,textarea{background:#1a1a1e;color:#e6e6e6;border:1px solid #2a2a2e;padding:10px;border-radius:8px;width:100%;margin:6px 0}
+button{cursor:pointer;font-weight:800} #btn-run{background:#76b900;color:#000} #btn-vqe{background:#00d1ff;color:#000} #btn-agent{background:#ff8c00;color:#000}
+#btn-init{background:#1a1a1e;font-weight:400}.muted{color:#8a8a90;font-size:12px}.ok{color:#76b900}.err{color:#ff5a5a}
+#prompt{height:80px;resize:vertical}
+</style>
 </head><body>
 <div id="left">
-<h3>🧠 grok-build 100% — VQE Native</h3>
-<div class="muted">WASM: <span id="wasm-ver">-</span> | Exports: agent_init, agent_step, vqe_energy</div>
+<h3>🧠 grok-build 100% — Fixed</h3>
+<div class="muted">WASM: <span id="wasm-ver">loading...</span> | <span id="wasm-size">-</span><br>Exports: agent_init, agent_step, vqe_energy</div>
 <input id="apiKey" type="password" placeholder="nvapi-..." />
-<select id="model"><option value="deepseek-ai/deepseek-v4-flash" selected>deepseek-ai/deepseek-v4-flash</option></select>
-<textarea id="prompt" style="height:70px">1부터 100까지 짝수 합을 계산하는 Rust 코드를 짜줘. 그리고 Markowitz portfolio 3 assets 예제도 포함.</textarea>
+<select id="model">
+<option value="deepseek-ai/deepseek-v4-flash" selected>deepseek-ai/deepseek-v4-flash (권장)</option>
+<option value="deepseek-ai/deepseek-r1">deepseek-ai/deepseek-r1</option>
+</select>
+<label class="muted">Task Prompt</label>
+<textarea id="prompt">1부터 100까지 짝수 합을 계산하는 Rust 코드. fn main에서 println!으로 결과 출력.</textarea>
 <button id="btn-run">▶ 1. DeepSeek 코드 생성</button>
-<button id="btn-vqe">⚛️ 2. WASM vqe_energy() 직접 호출 (100% 활용)</button>
-<button id="btn-agent">🤖 3. agent_init → agent_step 루프 실행</button>
-<div id="filetree" class="muted"></div>
+<button id="btn-vqe">⚛️ 2. WASM vqe_energy() 호출</button>
+<button id="btn-agent">🤖 3. agent_init → agent_step (수정됨)</button>
+<button id="btn-init">초기화</button>
+<div id="filetree" class="muted" style="margin-top:8px;flex:1;overflow:auto"></div>
 <div class="muted">Status: <span id="status" class="ok">ready</span></div>
-</div><div id="center"><div id="term"></div><div id="diff">// Output</div></div>
+</div>
+<div id="center"><div id="term"></div><div id="diff">// Output / Build log</div></div>
 <script type="module">
 import { Terminal } from "https://cdn.jsdelivr.net/npm/xterm@5.3.0/+esm"
 import initWasm, * as wasm from "./grok_qcore.js"
 const WORKER_URL = "https://nvidia-proxy.parkskwan.workers.dev";
 const term=new Terminal({convertEol:true,fontSize:13,theme:{background:"#0a0a0b"}});term.open(document.getElementById("term"));
-const $=id=>document.getElementById(id);
-await initWasm(); const ver=wasm.version(); $("wasm-ver").textContent=ver; term.writeln(`[ok] ${ver} loaded — exports: ${Object.keys(wasm).join(", ")}`);
+const $=id=>document.getElementById(id); const log=(m,c="")=>term.writeln(c?`[${c}] ${m}`:m);
+
+await initWasm();
+const ver = wasm.version?.() || "0.2.0";
+$("wasm-ver").textContent = ver;
+log(`phase-1: ${ver} / HostIo + AgentState / loaded — exports: ${Object.keys(wasm).join(", ")}`,"ok");
+try{ const r=await fetch("./grok_qcore_bg.wasm",{cache:"no-store"}); const b=await r.arrayBuffer(); $("wasm-size").textContent=`${(b.byteLength/1024).toFixed(1)}KB`; }catch{}
 $("apiKey").value=localStorage.getItem("nv_key")||"";
 const opfsRoot=await navigator.storage.getDirectory();
-async function opfsWrite(p,c){const a=p.split("/").filter(Boolean);const n=a.pop();let d=opfsRoot;for(const x of a)d=await d.getDirectoryHandle(x,{create:true});const h=await d.getFileHandle(n,{create:true});const w=await h.createWritable();await w.write(c);await w.close();term.writeln(`[wrote] ${p}`);}
+async function opfsWrite(p,c){const a=p.split("/").filter(Boolean);const n=a.pop();let d=opfsRoot;for(const x of a)d=await d.getDirectoryHandle(x,{create:true});const h=await d.getFileHandle(n,{create:true});const w=await h.createWritable();await w.write(c);await w.close();}
 async function opfsList(dh=opfsRoot,pre=""){const o=[];for await(const[k,v] of dh.entries()){if(v.kind==="file")o.push(pre+k);else o.push(...await opfsList(v,pre+k+"/"))}return o;}
 async function refresh(){const f=await opfsList();$("filetree").innerHTML=f.map(x=>`<div>📄 ${x}</div>`).join("")||"(empty)";}
 
 $("btn-run").onclick=async()=>{
-  const key=$("apiKey").value.trim(); if(!key.startsWith("nvapi-")){term.writeln("키 필요");return;} localStorage.setItem("nv_key",key);
-  const body=JSON.stringify({model:$("model").value,messages:[{role:"system",content:"Output JSON {type:Edit,path,diff} only."},{role:"user",content:$("prompt").value}],max_tokens:8000,stream:false});
-  const r=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`},body}); const j=await r.json(); const out=j.choices[0].message.content; term.writeln(`[out] ${out.slice(0,600)}`); const tool=JSON.parse(out.match(/\{[\s\S]*\}/)[0]); $("diff").textContent=JSON.stringify(tool,null,2); await opfsWrite(tool.path,tool.diff); await refresh();
+  const key=$("apiKey").value.trim(); if(!key.startsWith("nvapi-")){log("nvapi- 키 필요","err");return;} localStorage.setItem("nv_key",key);
+  log(`[nvidia] ${$("model").value} → generating...`);
+  try{
+    const body=JSON.stringify({model:$("model").value,messages:[{role:"system",content:"You are grok-qcore builder. Output ONE JSON only: {\"type\":\"Edit\",\"path\":\"main.rs\",\"diff\":\"full rust code\"}. No markdown."},{role:"user",content:$("prompt").value}],temperature:0.7,max_tokens:8000,stream:false});
+    const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`},body}); const txt=await res.text(); if(!res.ok) throw new Error(txt.slice(0,800));
+    const j=JSON.parse(txt); const out=j.choices?.[0]?.message?.content||""; log(`[out] ${out.slice(0,500)}`); const m=out.match(/\{[\s\S]*\}/); if(!m) throw new Error("No JSON"); const tool=JSON.parse(m[0]);
+    $("diff").textContent=JSON.stringify(tool,null,2); await opfsWrite(tool.path,tool.diff); await refresh(); log(`[wrote] ${tool.path}`,"ok");
+  }catch(e){ log(`[error] ${e.message}`,"err"); }
 };
 
 $("btn-vqe").onclick=async()=>{
-  try{
-    term.writeln(`[vqe] calling wasm.vqe_energy()...`);
-    // vqe_energy 시그니처를 자동 탐색: 보통 (returns_ptr, cov_ptr) 또는 파라미터 없음
-    let result;
-    if(wasm.vqe_energy.length===0){ result = wasm.vqe_energy(); }
-    else if(wasm.vqe_energy.length===1){ result = wasm.vqe_energy(0.5); }
-    else { result = wasm.vqe_energy(); }
-    term.writeln(`[vqe] result = ${result} — type: ${typeof result}`);
-    $("diff").textContent = `vqe_energy() = ${result}\n\nThis is the Markowitz efficient frontier energy.\n100% WASM native execution success!`;
-    $("status").textContent = `VQE Success: ${result}`;
-  }catch(e){ term.writeln(`[vqe error] ${e.message}\n${e.stack}`); }
+  try{ log(`[vqe] calling vqe_energy()...`); const r=wasm.vqe_energy(); log(`[vqe] result = ${r} (type ${typeof r})`,"ok"); $("diff").textContent=`vqe_energy() = ${r}\ncos(0.5) = ${Math.cos(0.5)}\nMatch: ${Math.abs(r-Math.cos(0.5))<1e-9? "YES - Ry(0.5) ansatz" : "custom"}`; $("status").textContent=`VQE: ${r}`; }catch(e){ log(`[vqe error] ${e.message}`,"err"); }
 };
 
 $("btn-agent").onclick=async()=>{
   try{
-    term.writeln(`[agent] agent_init()...`); const s0 = wasm.agent_init(); term.writeln(`init => ${JSON.stringify(s0).slice(0,500)}`);
-    term.writeln(`[agent] agent_step() loop 5 times...`);
-    for(let i=0;i<5;i++){ const s = wasm.agent_step(); term.writeln(`step ${i+1} => ${JSON.stringify(s).slice(0,500)}`); await new Promise(r=>setTimeout(r,200)); }
-    term.writeln(`[ok] Agent loop 100% executed!`); $("status").textContent="Agent 100% Done";
-  }catch(e){ term.writeln(`[agent error] ${e.message}`); }
+    log(`[agent] agent_init()...`); let stateStr = wasm.agent_init(); log(`init => ${stateStr}`);
+    let state = JSON.parse(stateStr); log(`[ok] parsed: steps=${state.steps}, history len=${state.history?.length||0}`,"ok");
+    log(`[agent] agent_step(state) loop 10 times... (length check fixed)`);
+    for(let i=0;i<10;i++){
+      let nextStr;
+      // 핵심 수정: agent_step은 state 문자열을 요구함
+      try{ nextStr = wasm.agent_step(stateStr); }
+      catch(e){ log(`[agent error] step ${i+1} failed: ${e.message}`,"err"); log(`signature: agent_step.length=${wasm.agent_step.length}, typeof stateStr=${typeof stateStr}`,"err"); break; }
+      stateStr = nextStr; state = JSON.parse(stateStr);
+      log(`step ${i+1} => steps=${state.steps}, history=${JSON.stringify(state.history).slice(0,100)}`);
+      try{ const e=wasm.vqe_energy(); log(` └ vqe_energy=${e}`); }catch{}
+      await new Promise(r=>setTimeout(r,150));
+    }
+    log(`[ok] Agent loop finished! Final: ${stateStr.slice(0,400)}`,"ok"); $("status").textContent=`Agent Done: ${state.steps} steps`;
+  }catch(e){ log(`[agent fatal] ${e.message}\n${e.stack}`,"err"); }
 };
+
+$("btn-init").onclick=async()=>{ await opfsWrite("main.rs",`fn main(){ println!("grok-build 100% ready"); }`); await refresh(); log("init done","ok"); }
 await refresh();
 </script></body></html>
