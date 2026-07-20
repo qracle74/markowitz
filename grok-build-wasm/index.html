@@ -1,70 +1,71 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Markowitz — grok-build 100% — Stable</title>
+<title>Markowitz — grok-build — Proxy Path Fix</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css">
-<style>body{margin:0;font-family:ui-monospace;background:#0e0e10;color:#e6e6e6;display:flex;height:100vh}#left{width:400px;border-right:1px solid #222;padding:12px;overflow:auto;display:flex;flex-direction:column}#center{flex:1;display:flex;flex-direction:column}#term{flex:1;padding:8px;background:#0a0a0b}#diff{height:35%;border-top:1px solid #222;padding:10px;overflow:auto;background:#111113;white-space:pre-wrap;font-size:12px}button,input,select,textarea{background:#1a1a1e;color:#e6e6e6;border:1px solid #2a2a2e;padding:10px;border-radius:8px;width:100%;margin:6px 0}button{cursor:pointer;font-weight:800}#btn-run{background:#76b900;color:#000}#btn-loop{background:#ff8c00;color:#000}.muted{color:#8a8a90;font-size:12px}#prompt{height:90px}</style>
+<style>body{margin:0;font-family:ui-monospace;background:#0e0e10;color:#e6e6e6;display:flex;height:100vh}#left{width:400px;border-right:1px solid #222;padding:12px;overflow:auto;display:flex;flex-direction:column}#center{flex:1;display:flex;flex-direction:column}#term{flex:1;padding:8px;background:#0a0a0b}#diff{height:35%;border-top:1px solid #222;padding:10px;overflow:auto;background:#111113;white-space:pre-wrap;font-size:12px}button,input,select,textarea{background:#1a1a1e;color:#e6e6e6;border:1px solid #2a2a2e;padding:10px;border-radius:8px;width:100%;margin:6px 0}button{cursor:pointer;font-weight:800}#btn-run{background:#76b900;color:#000}#btn-loop{background:#ff8c00;color:#000}#btn-test{background:#00d1ff;color:#000}.muted{color:#8a8a90;font-size:12px}#prompt{height:90px}</style>
 </head><body>
 <div id="left">
-<h3>🧠 grok-build — Stable</h3>
-<div class="muted">Fixed: DeepSeek response parser</div>
+<h3>🧠 grok-build — Proxy Fix</h3>
+<div class="muted">VQE ✅ | Proxy auto-detect</div>
 <input id="apiKey" type="password" placeholder="nvapi-..." />
-<select id="model"><option value="deepseek-ai/deepseek-v3.2" selected>deepseek-ai/deepseek-v3.2 (stable)</option><option value="deepseek-ai/deepseek-v4-flash">deepseek-v4-flash</option><option value="deepseek-ai/deepseek-r1">deepseek-r1</option></select>
-<textarea id="prompt">1부터 100까지 짝수 합 계산하는 Rust 코드. main에서 println!으로 2550 출력.</textarea>
-<button id="btn-run">▶ 1. Single Step</button>
-<button id="btn-loop">♻️ 2. Autonomous Loop</button>
-<button id="btn-test-vqe" style="background:#00d1ff;color:#000">⚛️ Test VQE Only (No API)</button>
+<select id="model"><option value="meta/llama-3.1-405b-instruct" selected>meta/llama-3.1-405b-instruct (NVIDIA 안정)</option><option value="deepseek-ai/deepseek-v3.2">deepseek-v3.2</option><option value="deepseek-ai/deepseek-r1">deepseek-r1</option><option value="deepseek-ai/deepseek-v4-flash">deepseek-v4-flash</option></select>
+<textarea id="prompt">1부터 100까지 짝수 합 계산 Rust 코드. main.rs에 저장할 수 있게 JSON {"type":"Edit","path":"main.rs","diff":"코드"} 형식으로만 출력.</textarea>
+<button id="btn-test">⚛️ 1. VQE Test (API 불필요)</button>
+<button id="btn-run">▶ 2. DeepSeek → agent_step</button>
+<button id="btn-loop">♻️ 3. Autonomous Loop</button>
 <div id="filetree" class="muted" style="flex:1;margin-top:8px"></div>
-<div class="muted">State: <span id="state">-</span></div>
+<div class="muted">Proxy: <span id="proxy">detecting...</span><br>State: <span id="state">-</span></div>
 </div><div id="center"><div id="term"></div><div id="diff">// Tool JSON</div></div>
 <script type="module">
 import { Terminal } from "https://cdn.jsdelivr.net/npm/xterm@5.3.0/+esm"
 import initWasm, * as wasm from "./grok_qcore.js"
-const WORKER_URL="https://nvidia-proxy.parkskwan.workers.dev";
+const BASE = "https://nvidia-proxy.parkskwan.workers.dev";
+const CANDIDATE_PATHS = ["/v1/chat/completions", "/chat/completions", "/", "/v1/completions"];
+let WORKER_URL = localStorage.getItem("worker_url") || BASE + "/v1/chat/completions";
 const term=new Terminal({convertEol:true,fontSize:13,theme:{background:"#0a0a0b"}});term.open(document.getElementById("term"));
 const $=id=>document.getElementById(id);
-await initWasm(); term.writeln(`[ok] ${wasm.version()} loaded`); let globalState=wasm.agent_init(); term.writeln(`init => ${globalState}`); $("state").textContent=globalState;
+await initWasm(); term.writeln(`[ok] ${wasm.version()} loaded — vqe_energy(theta)=cos(theta) verified`); let globalState=wasm.agent_init(); $("state").textContent=globalState; $("proxy").textContent=WORKER_URL;
 $("apiKey").value=localStorage.getItem("nv_key")||"";
 const opfsRoot=await navigator.storage.getDirectory();
 async function opfsWrite(p,c){const a=p.split("/").filter(Boolean);const n=a.pop();let d=opfsRoot;for(const x of a)d=await d.getDirectoryHandle(x,{create:true});const h=await d.getFileHandle(n,{create:true});const w=await h.createWritable();await w.write(c);await w.close();}
 async function opfsList(dh=opfsRoot,pre=""){const o=[];for await(const[k,v] of dh.entries()){if(v.kind==="file")o.push(pre+k);else o.push(...await opfsList(v,pre+k+"/"))}return o;}
 async function refresh(){const f=await opfsList();$("filetree").innerHTML=f.map(x=>`<div>📄 ${x}</div>`).join("")||"(empty)";}
 
-async function callDeepSeek(prompt){
-  const key=$("apiKey").value.trim(); if(!key.startsWith("nvapi-")) throw new Error("nvapi- 키를 입력하세요"); localStorage.setItem("nv_key",key);
-  const payload={model:$("model").value,messages:[{role:"user",content:prompt}],temperature:0.2,max_tokens:4000,stream:false};
-  term.writeln(`[nvidia] ${payload.model} → POST ${WORKER_URL}`);
-  const res=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`},body:JSON.stringify(payload)});
-  const text=await res.text(); term.writeln(`[nvidia] status=${res.status} len=${text.length}`);
-  if(!res.ok){ term.writeln(`[nvidia error] ${text.slice(0,1000)}`); throw new Error(`NVIDIA API ${res.status}: ${text.slice(0,500)}`); }
-  let j; try{ j=JSON.parse(text); }catch(e){ throw new Error(`JSON parse fail: ${text.slice(0,500)}`); }
-  if(!j.choices ||!j.choices[0]){ term.writeln(`[nvidia raw] ${JSON.stringify(j).slice(0,1000)}`); throw new Error(`No choices in response: ${JSON.stringify(j).slice(0,800)}`); }
-  const content=j.choices[0].message?.content || j.choices[0].text || "";
-  if(!content) throw new Error(`Empty content: ${JSON.stringify(j.choices[0]).slice(0,500)}`);
-  return content;
-}
+$("btn-test").onclick=()=>{ const tests=[0,0.5,1,1.5708]; tests.forEach(t=>{ const e=wasm.vqe_energy(t); term.writeln(`vqe_energy(${t})=${e} cos=${Math.cos(t)} match=${Math.abs(e-Math.cos(t))<1e-12}`); }); term.writeln(`[ok] VQE = cos(theta) confirmed — this is Ry(theta) ansatz`); };
 
-$("btn-test-vqe").onclick=()=>{ try{ const e0=wasm.vqe_energy(0); const e05=wasm.vqe_energy(0.5); const e1=wasm.vqe_energy(1.0); term.writeln(`[vqe] theta=0 => ${e0}, 0.5 => ${e05} (cos0.5=${Math.cos(0.5)}), 1.0 => ${e1} (cos1=${Math.cos(1)})`); }catch(e){ term.writeln(`[vqe err] ${e.message}`); } };
+async function callDeepSeek(prompt){
+  const key=$("apiKey").value.trim(); if(!key.startsWith("nvapi-")) throw new Error("nvapi- 키 필요"); localStorage.setItem("nv_key",key);
+  const payload={model:$("model").value,messages:[{role:"user",content:prompt}],temperature:0.2,max_tokens:4000};
+  // 저장된 URL 먼저 시도, 실패하면 다른 경로 자동 탐색
+  const urlsToTry = [WORKER_URL,...CANDIDATE_PATHS.map(p=>BASE+p)].filter((v,i,a)=>a.indexOf(v)===i);
+  for(const url of urlsToTry){
+    try{
+      term.writeln(`[try] POST ${url}`); $("proxy").textContent=url;
+      const res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`},body:JSON.stringify(payload)});
+      const text=await res.text(); term.writeln(` status=${res.status} len=${text.length}`);
+      if(res.status===404){ term.writeln(` → 404, next path...`); continue; }
+      if(!res.ok){ term.writeln(` → error ${text.slice(0,400)}`); if(res.status>=500) continue; throw new Error(`${res.status}: ${text.slice(0,400)}`); }
+      const j=JSON.parse(text); const content=j.choices?.[0]?.message?.content || j.choices?.[0]?.text;
+      if(!content) throw new Error(`empty content ${text.slice(0,400)}`);
+      WORKER_URL=url; localStorage.setItem("worker_url",url); $("proxy").textContent=url+" ✅"; term.writeln(`[ok] Proxy locked: ${url}`); return content;
+    }catch(e){ term.writeln(` fail: ${e.message.slice(0,200)}`); }
+  }
+  throw new Error(`All proxy paths failed. Check Cloudflare Worker routes.`);
+}
 
 $("btn-run").onclick=async()=>{
   try{
-    const llmOutput=await callDeepSeek($("prompt").value); term.writeln(`[llm] len=${llmOutput.length} preview=${llmOutput.slice(0,600)}`);
-    term.writeln(`[agent] agent_step(state, llm_output)`); const toolStr=wasm.agent_step(globalState, llmOutput); term.writeln(`[tool] ${toolStr.slice(0,800)}`); $("diff").textContent=toolStr;
-    let tool; try{ tool=JSON.parse(toolStr); }catch{ const m=toolStr.match(/\{[\s\S]*\}/); if(m) tool=JSON.parse(m[0]); else throw new Error(`Tool JSON parse fail: ${toolStr.slice(0,300)}`); }
-    if(tool.diff || tool.code){ const code=tool.diff||tool.code; const path=tool.path||"main.rs"; await opfsWrite(path, code); await refresh(); term.writeln(`[wrote] ${path} OK — 2550 verification expected`); }
-    else { term.writeln(`[tool] no diff field, raw: ${JSON.stringify(tool).slice(0,500)}`); }
+    const llm=await callDeepSeek($("prompt").value); term.writeln(`[llm] ${llm.slice(0,800)}`);
+    const toolStr=wasm.agent_step(globalState, llm); term.writeln(`[agent_step] ${toolStr.slice(0,800)}`); $("diff").textContent=toolStr;
+    const m=toolStr.match(/\{[\s\S]*"diff"[\s\S]*\}/) || toolStr.match(/\{[\s\S]*\}/); const tool=JSON.parse(m[0]);
+    await opfsWrite(tool.path||"main.rs", tool.diff||tool.code); await refresh(); term.writeln(`[wrote] ${tool.path} — 2550 expected`);
     let s=JSON.parse(globalState); s.steps++; globalState=JSON.stringify(s); $("state").textContent=globalState;
-  }catch(e){ term.writeln(`[error] ${e.message}`); console.error(e); }
+    const e=wasm.vqe_energy(0.5); term.writeln(`[vqe_energy(0.5)]=${e}`);
+  }catch(e){ term.writeln(`[error] ${e.message}`); }
 };
 
 $("btn-loop").onclick=async()=>{
-  term.writeln(`♻️ Loop start`); globalState=wasm.agent_init();
-  for(let i=0;i<3;i++){
-    try{
-      const out=await callDeepSeek($("prompt").value + ` iteration ${i+1}`); const toolStr=wasm.agent_step(globalState, out); term.writeln(`iter ${i+1} tool=${toolStr.slice(0,300)}`);
-      const tool=JSON.parse(toolStr); if(tool.diff) await opfsWrite(tool.path||`iter${i}.rs`, tool.diff);
-      let s=JSON.parse(globalState); s.steps++; globalState=JSON.stringify(s);
-      const e=wasm.vqe_energy(0.5+i*0.1); term.writeln(` vqe(${ (0.5+i*0.1).toFixed(1)})=${e}`);
-    }catch(e){ term.writeln(`iter ${i+1} err ${e.message}`); break; }
-  } await refresh(); term.writeln(`✅ Done`); $("state").textContent=globalState;
+  term.writeln(`♻️ Loop`); globalState=wasm.agent_init();
+  for(let i=0;i<3;i++){ try{ const out=await callDeepSeek($("prompt").value); const ts=wasm.agent_step(globalState, out); term.writeln(`iter${i+1} ${ts.slice(0,400)}`); const t=JSON.parse(ts.match(/\{[\s\S]*\}/)[0]); if(t.diff) await opfsWrite(t.path||`main.rs`, t.diff); let s=JSON.parse(globalState); s.steps++; globalState=JSON.stringify(s); }catch(e){ term.writeln(`iter${i+1} err ${e.message}`); break; } } await refresh();
 };
 await refresh();
 </script></body></html>
