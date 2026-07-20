@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>grok-build-wasm Phase 2 — 70K flat deploy</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css">
+<style>
+  body { margin:0; font-family: ui-monospace, monospace; background:#0e0e10; color:#e6e6e6; display:flex; height:100vh; }
+  #left { width:280px; border-right:1px solid #222; padding:12px; overflow:auto; }
+  #center { flex:1; display:flex; flex-direction:column; }
+  #term { flex:1; padding:8px; background:#0a0a0b; }
+  #diff { height:28%; border-top:1px solid #222; padding:10px; overflow:auto; background:#111113; white-space:pre-wrap; }
+  button { background:#1a1a1e; color:#e6e6e6; border:1px solid #2a2a2e; padding:6px 10px; border-radius:6px; cursor:pointer; }
+ .muted { color:#8a8a90; font-size:12px; }
+</style>
+</head>
+<body>
+  <div id="left">
+    <h3>OPFS — 내 컴퓨터 디스크</h3>
+    <div class="muted">서버로 전송 안 됨. 브라우저 내장 가상 파일시스템.</div>
+    <div style="margin:10px 0; display:flex; gap:8px">
+      <button id="btn-init">샘플 파일 생성</button>
+      <button id="btn-list">목록 새로고침</button>
+    </div>
+    <div id="filetree"></div>
+    <hr style="border-color:#222; margin:14px 0">
+    <div class="muted">WASM: <span id="wasm-size">loading...</span><br>version: <span id="wasm-ver">-</span></div>
+    <div id="log" style="margin-top:10px; font-size:12px;"></div>
+  </div>
+  <div id="center"><div id="term"></div><div id="diff" class="muted">// diff 뷰어</div></div>
+
+<script type="module">
+// 수정점: 같은 폴더에 있는 wasm을 로드하도록 경로 단순화
+// 목적: Pages에서 ./crates/qcore/pkg/... 경로는 404가 나기 쉬움. flat이 가장 확실.
+import { Terminal } from "https://cdn.jsdelivr.net/npm/xterm@5.3.0/+esm"
+import initWasm, * as wasm from "./grok_qcore.js" // <-- 여기 수정: 같은 폴더
+
+const term = new Terminal({ convertEol:true, fontSize:13, theme:{background:"#0a0a0b"} })
+term.open(document.getElementById("term"))
+function termPrint(s){ term.writeln(s); const el=document.getElementById("log"); el.innerHTML+=`<div>${s}</div>`; }
+term.writeln("\x1b[90m[client] loading ./grok_qcore_bg.wasm (70K)...\x1b[0m")
+await initWasm() // grok_qcore.js가 같은 폴더의 .wasm을 자동으로 찾음
+termPrint(`\x1b[32m[client] WASM loaded: ${wasm.version()} — ${wasm.greet("you")}\x1b[0m`)
+document.getElementById("wasm-ver").textContent = wasm.version()
+try{ const r = await fetch("./grok_qcore_bg.wasm"); document.getElementById("wasm-size").textContent = `${r.headers.get('content-length')||70000/1000}KB flat`; }catch{}
+
+const opfsRoot = await navigator.storage.getDirectory()
+async function opfsWrite(path, content){ const parts = path.split("/").filter(Boolean); const name = parts.pop(); let dir = opfsRoot; for(const p of parts){ dir = await dir.getDirectoryHandle(p,{create:true}); } const fh = await dir.getFileHandle(name,{create:true}); const w = await fh.createWritable(); await w.write(content); await w.close(); termPrint(`\x1b[90m[OPFS] wrote ${path}\x1b[0m`)}
+async function opfsRead(path){ const parts = path.split("/").filter(Boolean); const name = parts.pop(); let dir = opfsRoot; for(const p of parts){ dir = await dir.getDirectoryHandle(p); } const fh = await dir.getFileHandle(name); const f = await fh.getFile(); return await f.text(); }
+async function opfsList(dirHandle=opfsRoot, prefix=""){ const out=[]; for await (const [n,h] of dirHandle.entries()){ if(h.kind==="file") out.push(prefix+n); else out.push(...await opfsList(h, prefix+n+"/")); } return out; }
+let agentStateJson = wasm.agent_init()
+async function runMockAgent(t){ const j = wasm.agent_step(agentStateJson, t); const tool=JSON.parse(j); termPrint(`[agent] ${j}`); document.getElementById("diff").textContent=JSON.stringify(tool,null,2); if(tool.type==="Read"){ try{ termPrint((await opfsRead(tool.path)).slice(0,400)) }catch(e){ termPrint(`miss ${tool.path}`)} } else if(tool.type==="Edit"){ await opfsWrite(tool.path, tool.diff); refreshTree(); } }
+async function refreshTree(){ const files = await opfsList(); document.getElementById("filetree").innerHTML = files.map(f=>`<div>📄 ${f}</div>`).join("")||`<span class="muted">(empty)</span>` }
+document.getElementById("btn-init").onclick = async ()=>{ await opfsWrite("src/main.rs", `fn main(){ println!("Hello flat deploy!"); }`); await refreshTree(); await runMockAgent("READ: src/main.rs"); }
+document.getElementById("btn-list").onclick = refreshTree; await refreshTree(); window.runMockAgent=runMockAgent;
+</script>
+</body>
+</html>
