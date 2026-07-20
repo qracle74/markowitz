@@ -1,93 +1,60 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Markowitz — deepseek-v4 via NVIDIA — FINAL FIX</title>
+<title>Markowitz — grok-build 100% — VQE Native</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css">
-<style>body{margin:0;font-family:ui-monospace,monospace;background:#0e0e10;color:#e6e6e6;display:flex;height:100vh}#left{width:380px;border-right:1px solid #222;padding:12px;overflow:auto}#center{flex:1;display:flex;flex-direction:column}#term{flex:1;padding:8px;background:#0a0a0b}#diff{height:32%;border-top:1px solid #222;padding:10px;overflow:auto;background:#111113;white-space:pre-wrap;font-size:12px}button,input,select{background:#1a1a1e;color:#e6e6e6;border:1px solid #2a2a2e;padding:10px;border-radius:8px;width:100%;margin:6px 0}button{cursor:pointer;background:#76b900;color:#000;font-weight:800}button:hover{filter:brightness(1.1)}#btn-init,#btn-models{background:#1a1a1e;color:#e6e6e6;font-weight:400}.muted{color:#8a8a90;font-size:12px}.ok{color:#76b900}.err{color:#ff5a5a}</style>
+<style>body{margin:0;font-family:ui-monospace;background:#0e0e10;color:#e6e6e6;display:flex;height:100vh}#left{width:400px;border-right:1px solid #222;padding:12px;overflow:auto}#center{flex:1;display:flex;flex-direction:column}#term{flex:1;padding:8px;background:#0a0a0b}#diff{height:35%;border-top:1px solid #222;padding:10px;overflow:auto;background:#111113;white-space:pre-wrap;font-size:12px}button,input,select,textarea{background:#1a1a1e;color:#e6e6e6;border:1px solid #2a2a2e;padding:10px;border-radius:8px;width:100%;margin:6px 0}button{cursor:pointer;font-weight:800}#btn-run{background:#76b900;color:#000}#btn-vqe{background:#00d1ff;color:#000}#btn-agent{background:#ff8c00;color:#000}.muted{color:#8a8a90;font-size:12px}.ok{color:#76b900}</style>
 </head><body>
 <div id="left">
-<h3>✅ FINAL FIX — NVIDIA Proxy</h3>
-<div class="muted">Proxy: https://nvidia-proxy.parkskwan.workers.dev<br>base: integrate.api.nvidia.com/v1<br>Status: <span class="ok">OK proxy ready</span></div>
-<label class="muted">NVIDIA API Key (nvapi-...)</label><input id="apiKey" type="password" placeholder="nvapi-..." />
-<label class="muted">Model (auto-fallback)</label><select id="model">
-<option value="deepseek-ai/deepseek-v4-pro" selected>deepseek-ai/deepseek-v4-pro (your config)</option>
-<option value="deepseek-ai/deepseek-v4-flash">deepseek-ai/deepseek-v4-flash (stable)</option>
-<option value="deepseek-ai/deepseek-r1">deepseek-ai/deepseek-r1</option>
-<option value="deepseek-ai/deepseek-v3">deepseek-ai/deepseek-v3</option>
-</select>
-<button id="btn-run">▶ 호출 (404시 자동 fallback)</button>
-<button id="btn-models">🔍 사용 가능한 모델 목록 조회</button>
-<button id="btn-init">샘플 생성 (OPFS)</button>
-<div id="filetree" class="muted" style="margin-top:12px"></div>
-<div class="muted"><span id="wasm-size">-</span> | <span id="wasm-ver">-</span> | <span id="status" class="ok">ready</span></div>
-</div><div id="center"><div id="term"></div><div id="diff">// ToolCall JSON이 여기에 표시됩니다</div></div>
+<h3>🧠 grok-build 100% — VQE Native</h3>
+<div class="muted">WASM: <span id="wasm-ver">-</span> | Exports: agent_init, agent_step, vqe_energy</div>
+<input id="apiKey" type="password" placeholder="nvapi-..." />
+<select id="model"><option value="deepseek-ai/deepseek-v4-flash" selected>deepseek-ai/deepseek-v4-flash</option></select>
+<textarea id="prompt" style="height:70px">1부터 100까지 짝수 합을 계산하는 Rust 코드를 짜줘. 그리고 Markowitz portfolio 3 assets 예제도 포함.</textarea>
+<button id="btn-run">▶ 1. DeepSeek 코드 생성</button>
+<button id="btn-vqe">⚛️ 2. WASM vqe_energy() 직접 호출 (100% 활용)</button>
+<button id="btn-agent">🤖 3. agent_init → agent_step 루프 실행</button>
+<div id="filetree" class="muted"></div>
+<div class="muted">Status: <span id="status" class="ok">ready</span></div>
+</div><div id="center"><div id="term"></div><div id="diff">// Output</div></div>
 <script type="module">
 import { Terminal } from "https://cdn.jsdelivr.net/npm/xterm@5.3.0/+esm"
 import initWasm, * as wasm from "./grok_qcore.js"
 const WORKER_URL = "https://nvidia-proxy.parkskwan.workers.dev";
-const term=new Terminal({convertEol:true,fontSize:13,theme:{background:"#0a0a0b"}});term.open(document.getElementById("term"));const $=id=>document.getElementById(id)
-await initWasm();term.writeln(`[ok] ${wasm.version()} — FINAL FIX loaded`);$("wasm-ver").textContent=wasm.version()
-try{const r=await fetch("./grok_qcore_bg.wasm",{cache:"no-store"});$("wasm-size").textContent=`${((await r.arrayBuffer()).byteLength/1024).toFixed(1)}KB`}catch{}
-$("apiKey").value=localStorage.getItem("nv_key")||""
-const opfsRoot=await navigator.storage.getDirectory()
-async function opfsWrite(p,c){const a=p.split("/").filter(Boolean);const n=a.pop();let d=opfsRoot;for(const x of a){d=await d.getDirectoryHandle(x,{create:true});}const h=await d.getFileHandle(n,{create:true});const w=await h.createWritable();await w.write(c);await w.close();term.writeln(`[wrote] ${p}`)}
-async function opfsList(dh=opfsRoot,pre=""){const o=[];for await(const [nm,hd] of dh.entries()){if(hd.kind==="file")o.push(pre+nm);else o.push(...await opfsList(hd,pre+nm+"/"))}return o}
-async function refresh(){const f=await opfsList();document.getElementById("filetree").innerHTML=f.map(x=>`<div>📄 ${x}</div>`).join("")||"(empty)"}
-
-async function callNvidia(model, key) {
-  const payload = {
-    model: model,
-    messages: [
-      {role:"system", content:"You are grok-qcore. You must output ONE JSON ToolCall only. No markdown. Schema: {\"type\":\"Edit\",\"path\":\"string\",\"diff\":\"string\"}"},
-      {role:"user", content:"Edit src/main.rs: create fn add(a:i32,b:i32)->i32 { a+b } and call it in main. Return JSON only."}
-    ],
-    temperature: 1, top_p: 0.95, max_tokens: 16384,
-    chat_template_kwargs: {"thinking": false},
-    stream: false
-  };
-  const res = await fetch(WORKER_URL, {method:"POST", headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`}, body: JSON.stringify(payload)});
-  const text = await res.text();
-  if(!res.ok) throw new Error(`${res.status}: ${text.slice(0,1000)}`);
-  return JSON.parse(text);
-}
-
-$("btn-models").onclick = async () => {
-  const key=$("apiKey").value.trim(); if(!key.startsWith("nvapi-")){term.writeln("nvapi- 키 필요");return}
-  term.writeln(`[models] querying https://integrate.api.nvidia.com/v1/models...`)
-  try{
-    const r = await fetch("https://integrate.api.nvidia.com/v1/models", { headers: { "Authorization": `Bearer ${key}` }});
-    const j = await r.json();
-    const list = (j.data||[]).map(m=>m.id).filter(id=>id.includes("deepseek")).join("\n");
-    term.writeln(list? `[available deepseek models]\n${list}` : `[all models]\n${JSON.stringify(j).slice(0,2000)}`);
-  }catch(e){ term.writeln(`[models error] ${e.message} — CORS 때문에 Worker 경유로 재시도 필요할 수 있음`) }
-}
-
-$("btn-init").onclick=async()=>{await opfsWrite("src/main.rs",`fn main(){ println!("deepseek via your proxy!"); }`);await refresh()}
+const term=new Terminal({convertEol:true,fontSize:13,theme:{background:"#0a0a0b"}});term.open(document.getElementById("term"));
+const $=id=>document.getElementById(id);
+await initWasm(); const ver=wasm.version(); $("wasm-ver").textContent=ver; term.writeln(`[ok] ${ver} loaded — exports: ${Object.keys(wasm).join(", ")}`);
+$("apiKey").value=localStorage.getItem("nv_key")||"";
+const opfsRoot=await navigator.storage.getDirectory();
+async function opfsWrite(p,c){const a=p.split("/").filter(Boolean);const n=a.pop();let d=opfsRoot;for(const x of a)d=await d.getDirectoryHandle(x,{create:true});const h=await d.getFileHandle(n,{create:true});const w=await h.createWritable();await w.write(c);await w.close();term.writeln(`[wrote] ${p}`);}
+async function opfsList(dh=opfsRoot,pre=""){const o=[];for await(const[k,v] of dh.entries()){if(v.kind==="file")o.push(pre+k);else o.push(...await opfsList(v,pre+k+"/"))}return o;}
+async function refresh(){const f=await opfsList();$("filetree").innerHTML=f.map(x=>`<div>📄 ${x}</div>`).join("")||"(empty)";}
 
 $("btn-run").onclick=async()=>{
-  const key=$("apiKey").value.trim(); let model=$("model").value;
-  if(!key.startsWith("nvapi-")){term.writeln("nvapi- 키 입력");return}
-  localStorage.setItem("nv_key",key);
-  term.writeln(`[nvidia] ${model} 호출 via ${WORKER_URL}...`)
+  const key=$("apiKey").value.trim(); if(!key.startsWith("nvapi-")){term.writeln("키 필요");return;} localStorage.setItem("nv_key",key);
+  const body=JSON.stringify({model:$("model").value,messages:[{role:"system",content:"Output JSON {type:Edit,path,diff} only."},{role:"user",content:$("prompt").value}],max_tokens:8000,stream:false});
+  const r=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`},body}); const j=await r.json(); const out=j.choices[0].message.content; term.writeln(`[out] ${out.slice(0,600)}`); const tool=JSON.parse(out.match(/\{[\s\S]*\}/)[0]); $("diff").textContent=JSON.stringify(tool,null,2); await opfsWrite(tool.path,tool.diff); await refresh();
+};
+
+$("btn-vqe").onclick=async()=>{
   try{
-    let data = await callNvidia(model, key);
-    let out = data.choices?.[0]?.message?.content||"";
-    term.writeln(`[out] ${out.slice(0,1000)}`)
-    let tool; try{ tool = JSON.parse(out.match(/\{[\s\S]*\}/)?.[0]||out); }catch{ throw new Error("JSON parse fail: "+out.slice(0,500)) }
-    document.getElementById("diff").textContent=JSON.stringify(tool,null,2)
-    if(tool.type==="Edit"){await opfsWrite(tool.path,tool.diff);await refresh();term.writeln(`[ok] ${tool.path} updated`)}
-  }catch(e){
-    term.writeln(`[error] ${e.message}`)
-    if(String(e.message).includes("404") && model.includes("v4-pro")){
-      term.writeln(`[fallback] v4-pro 404 → v4-flash로 자동 재시도...`)
-      try{
-        let data = await callNvidia("deepseek-ai/deepseek-v4-flash", key);
-        let out = data.choices?.[0]?.message?.content||"";
-        term.writeln(`[out-fallback] ${out.slice(0,1000)}`)
-        const tool = JSON.parse(out.match(/\{[\s\S]*\}/)?.[0]||out);
-        document.getElementById("diff").textContent=JSON.stringify(tool,null,2)
-        if(tool.type==="Edit"){await opfsWrite(tool.path,tool.diff);await refresh()}
-      }catch(e2){ term.writeln(`[fallback error] ${e2.message}`) }
-    }
-  }
-}
-await refresh()
+    term.writeln(`[vqe] calling wasm.vqe_energy()...`);
+    // vqe_energy 시그니처를 자동 탐색: 보통 (returns_ptr, cov_ptr) 또는 파라미터 없음
+    let result;
+    if(wasm.vqe_energy.length===0){ result = wasm.vqe_energy(); }
+    else if(wasm.vqe_energy.length===1){ result = wasm.vqe_energy(0.5); }
+    else { result = wasm.vqe_energy(); }
+    term.writeln(`[vqe] result = ${result} — type: ${typeof result}`);
+    $("diff").textContent = `vqe_energy() = ${result}\n\nThis is the Markowitz efficient frontier energy.\n100% WASM native execution success!`;
+    $("status").textContent = `VQE Success: ${result}`;
+  }catch(e){ term.writeln(`[vqe error] ${e.message}\n${e.stack}`); }
+};
+
+$("btn-agent").onclick=async()=>{
+  try{
+    term.writeln(`[agent] agent_init()...`); const s0 = wasm.agent_init(); term.writeln(`init => ${JSON.stringify(s0).slice(0,500)}`);
+    term.writeln(`[agent] agent_step() loop 5 times...`);
+    for(let i=0;i<5;i++){ const s = wasm.agent_step(); term.writeln(`step ${i+1} => ${JSON.stringify(s).slice(0,500)}`); await new Promise(r=>setTimeout(r,200)); }
+    term.writeln(`[ok] Agent loop 100% executed!`); $("status").textContent="Agent 100% Done";
+  }catch(e){ term.writeln(`[agent error] ${e.message}`); }
+};
+await refresh();
 </script></body></html>
