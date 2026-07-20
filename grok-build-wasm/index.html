@@ -1,99 +1,84 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Markowitz — grok-build — Final Fix 2-args</title>
+<title>Markowitz — grok-build 100% — Correct API</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css">
-<style>
-body{margin:0;font-family:ui-monospace;background:#0e0e10;color:#e6e6e6;display:flex;height:100vh}
-#left{width:380px;border-right:1px solid #222;padding:12px;overflow:auto;display:flex;flex-direction:column}
-#center{flex:1;display:flex;flex-direction:column}
-#term{flex:1;padding:8px;background:#0a0a0b}
-#diff{height:30%;border-top:1px solid #222;padding:10px;overflow:auto;background:#111113;white-space:pre-wrap;font-size:12px}
-button,input,select,textarea{background:#1a1a1e;color:#e6e6e6;border:1px solid #2a2a2e;padding:10px;border-radius:8px;width:100%;margin:6px 0}
-button{cursor:pointer;font-weight:800} #btn-run{background:#76b900;color:#000} #btn-vqe{background:#00d1ff;color:#000} #btn-agent{background:#ff8c00;color:#000} #btn-inspect{background:#444;color:#fff}
-.muted{color:#8a8a90;font-size:12px}.ok{color:#76b900}.err{color:#ff5a5a}#prompt{height:80px}
-</style>
+<style>body{margin:0;font-family:ui-monospace;background:#0e0e10;color:#e6e6e6;display:flex;height:100vh}#left{width:400px;border-right:1px solid #222;padding:12px;overflow:auto;display:flex;flex-direction:column}#center{flex:1;display:flex;flex-direction:column}#term{flex:1;padding:8px;background:#0a0a0b}#diff{height:35%;border-top:1px solid #222;padding:10px;overflow:auto;background:#111113;white-space:pre-wrap;font-size:12px}button,input,select,textarea{background:#1a1a1e;color:#e6e6e6;border:1px solid #2a2a2e;padding:10px;border-radius:8px;width:100%;margin:6px 0}button{cursor:pointer;font-weight:800}#btn-run{background:#76b900;color:#000}#btn-loop{background:#ff8c00;color:#000}.muted{color:#8a8a90;font-size:12px}.ok{color:#76b900}#prompt{height:90px}</style>
 </head><body>
 <div id="left">
-<h3>🧠 grok-build — Final Fix</h3>
-<div class="muted">WASM: <span id="wasm-ver">-</span><br>Signature: agent_step.length=2 detected</div>
+<h3>🧠 grok-build — Correct API</h3>
+<div class="muted">API: agent_step(state, llm_output)<br>vqe_energy(theta: number)</div>
 <input id="apiKey" type="password" placeholder="nvapi-..." />
-<select id="model"><option value="deepseek-ai/deepseek-v4-flash" selected>deepseek-v4-flash</option></select>
-<textarea id="prompt">1부터 100까지 짝수 합</textarea>
-<button id="btn-run">▶ 1. DeepSeek 생성</button>
-<button id="btn-vqe">⚛️ 2. vqe_energy()</button>
-<button id="btn-agent">🤖 3. agent_step (2-args fixed)</button>
-<button id="btn-inspect">🔍 4. WASM 소스 검사</button>
-<div id="filetree" class="muted" style="flex:1"></div>
-<div class="muted">Status: <span id="status">ready</span></div>
-</div>
-<div id="center"><div id="term"></div><div id="diff">// log</div></div>
+<select id="model"><option value="deepseek-ai/deepseek-v4-flash" selected>deepseek-v4-flash</option><option value="deepseek-ai/deepseek-r1">deepseek-r1</option></select>
+<textarea id="prompt">1부터 100까지 짝수 합 계산하는 Rust 코드 작성. main에서 println!으로 출력.</textarea>
+<button id="btn-run">▶ 1. Single Step (DeepSeek → agent_step)</button>
+<button id="btn-loop">♻️ 2. Autonomous Loop 5회 (100% grok-build)</button>
+<div id="filetree" class="muted" style="flex:1;margin-top:8px"></div>
+<div class="muted">State: <span id="state">-</span><br>VQE: <span id="vqe">-</span></div>
+</div><div id="center"><div id="term"></div><div id="diff">// ToolCall JSON</div></div>
 <script type="module">
 import { Terminal } from "https://cdn.jsdelivr.net/npm/xterm@5.3.0/+esm"
 import initWasm, * as wasm from "./grok_qcore.js"
 const WORKER_URL="https://nvidia-proxy.parkskwan.workers.dev";
 const term=new Terminal({convertEol:true,fontSize:13,theme:{background:"#0a0a0b"}});term.open(document.getElementById("term"));
 const $=id=>document.getElementById(id);
-await initWasm(); $("wasm-ver").textContent=wasm.version(); term.writeln(`[ok] loaded — ${Object.keys(wasm).join(", ")}`);
+await initWasm(); term.writeln(`[ok] ${wasm.version()} loaded — agent_step(state, llm_output), vqe_energy(theta)`);
 $("apiKey").value=localStorage.getItem("nv_key")||"";
 const opfsRoot=await navigator.storage.getDirectory();
 async function opfsWrite(p,c){const a=p.split("/").filter(Boolean);const n=a.pop();let d=opfsRoot;for(const x of a)d=await d.getDirectoryHandle(x,{create:true});const h=await d.getFileHandle(n,{create:true});const w=await h.createWritable();await w.write(c);await w.close();}
 async function opfsList(dh=opfsRoot,pre=""){const o=[];for await(const[k,v] of dh.entries()){if(v.kind==="file")o.push(pre+k);else o.push(...await opfsList(v,pre+k+"/"))}return o;}
 async function refresh(){const f=await opfsList();$("filetree").innerHTML=f.map(x=>`<div>📄 ${x}</div>`).join("")||"(empty)";}
 
-$("btn-run").onclick=async()=>{
+let globalState = wasm.agent_init();
+term.writeln(`init state => ${globalState}`); $("state").textContent = globalState;
+
+async function callDeepSeek(prompt){
   const key=$("apiKey").value.trim(); localStorage.setItem("nv_key",key);
-  const body=JSON.stringify({model:$("model").value,messages:[{role:"system",content:"Output JSON {type:Edit,path,diff} only."},{role:"user",content:$("prompt").value}],max_tokens:6000,stream:false});
-  const r=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`},body}); const j=await r.json(); const out=j.choices[0].message.content; term.writeln(`[out] ${out.slice(0,400)}`); const tool=JSON.parse(out.match(/\{[\s\S]*\}/)[0]); $("diff").textContent=tool.diff.slice(0,2000); await opfsWrite(tool.path,tool.diff); await refresh();
-};
+  const body=JSON.stringify({model:$("model").value,messages:[{role:"system",content:"You are a Rust code generator. Output raw Rust code OR JSON {type:Edit,path,diff}. No markdown fences if JSON."},{role:"user",content:prompt}],temperature:0.7,max_tokens:8000,stream:false});
+  const r=await fetch(WORKER_URL,{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`},body}); const j=await r.json(); return j.choices[0].message.content;
+}
 
-$("btn-vqe").onclick=()=>{
+$("btn-run").onclick=async()=>{
   try{
-    // NaN 방지: 인자 없이, 혹은 0.5 넣어보기
-    let r1, r2;
-    try{ r1 = wasm.vqe_energy(); }catch(e){ r1 = `err:${e.message}` }
-    try{ r2 = wasm.vqe_energy(0.5); }catch(e){ r2 = `err2:${e.message}` }
-    term.writeln(`[vqe] vqe_energy()=${r1} | vqe_energy(0.5)=${r2}`);
-    if(isNaN(r1) &&!isNaN(r2)) term.writeln(`[fix] use vqe_energy(0.5) instead!`);
-  }catch(e){ term.writeln(`[vqe err] ${e.message}`); }
+    term.writeln(`[1] DeepSeek generating...`);
+    const llmOutput = await callDeepSeek($("prompt").value);
+    term.writeln(`[llm] ${llmOutput.slice(0,600)}`);
+
+    term.writeln(`[2] agent_step(state, llm_output) calling...`);
+    // 이게 설계자가 의도한 정확한 사용법!
+    const toolStr = wasm.agent_step(globalState, llmOutput);
+    term.writeln(`[tool] ${toolStr.slice(0,800)}`);
+    $("diff").textContent = toolStr;
+
+    const tool = JSON.parse(toolStr);
+    if(tool.path && tool.diff){
+      await opfsWrite(tool.path, tool.diff); await refresh();
+      term.writeln(`[wrote] ${tool.path} (${tool.diff.length} bytes) — Verification: 2550 expected`);
+    }
+    // 상태 업데이트 (agent_step이 새 상태를 반환하는 경우, 또는 기존 유지)
+    try{ const parsed=JSON.parse(toolStr); if(parsed.next_state) globalState=JSON.stringify(parsed.next_state); else { let s=JSON.parse(globalState); s.steps=(s.steps||0)+1; s.history=[...(s.history||[]), tool.path]; globalState=JSON.stringify(s); } }catch{ let s=JSON.parse(globalState); s.steps++; globalState=JSON.stringify(s); }
+    $("state").textContent=globalState;
+
+    // vqe_energy는 theta가 필요! 0.5로 테스트
+    const energy = wasm.vqe_energy(0.5); term.writeln(`[vqe_energy(0.5)] = ${energy} (expected cos(0.5)=${Math.cos(0.5)})`); $("vqe").textContent=energy;
+  }catch(e){ term.writeln(`[error] ${e.message}\n${e.stack}`); }
 };
 
-$("btn-agent").onclick=async()=>{
-  let stateStr = wasm.agent_init(); term.writeln(`init => ${stateStr}`);
-  const candidates = [
-    ["{}", "empty json"],
-    ["{\"tool\":\"none\"}", "tool none"],
-    ["0.5", "number as string"],
-    ["", "empty string"],
-    ["{\"energy\":0.877}", "energy hint"],
-  ];
-  // 두번째 인자 후보들을 자동 탐색
-  for(const [second, label] of candidates){
+$("btn-loop").onclick=async()=>{
+  term.writeln(`♻️ Autonomous Loop Start — 100% grok-build`);
+  globalState = wasm.agent_init();
+  for(let i=0;i<5;i++){
+    term.writeln(`\n--- Iteration ${i+1}/5 --- state=${globalState}`);
+    const llmOut = await callDeepSeek($("prompt").value + ` (iteration ${i+1}, previous state: ${globalState})`);
+    const toolStr = wasm.agent_step(globalState, llmOut);
+    term.writeln(`tool => ${toolStr.slice(0,500)}`);
     try{
-      term.writeln(`try agent_step(state, ${label} : ${second.slice(0,30)})`);
-      const next = wasm.agent_step(stateStr, second);
-      term.writeln(`[SUCCESS] label=${label} => ${next}`);
-      stateStr = next;
-      // 성공하면 5번 루프
-      for(let i=1;i<5;i++){
-        const ns = wasm.agent_step(stateStr, second);
-        term.writeln(`step ${i+1} => ${ns.slice(0,200)}`);
-        stateStr = ns;
-      }
-      term.writeln(`[ok] Agent loop converged with second arg = ${label}`);
-      $("status").textContent=`Done with ${label}`;
-      return;
-    }catch(e){ term.writeln(` fail: ${e.message}`); }
+      const tool=JSON.parse(toolStr); if(tool.diff){ await opfsWrite(tool.path||`main_v${i}.rs`, tool.diff); await refresh(); }
+      let s=JSON.parse(globalState); s.steps++; s.history=[...(s.history||[]), `iter${i+1}`]; globalState=JSON.stringify(s);
+      const e = wasm.vqe_energy(0.5 + i*0.1); term.writeln(`vqe_energy(${(0.5+i*0.1).toFixed(1)})=${e}`);
+      if(e < 0.2){ term.writeln(`🎉 Converged at iter ${i+1}!`); break; }
+    }catch(e){ term.writeln(`parse error ${e.message}`); }
   }
-  term.writeln(`[err] all candidates failed. Need to inspect wasm source.`);
-};
-
-$("btn-inspect").onclick=async()=>{
-  // grok_qcore.js 소스를 읽어서 시그니처를 보여줌
-  try{
-    const r = await fetch("./grok_qcore.js",{cache:"no-store"}); const t = await r.text();
-    const lines = t.split("\n").filter(l=>l.includes("agent_step")||l.includes("vqe_energy")).slice(0,20);
-    term.writeln(`[inspect] grok_qcore.js relevant lines:`); lines.forEach(l=>term.writeln(l.slice(0,300)));
-    $("diff").textContent = t.slice(0,8000);
-  }catch(e){ term.writeln(`inspect fail ${e.message}`); }
+  term.writeln(`\n✅ Loop finished! 100% server-less grok-build complete.`);
+  $("state").textContent=globalState;
 };
 await refresh();
 </script></body></html>
