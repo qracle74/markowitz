@@ -1,78 +1,64 @@
 <!doctype html><html lang="ko"><head><meta charset="utf-8"/>
-<title>grok-build-wasm — DeepSeek V4 Pro Cloud — 0% server</title>
+<title>NVIDIA NIM — deepseek-ai/deepseek-v4-pro — 0% server</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.min.css">
-<style>body{margin:0;font-family:ui-monospace,monospace;background:#0e0e10;color:#e6e6e6;display:flex;height:100vh}#left{width:340px;border-right:1px solid #222;padding:12px;overflow:auto}#center{flex:1;display:flex;flex-direction:column}#term{flex:1;padding:8px;background:#0a0a0b}#diff{height:32%;border-top:1px solid #222;padding:10px;overflow:auto;background:#111113;white-space:pre-wrap;font-size:12px}button,input,select{background:#1a1a1e;color:#e6e6e6;border:1px solid #2a2a2e;padding:8px 10px;border-radius:8px;width:100%;margin:5px 0}button{cursor:pointer;background:#238636;border-color:#2ea043;font-weight:600}button:hover{filter:brightness(1.1)}.muted{color:#8a8a90;font-size:12px}.ok{color:#7ee787}</style>
+<style>body{margin:0;font-family:ui-monospace,monospace;background:#0e0e10;color:#e6e6e6;display:flex;height:100vh}#left{width:360px;border-right:1px solid #222;padding:12px;overflow:auto}#center{flex:1;display:flex;flex-direction:column}#term{flex:1;padding:8px;background:#0a0a0b}#diff{height:34%;border-top:1px solid #222;padding:10px;overflow:auto;background:#111113;white-space:pre-wrap;font-size:12px}button,input,select{background:#1a1a1e;color:#e6e6e6;border:1px solid #2a2a2e;padding:9px 10px;border-radius:8px;width:100%;margin:6px 0}button{cursor:pointer;background:#76b900;color:#000;font-weight:800}button:hover{filter:brightness(1.1)}#btn-init{background:#1a1a1e;color:#e6e6e6;font-weight:400}.muted{color:#8a8a90;font-size:12px}.ok{color:#76b900}a{color:#76b900}</style>
 </head><body>
 <div id="left">
-<h3>DeepSeek V4 Pro — GitHub Only</h3>
-<div class="muted">GitHub Pages 32KB만 사용. 파일은 브라우저 OPFS에만 저장. 서버 업로드 0.</div>
+<h3>NVIDIA NIM × deepseek-v4-pro</h3>
+<div class="muted">base_url = https://integrate.api.nvidia.com/v1<br>당신의 config 그대로 사용</div>
 
-<label class="muted">DeepSeek API Key (sk-...)</label>
-<input id="apiKey" placeholder="sk-..." type="password" />
-<div class="muted" style="margin:4px 0">키 발급: <a href="https://platform.deepseek.com/api_keys" target="_blank" style="color:#7ee787">platform.deepseek.com</a> — localStorage에만 저장</div>
+<label class="muted">NVIDIA API Key (nvapi-...)</label>
+<input id="apiKey" placeholder="nvapi-..." type="password" />
 
-<label class="muted">Model — 당신의 config 그대로</label>
+<label class="muted">Base URL</label>
+<input id="baseUrl" value="https://integrate.api.nvidia.com/v1" readonly style="opacity:.7" />
+
+<label class="muted">Model</label>
 <select id="model">
-  <option value="deepseek-ai/deepseek-v4-pro" selected>deepseek-ai/deepseek-v4-pro (default, web_search, session_summary 전부)</option>
-  <option value="deepseek-ai/deepseek-v4-flash">deepseek-ai/deepseek-v4-flash (빠른 버전)</option>
+  <option value="deepseek-ai/deepseek-v4-pro" selected>deepseek-ai/deepseek-v4-pro (default / web_search / image_description / session_summary)</option>
+  <option value="deepseek-ai/deepseek-v4-flash">deepseek-ai/deepseek-v4-flash</option>
 </select>
 
-<button id="btn-run">▶ DeepSeek V4 Pro로 Agent 실행</button>
-<button id="btn-init" style="background:#1a1a1e">샘플 파일 생성 (OPFS)</button>
+<button id="btn-run">▶ deepseek-v4-pro 호출 (NVIDIA 무료)</button>
+<button id="btn-init">샘플 파일 생성 (OPFS)</button>
 
 <div id="filetree" class="muted" style="margin-top:12px">(empty)</div>
 <hr style="border-color:#222;margin:12px 0">
-<div class="muted">WASM: <span id="wasm-size">-</span> | <span id="wasm-ver">-</span><br><span id="status" class="ok">ready — GitHub Pages only</span></div>
+<div class="muted">WASM: <span id="wasm-size">-</span> | <span id="wasm-ver">-</span><br><span id="status" class="ok">ready</span></div>
 <div id="log" style="font-size:12px;margin-top:8px;line-height:1.6"></div>
 </div>
-
-<div id="center"><div id="term"></div><div id="diff">// ToolCall JSON이 여기 표시됩니다.</div></div>
+<div id="center"><div id="term"></div><div id="diff">// ToolCall JSON</div></div>
 
 <script type="module">
 import { Terminal } from "https://cdn.jsdelivr.net/npm/xterm@5.3.0/+esm"
 import initWasm, * as wasm from "./grok_qcore.js"
 const term = new Terminal({convertEol:true,fontSize:13,theme:{background:"#0a0a0b"}}); term.open(document.getElementById("term"))
-const $ = id=>document.getElementById(id)
-
-term.writeln("\x1b[90m[client] loading 32KB WASM...\x1b[0m"); await initWasm()
-term.writeln(`\x1b[32m[ok] ${wasm.version()} — DeepSeek Native\x1b[0m`)
+const $=id=>document.getElementById(id)
+term.writeln("\x1b[90m[client] loading...\x1b[0m"); await initWasm()
+term.writeln(`\x1b[32m[ok] ${wasm.version()} — v4-pro mode\x1b[0m`)
 $("wasm-ver").textContent=wasm.version()
-try{const r=await fetch("./grok_qcore_bg.wasm",{cache:"no-store"});const l=r.headers.get('content-length')||(await r.arrayBuffer()).byteLength;$("wasm-size").textContent=`${(l/1024).toFixed(1)}KB flat`}catch{}
-
-$("apiKey").value = localStorage.getItem("ds_key")||""
-$("model").value = localStorage.getItem("ds_model")||"deepseek-ai/deepseek-v4-pro"
-
-const opfsRoot = await navigator.storage.getDirectory()
-async function opfsWrite(p,c){const a=p.split("/").filter(Boolean);const n=a.pop();let d=opfsRoot;for(const x of a){d=await d.getDirectoryHandle(x,{create:true});}const h=await d.getFileHandle(n,{create:true});const w=await h.createWritable();await w.write(c);await w.close();term.writeln(`\x1b[90m[OPFS] wrote ${p} (${c.length}B) local only\x1b[0m`)}
+try{const r=await fetch("./grok_qcore_bg.wasm",{cache:"no-store"});const l=r.headers.get('content-length')||(await r.arrayBuffer()).byteLength;$("wasm-size").textContent=`${(l/1024).toFixed(1)}KB`}catch{}
+$("apiKey").value=localStorage.getItem("nv_key")||""
+const opfsRoot=await navigator.storage.getDirectory()
+async function opfsWrite(p,c){const a=p.split("/").filter(Boolean);const n=a.pop();let d=opfsRoot;for(const x of a){d=await d.getDirectoryHandle(x,{create:true});}const h=await d.getFileHandle(n,{create:true});const w=await h.createWritable();await w.write(c);await w.close();term.writeln(`\x1b[90m[wrote] ${p}\x1b[0m`)}
 async function opfsList(dh=opfsRoot,pre=""){const o=[];for await(const [nm,hd] of dh.entries()){if(hd.kind==="file")o.push(pre+nm);else o.push(...await opfsList(hd,pre+nm+"/"))}return o}
 async function refresh(){const f=await opfsList();$("filetree").innerHTML=f.map(x=>`<div>📄 ${x}</div>`).join("")||"<span class=muted>(empty)</span>"}
-
-$("btn-init").onclick=async()=>{await opfsWrite("src/main.rs",`fn main(){ println!("Hello DeepSeek V4 Pro — GitHub Pages only, 0% server!"); }`);await refresh()}
-
+$("btn-init").onclick=async()=>{await opfsWrite("src/main.rs",`fn main(){ println!("deepseek-v4-pro via NVIDIA NIM — free!"); }`);await refresh()}
 $("btn-run").onclick=async()=>{
-  const key=$("apiKey").value.trim(), model=$("model").value
-  if(!key.startsWith("sk-")){ term.writeln("\x1b[33mAPI 키를 입력하세요. https://platform.deepseek.com/api_keys 에서 발급\x1b[0m"); return }
-  localStorage.setItem("ds_key",key); localStorage.setItem("ds_model",model)
-  $("status").textContent=`calling ${model} @ api.deepseek.com...`
-  term.writeln(`\x1b[90m[deepseek] ${model} 호출 중... (브라우저 -> api.deepseek.com 직접, GitHub 서버 경유 0)\x1b[0m`)
+  const key=$("apiKey").value.trim(), model=$("model").value, base=$("baseUrl").value
+  if(!key.startsWith("nvapi-")){term.writeln("\x1b[33mnvapi- 키를 입력하세요\x1b[0m");return}
+  localStorage.setItem("nv_key",key)
+  $("status").textContent=`calling ${model}...`
+  term.writeln(`\x1b[90m[nvidia] ${model} @ ${base} 호출 (직접, 0% server)...\x1b[0m`)
   try{
-    const system = `You are grok-qcore. Output ONE JSON ToolCall only. No markdown.
-Types: {"type":"Read","path":"string"} | {"type":"Edit","path":"string","diff":"FULL NEW FILE CONTENT"} | {"type":"Done","reason":"string"}
-Rule: Always Read before Edit.`
-    const user = `Task: src/main.rs 파일에 주석 2줄 추가하고 함수 fn add(a:i32,b:i32)->i32 를 추가해. Edit JSON으로 출력.`
-    const res = await fetch("https://api.deepseek.com/v1/chat/completions",{
-      method:"POST",
-      headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`},
-      body: JSON.stringify({ model: model.includes("/")? "deepseek-chat" : model, messages:[{role:"system",content:system},{role:"user",content:user}], temperature:0.2, response_format:{type:"json_object"}})
-    })
-    if(!res.ok){ const t=await res.text(); throw new Error(`DeepSeek ${res.status}: ${t.slice(0,500)}`) }
-    const j=await res.json()
-    const out=j.choices?.[0]?.message?.content||""
-    term.writeln(`\x1b[36m[deepseek] ${out.slice(0,600)}\x1b[0m`)
-    const tool=JSON.parse(out.match(/\{[\s\S]*\}/)?.[0]||out)
-    $("diff").textContent=JSON.stringify(tool,null,2)
-    if(tool.type==="Edit"){ await opfsWrite(tool.path, tool.diff); await refresh(); term.writeln(`\x1b[32m[applied] ${tool.path} — 로컬 OPFS에만 저장됨\x1b[0m`); $("status").textContent="done — OPFS updated" }
-  }catch(e){ term.writeln(`\x1b[31m[error] ${e.message}\x1b[0m`); $("status").textContent="error — 키 확인" }
+    const res=await fetch(`${base}/chat/completions`,{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${key}`},body:JSON.stringify({model:model,messages:[{role:"system",content:`You are grok-qcore. Output ONE JSON only: {"type":"Edit","path":"src/main.rs","diff":"FULL FILE"} | {"type":"Read","path":"..."} | {"type":"Done"}. No markdown.`},{role:"user",content:`Read src/main.rs then Edit to add fn add(a:i32,b:i32)->i32`}],temperature:0.2,max_tokens:1200})})
+    if(!res.ok){const t=await res.text();throw new Error(`${res.status}: ${t.slice(0,800)}`)}
+    const j=await res.json();const out=j.choices?.[0]?.message?.content||""
+    term.writeln(`\x1b[36m[out] ${out.slice(0,800)}\x1b[0m`)
+    const tool=JSON.parse(out.match(/\{[\s\S]*\}/)?.[0]||out);$("diff").textContent=JSON.stringify(tool,null,2)
+    if(tool.type==="Edit"){await opfsWrite(tool.path,tool.diff);await refresh();term.writeln(`\x1b[32m[ok] ${tool.path} updated — OPFS only\x1b[0m`)}
+    $("status").textContent=`done: ${tool.type}`
+  }catch(e){term.writeln(`\x1b[31m[error] ${e.message}\x1b[0m`);$("status").textContent="error"}
 }
 await refresh()
 </script></body></html>
